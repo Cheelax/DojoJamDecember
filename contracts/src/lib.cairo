@@ -1,4 +1,12 @@
 mod actions;
-mod models;
-mod utils;
+mod data {
+    mod v00;
+}
+mod models {
+    mod map;
+    mod tile;
+}
+
+
+use plaguestark::data::v00 as config;
 
