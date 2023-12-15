@@ -6,8 +6,6 @@ use poseidon::PoseidonTrait;
 use hash::HashStateTrait;
 
 // External imports
-
-use alexandria_data_structures::array_ext::SpanTraitExt;
 use plaguestark::utils::dice::{Dice, DiceTrait};
 
 // Internal imports

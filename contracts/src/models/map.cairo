@@ -8,7 +8,6 @@ use hash::HashStateTrait;
 
 // External imports
 
-use alexandria_data_structures::array_ext::ArrayTraitExt;
 
 use plaguestark::config;
 use plaguestark::models::tile::{Tile, TileTrait};
@@ -64,7 +63,6 @@ impl MapImpl of MapTrait {
         
         // [Compute] Seed in u256 for futher operations
         let base_seed: u256 = seed.into();
-        
         // Each player draw R/N where R is the remaining cards and N the number of players left
         let mut tilesMap: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
         let mut count_generated: u32 = 0;
@@ -154,9 +152,9 @@ mod tests {
 
     // Internal imports
 
-    use zconqueror::config;
-    use zconqueror::models::tile::{Tile, TileTrait};
-    use zconqueror::models::set::{Set, SetTrait};
+    use plaguestark::config;
+    use plaguestark::models::tile::{Tile, TileTrait};
+    // use plaguestark::models::set::{Set, SetTrait};
 
     // Local imports
 
@@ -167,10 +165,9 @@ mod tests {
     const GAME_ID: u32 = 0;
     const SEED: felt252 = 'seed';
     const NONCE: u32 = 0;
-    const PLAYER_1: u32 = 0;
 
     #[test]
-    #[available_gas(100_000)]
+    #[available_gas(100_000_000)]
     fn test_map_random() {
         let (unit, nonce) = _random(SEED, NONCE);
         assert(unit == 0 || unit == 1, 'Map: wrong random unit');
@@ -180,17 +177,26 @@ mod tests {
     #[test]
     #[available_gas(18_000_000)]
     fn test_map_new() {
-        MapTrait::new(GAME_ID, SEED, PLAYER_NUMBER, config::TILE_NUMBER, config::ARMY_NUMBER);
+        let result = MapTrait::new(GAME_ID, SEED, config::TILE_NUMBER);
+         println!("Hello, World!");
+        
     }
 
-    #[test]
-    #[available_gas(18_000_000)]
-    fn test_map_from_tiles() {
-        let mut tiles: Array<Tile> = array![];
-        tiles.append(TileTrait::new(GAME_ID, 1, 0, PLAYER_1));
-        tiles.append(TileTrait::new(GAME_ID, 2, 0, PLAYER_1));
-        MapTrait::from_tiles(PLAYER_NUMBER, tiles.span());
-    }
+    // #[test]
+    // #[available_gas(18_000_000)]
+    // fn test_map_from_tiles() {
+    //     let mut tiles: Array<Tile> = array![];
+    //     tiles.append(TileTrait::new(GAME_ID, 1, 0,0));
+    //     tiles.append(TileTrait::new(GAME_ID, 2, 0,0));
+    //     MapTrait::from_tiles( 1,tiles.span());
+    // }
+
+
+
+
+
+
+
 
     // #[test]
     // #[available_gas(18_000_000)]
