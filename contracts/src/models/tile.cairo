@@ -44,7 +44,7 @@ trait TileTrait {
     /// * `owner` - The owner id of the territory.
     /// # Returns
     /// * The initialized `Tile`.
-    fn new(game_id: u32, id: u8) -> Tile;
+    fn new(game_id: u32, id: u8, x:u8, y:u8) -> Tile;
     /// Returns a new `Option<Tile>` struct.
     /// # Arguments
     /// * `id` - The territory id.
@@ -68,10 +68,10 @@ trait TileTrait {
 /// Implementation of the `TileTrait` for the `Tile` struct.
 impl TileImpl of TileTrait {
     #[inline(always)]
-    fn new(game_id: u32, id: u8) -> Tile {
+    fn new(game_id: u32, id: u8, x:u8, y: u8) -> Tile {
         // assert(config::TILE_NUMBER >= id.into() && id > 0, errors::INVALID_ID);
         // let neighbors = config::neighbors(id).expect(errors::INVALID_ID);
-        Tile { game_id, id, x:0, y:0, _type:0}
+        Tile { game_id, id, x, y, _type:0}
     }
 
     #[inline(always)]

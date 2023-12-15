@@ -39,7 +39,7 @@ trait MapTrait {
     /// * `army_count` - The number of army of each player.
     /// # Returns
     /// * The initialized `Map`.
-    fn new(game_id: u32, seed: felt252, player_count: u32, tile_count: u32, army_count: u32) -> Map;
+    fn new(game_id: u32, seed: felt252, grid_side: u8) -> Map;
     /// Returns the `Map` struct according to the tiles.
     /// # Arguments
     /// * `player_count` - The number of players.
@@ -59,7 +59,7 @@ trait MapTrait {
 /// Implementation of the `MapTrait` for the `Map` struct.
 impl MapImpl of MapTrait {
     fn new(
-        game_id: u32, seed: felt252, player_count: u32, tile_count: u32, army_count: u32
+        game_id: u32, seed: felt252, grid_side: u8
     ) -> Map {
         
         // [Compute] Seed in u256 for futher operations
@@ -68,20 +68,31 @@ impl MapImpl of MapTrait {
         // Each player draw R/N where R is the remaining cards and N the number of players left
         let mut tilesMap: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
         let mut count_generated: u32 = 0;
+
+        let mut x: u8 = 0;
+        let mut y: u8 = 0;
         loop {
-            if count_generated == 100 {
+            if x==grid_side {
                 break;
             }
+            loop {
+                if y==grid_side {
+                    break;
+                }
+
+                let mut tiles: Array<Tile> = array![];
+                let tile_id = (x * grid_side + y); // Calculez l'ID basé sur x et y
+                let tile = TileTrait::new(game_id, tile_id, x, y); // Assurez-vous que TileTrait::new accepte x et y
+                tiles.append(tile);
+
+                //todo: verify if this key is unique
+                let key = (x * grid_side + y);
+                tilesMap.insert(key.into(), nullable_from_box(BoxTrait::new(tiles.span())));
+                y= y+1;
+            };
             
-            let mut tiles: Array<Tile> = array![];
-          
-            // let tile_id = deck.draw();
-            let tile = TileTrait::new(game_id, 1);
-            tiles.append(tile);
-           
-            // Store the player tiles
-            tilesMap.insert(count_generated.into(), nullable_from_box(BoxTrait::new(tiles.span())));
-            count_generated += 1;
+            x= x+1;
+            y= 0_u8;
         };
         Map { tilesMap }
     }
