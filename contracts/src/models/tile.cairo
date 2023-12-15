@@ -8,7 +8,7 @@ use hash::HashStateTrait;
 // External imports
 
 use alexandria_data_structures::array_ext::SpanTraitExt;
-// use origami::random::dice::{Dice, DiceTrait};
+use plaguestark::utils::dice::{Dice, DiceTrait};
 
 // Internal imports
 
@@ -25,7 +25,6 @@ struct Tile {
     x: u8,
     y: u8,
     _type: u8,
-
 }
 
 /// Errors module

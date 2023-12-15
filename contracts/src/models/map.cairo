@@ -1,16 +1,24 @@
-// Map struct.
-#[derive(Destruct)]
-struct Map {
-    // realms: Felt252Dict<Nullable<Span<Tile>>>,
-}
+// Core imports
 
+use dict::{Felt252Dict, Felt252DictTrait};
+use array::{ArrayTrait, SpanTrait};
+use nullable::{NullableTrait, nullable_from_box, match_nullable, FromNullableResult};
 use poseidon::PoseidonTrait;
 use hash::HashStateTrait;
 
-// Internal imports
+// External imports
+
+use alexandria_data_structures::array_ext::ArrayTraitExt;
 
 use plaguestark::config;
 use plaguestark::models::tile::{Tile, TileTrait};
+// Map struct.
+#[derive(Destruct)]
+struct Map {
+    tilesMap: Felt252Dict<Nullable<Span<Tile>>>,
+}
+
+
 
 /// Errors module
 mod errors {
@@ -58,55 +66,28 @@ impl MapImpl of MapTrait {
         let base_seed: u256 = seed.into();
         
         // Each player draw R/N where R is the remaining cards and N the number of players left
-        let mut realms: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
-        // let mut player_index: u32 = 0;
-        // loop {
-        //     if player_index == player_count {
-        //         break;
-        //     }
-        //     let turns_count = deck.remaining / (player_count - player_index);
-        //     // [Check] At least 1 tile per player
-        //     assert(turns_count > 0, errors::INVALID_TILE_NUMBER);
-        //     let mut turn_index = 0;
-        //     // Draw the tiles for the current player with a single unit army
-        //     let mut remaining_army = army_count;
-        //     let mut tiles: Array<Tile> = array![];
-        //     loop {
-        //         if turn_index == turns_count {
-        //             break;
-        //         }
-        //         let tile_id = deck.draw();
-        //         let tile = TileTrait::new(game_id, tile_id, 1, player_index);
-        //         tiles.append(tile);
-        //         remaining_army -= 1;
-        //         turn_index += 1;
-        //     };
-        //     // Spread army on the tiles
-        //     let mut remaining_army = army_count - turns_count;
-        //     let mut nonce = 0;
-        //     loop {
-        //         if remaining_army == 0 {
-        //             break;
-        //         }
-        //         // Random number between 0 or 1
-        //         let (unit, new_nonce) = _random(seed, nonce);
-        //         nonce = new_nonce;
-        //         // Increase army of the current tile with the unit
-        //         let mut tile: Tile = tiles.pop_front().expect(errors::TILES_EMPTY);
-        //         // TODO: Check if it is better to conditonate the following lines
-        //         tile.army += unit.into();
-        //         remaining_army -= unit.into();
-        //         tiles.append(tile);
-        //     };
-        //     // Store the player tiles
-        //     realms.insert(player_index.into(), nullable_from_box(BoxTrait::new(tiles.span())));
-        //     player_index += 1;
-        // };
-        Map { }
+        let mut tilesMap: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
+        let mut count_generated: u32 = 0;
+        loop {
+            if count_generated == 100 {
+                break;
+            }
+            
+            let mut tiles: Array<Tile> = array![];
+          
+            // let tile_id = deck.draw();
+            let tile = TileTrait::new(game_id, 1);
+            tiles.append(tile);
+           
+            // Store the player tiles
+            tilesMap.insert(count_generated.into(), nullable_from_box(BoxTrait::new(tiles.span())));
+            count_generated += 1;
+        };
+        Map { tilesMap }
     }
 
     fn from_tiles(player_count: u32, tiles: Span<Tile>) -> Map {
-        let mut realms: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
+        let mut tilesMap: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
         let mut player_index = 0;
         loop {
             if player_index == player_count {
@@ -122,11 +103,11 @@ impl MapImpl of MapTrait {
                
                 tile_index += 1;
             };
-            realms
+            tilesMap
                 .insert(player_index.into(), nullable_from_box(BoxTrait::new(player_tiles.span())));
             player_index += 1;
         };
-        Map { }
+        Map { tilesMap }
     }
 
     fn score(ref self: Map, player_index: u32) -> u32 {
