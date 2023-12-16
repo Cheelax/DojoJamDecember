@@ -7,9 +7,5 @@ export function createClientComponents({ contractComponents }: SetupNetworkResul
   return {
     ...contractComponents,
     Player: overridableComponent(contractComponents.Player),
-    // Game: overridableComponent(contractComponents.Game),
-    // Map: overridableComponent(contractComponents.Map),
-    // Tile: overridableComponent(contractComponents.Tile),
-    // Character: overridableComponent(contractComponents.Character),
   };
 }

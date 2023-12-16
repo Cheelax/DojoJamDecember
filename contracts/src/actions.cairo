@@ -1,17 +1,16 @@
-
+use starknet::ContractAddress;
 
 // define the interface
 #[starknet::interface]
 trait IActions<TContractState> {
-    fn spawn(self: @TContractState, ip: felt252);
-    fn move(self: @TContractState, ip: felt252, x: u16, y: u16);
+    fn spawn(self: @TContractState);
+    fn move(self: @TContractState, x: u16, y: u16);
 }
 
 #[derive(Model, Copy, Drop, Serde)]
 struct Player {
     #[key]
-    id: felt252,
-    account: felt252,
+    id: ContractAddress,
     x: u16,
     y: u16,
     orientation: u8, // use enum
@@ -20,7 +19,7 @@ struct Player {
 // dojo decorator
 #[dojo::contract]
 mod actions {
-    use starknet::{ContractAddress, get_caller_address};
+    use starknet::get_caller_address;
     use super::IActions;
 
     use super::Player;
@@ -29,22 +28,22 @@ mod actions {
     #[external(v0)]
     impl ActionsImpl of IActions<ContractState> {
         // ContractState is defined by system decorator expansion
-        fn spawn(self: @ContractState, ip: felt252) {
+        fn spawn(self: @ContractState) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
 
             // Get the address of the current caller, possibly the player's address.
             let player = get_caller_address();
 
-            set!(world, 
+            set!(world,
                 (
-                    Player { id: ip, orientation: 0, x: 0, y: 0 },
+                    Player { id: player.into(), orientation: 0, x: 0, y: 0 },
                 )
             );
         }
 
         // Implementation of the move function for the ContractState struct.
-        fn move(self: @ContractState, ip: felt252, x: u16, y: u16) {
+        fn move(self: @ContractState, x: u16, y: u16) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
 
@@ -57,7 +56,7 @@ mod actions {
 
             set!(world,
                 (
-                    Player { id: ip, orientation: nextOrientation, x: x, y: y },
+                    Player { id: player.into(), orientation: nextOrientation, x: x, y: y },
                 )
             );
         }

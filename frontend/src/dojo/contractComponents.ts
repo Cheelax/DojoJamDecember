@@ -11,20 +11,7 @@ export function defineContractComponents(world: World) {
 	      {
 	        metadata: {
 	          name: "Player",
-	          types: ["felt252","u16","u16","u8"],
-	          customTypes: [],
-	        },
-	      }
-	    );
-	  })(),
-	  Tile: (() => {
-	    return defineComponent(
-	      world,
-	      { game_id: RecsType.Number, id: RecsType.Number, x: RecsType.Number, y: RecsType.Number, _type: RecsType.Number },
-	      {
-	        metadata: {
-	          name: "Tile",
-	          types: ["u32","u8","u8","u8","u8"],
+	          types: ["contractaddress","u16","u16","u8"],
 	          customTypes: [],
 	        },
 	      }

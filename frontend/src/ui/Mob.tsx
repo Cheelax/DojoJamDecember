@@ -1,17 +1,16 @@
-import { AnimatedSprite, useTick } from '@pixi/react';
+import { AnimatedSprite } from '@pixi/react';
 import { Assets, Texture } from 'pixi.js';
 import { useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
 import { to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import { Direction, getFramesFromType, Animation } from '../utils/animation';
+import { defineSystem, Has } from '@latticexyz/recs';
 
 export type MobType = 'knight';
 
 interface MobProps {
   type: MobType;
-  targetPosition: Coordinate;
-  health: number;
-  knightPosition?: Coordinate;
+  position: Coordinate;
 }
 
 function lerp(start: number, end: number, t: number) {
@@ -40,56 +39,37 @@ const getStartOrientation = (mob_coord: Coordinate, knight_position?: Coordinate
 
 const Mob: React.FC<MobProps> = ({
   type,
-  targetPosition,
-  health,
-  knightPosition,
+  position,
 }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
-  const [counterAnim, setCounterAnim] = useState(0);
 
-  const [orientation, setOrientation] = useState<Direction>(getStartOrientation(targetPosition, knightPosition));
+  // const [orientation, setOrientation] = useState<Direction>(getStartOrientation(targetPosition, knightPosition));
   const [frames, setFrames] = useState<Texture[]>([]);
   const [resource, setResource] = useState<any>(undefined);
   const [currentFrame, setCurrentFrame] = useState(0);
 
   const [isMoving, setIsMoving] = useState(false);
 
-  useEffect(() => {
-    if (resource) {
-      if (animation === Animation.Walk) {
-        const or = getDirection(
-          to_grid_coordinate(absolutePosition),
-          to_grid_coordinate(absoluteTargetPosition),
-          orientation
-        );
-        setOrientation(or);
-        setFrames(getFramesFromType(type, Animation.Walk, or, resource));
-      } else if (animation === Animation.Hurt) {
-        setFrames(getFramesFromType(type, Animation.Hurt, orientation, resource));
-      } else if (animation === Animation.Death) {
-        setFrames(getFramesFromType(type, Animation.Death, orientation, resource));
-      } else {
-        setFrames(getFramesFromType(type, Animation.Idle, orientation, resource));
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [animation, resource]);
-
-  useEffect(() => {
-    setCurrentFrame(0);
-    if (health === 0) {
-      setAnimation(Animation.Death);
-    } else {
-      if (
-        (health === 10 && type === 'knight')
-      ) {
-        setAnimation(Animation.Jump);
-      } else {
-        setAnimation(Animation.Hurt);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [health]);
+  // useEffect(() => {
+  //   if (resource) {
+  //     if (animation === Animation.Walk) {
+  //       // const or = getDirection(
+  //       //   to_grid_coordinate(absolutePosition),
+  //       //   to_grid_coordinate(absoluteTargetPosition),
+  //       //   orientation
+  //       // );
+  //       // setOrientation(or);
+  //       setFrames(getFramesFromType(type, Animation.Walk, or, resource));
+  //     } else if (animation === Animation.Hurt) {
+  //       setFrames(getFramesFromType(type, Animation.Hurt, orientation, resource));
+  //     } else if (animation === Animation.Death) {
+  //       setFrames(getFramesFromType(type, Animation.Death, orientation, resource));
+  //     } else {
+  //       setFrames(getFramesFromType(type, Animation.Idle, orientation, resource));
+  //     }
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [animation, resource]);
 
   useEffect(() => {
     if (isMoving) {
@@ -99,75 +79,31 @@ const Mob: React.FC<MobProps> = ({
 
   // current position absolute during movement
   // will be changing during the movement, towards the absoluteTargetPosition
-  const [absolutePosition, setAbsolutePosition] = useState<Coordinate>(to_center(to_screen_coordinate(targetPosition)));
-  const [absoluteTargetPosition, setAbsoluteTargetPosition] = useState<Coordinate>(
-    to_center(to_screen_coordinate(targetPosition))
-  );
+  const [absolutePosition, setAbsolutePosition] = useState<Coordinate>(to_center(to_screen_coordinate(position)));
+  // const [absoluteTargetPosition, setAbsoluteTargetPosition] = useState<Coordinate>(
+  //   to_center(to_screen_coordinate(targetPosition))
+  // );
 
   // Only at init
   useEffect(() => {
     const load = async () => {
       const resource = await Assets.load(`assets/${type}/${type}.json`);
       setResource(resource);
+      setFrames(getFramesFromType(type, Animation.Idle, Direction.SE, resource));
     };
     load();
     // init position
-    setAbsolutePosition(to_center(to_screen_coordinate(targetPosition)));
+    // setAbsolutePosition(to_center(to_screen_coordinate(targetPosition)));
+    setAbsolutePosition(to_center(to_screen_coordinate(position)));
   }, []);
 
   // If we receive a new targetPosition from props, we transform it into absolute pixel pos and work on it for the move
   useEffect(() => {
-    setAbsoluteTargetPosition(to_center(to_screen_coordinate(targetPosition)));
-  }, [targetPosition]);
-
-  // Here we work only in absolute positions
-  useTick(() => {
-    const currentX = absolutePosition.x;
-    const currentY = absolutePosition.y;
-    const targetX = absoluteTargetPosition.x;
-    const targetY = absoluteTargetPosition.y;
-    if (Math.abs(targetX - currentX) >= 1 || Math.abs(targetY - currentY) >= 1) {
-      setIsMoving(true);
-      const newX = lerp(currentX, targetX, 0.05);
-      const newY = lerp(currentY, targetY, 0.05);
-      setAbsolutePosition({ x: newX, y: newY });
-    } else {
-      setIsMoving(false);
-    }
-  });
+    setAbsolutePosition(to_center(to_screen_coordinate(position)));
+  }, [position]);
 
   const [shouldAnimate, setShouldAnimate] = useState(true);
   const [isDead, setIsDead] = useState(false);
-
-  useTick(() => {
-    if (shouldAnimate) {
-      setCounterAnim((prevCounter) => prevCounter + 1);
-      if (counterAnim === 1000) setCounterAnim(0);
-
-      if (counterAnim % 10 === 0) {
-        if (animation === Animation.Idle) {
-          // if IDLE, loop through frames
-          if (frames && frames.length > 0) {
-            setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
-          }
-        } else {
-          // otherwise we do only the frames, and then go IDLE
-          if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
-            setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
-          } else {
-            // last frame of the animation
-            if (animation === Animation.Death) {
-              setShouldAnimate(false);
-              setIsDead(true);
-            } else {
-              setCurrentFrame(0);
-              setAnimation(Animation.Idle);
-            }
-          }
-        }
-      }
-    }
-  });
 
   if (frames.length === 0) {
     return null;
@@ -181,7 +117,7 @@ const Mob: React.FC<MobProps> = ({
         y={isDead ? -100 /*lol*/ : absolutePosition.y - 36}
         anchor={0.5}
         scale={2}
-        isPlaying={false}
+        isPlaying={true}
         textures={frames}
         initialFrame={currentFrame}
       />
