@@ -21,7 +21,6 @@ export const useDojo = () => {
 
   if (!value) throw new Error('The `useDojo` hook must be used within a `DojoProvider`');
 
-  console.log(import.meta.env.VITE_PUBLIC_NODE_URL!)
   const provider = useMemo(
     () =>
       new RpcProvider({

@@ -19,17 +19,14 @@ export function createSystemCalls(
           calldata: [import.meta.env.VITE_PUBLIC_WORLD_ADDRESS],
         },
       ];
-      console.log("Calling SPAWN ", signer.address)
       const tx = await execute(signer, calls);
 
-      // console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
         retryInterval: 100,
       })) as InvokeTransactionReceiptResponse;
 
       const events = receipt.events;
 
-      // console.log("Events", events);
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
         await executeEvents(eventsTransformed);
@@ -52,18 +49,14 @@ export function createSystemCalls(
           calldata: [x + 25, y + 25], // avoid overflow if negative
         },
       ];
-      console.log("Calling MOVE ", x + 25, y + 25)
-
       const tx = await execute(signer, calls);
 
-      // console.log(tx);
       const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
         retryInterval: 100,
       })) as InvokeTransactionReceiptResponse;
 
       const events = receipt.events;
 
-      // console.log("Events", events);
       if (events) {
         const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
         await executeEvents(eventsTransformed);
@@ -83,7 +76,6 @@ export async function executeEvents(
   events: TransformedEvent[]
 ) {
   const playerEvents = events.filter((e): e is PlayerEvent & ComponentData => e.type === 'Player');
-  console.log('KD >>>> playerEvents', playerEvents);
   for (const e of playerEvents) {
     setComponent(e.component, e.entityIndex, e.componentValues);
   }
@@ -158,12 +150,13 @@ export async function setComponentsFromEvents(components: Components, events: Ev
 
     // Component
     const component = components[componentName];
-    const componentValues = Object.keys(component.schema).reduce((acc: Schema, key, index) => {
+    const componentValues = Object.keys(component.schema).slice(keysNumber).reduce((acc: Schema, key, index) => {
       const value = values[index];
       acc[key] = Number(value);
       return acc;
     }, {});
     const entity = getEntityIdFromKeys(keys);
+    componentValues.id = entity
 
     const baseEventData = {
       component,
@@ -174,8 +167,12 @@ export async function setComponentsFromEvents(components: Components, events: Ev
     switch (componentName) {
       case 'Player':
         transformedEvents.push({
-          ...handlePlayerEvent(keys, values),
           ...baseEventData,
+          componentValues: {
+            ...componentValues,
+            ...handlePlayerEvent(keys, values) // Hack needed if the values must be computed client side
+          },
+          ...handlePlayerEvent(keys, values)
         });
         break;
     }

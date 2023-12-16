@@ -1,28 +1,35 @@
 import { Container, Stage } from '@pixi/react';
-import * as PIXI from 'pixi.js';
 import { useEffect, useState } from 'react';
-import heart from '../assets/heart1.png';
-import skull from '../assets/skull.png';
 import { Coordinate } from '../type/GridElement';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate } from '../utils/grid';
 import MapComponent from './Map';
 import Mob from './Mob';
+import { defineSystem, Has } from '@latticexyz/recs';
 
 interface CanvasProps {
-  position: any,
+  spawn: any;
   move: any;
+  world: any;
   account: any;
+  Player: any;
 }
 
 const Canvas: React.FC<CanvasProps> = ({
   move,
-  position,
+  spawn,
+  world,
   account,
+  Player
 }) => {
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
+  const [player, setPlayer] = useState({ x: 0, y: 0, id: 0, orientation: 0 })
 
-  PIXI.Texture.from(heart).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
-  PIXI.Texture.from(skull).baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+  useEffect(() => {
+    spawn(account);
+    defineSystem(world, [Has(Player)], ({ value: [newValue]}: any) => {
+      setPlayer(newValue)
+    });  
+  }, [account])
 
   return (
     <div style={{ position: 'relative' }}>
@@ -44,7 +51,6 @@ const Canvas: React.FC<CanvasProps> = ({
           }
         }}
         onPointerDown={(e) => {
-          console.log('Click on map');
           const gridPos = to_grid_coordinate({
             x: e.nativeEvent.offsetX - WIDTH / 2,
             y: e.nativeEvent.offsetY - H_OFFSET + 18, // 18 otherwise mouse not centered on the tile
@@ -60,7 +66,7 @@ const Canvas: React.FC<CanvasProps> = ({
           <MapComponent hoveredTile={hoveredTile} />
             <Mob
               type="knight"
-              position={position}
+              position={{x: player.x, y: player.y} as Coordinate}
             />
         </Container>
       </Stage>
