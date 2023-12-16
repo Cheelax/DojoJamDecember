@@ -3,8 +3,18 @@
 // define the interface
 #[starknet::interface]
 trait IActions<TContractState> {
-    fn spawn(self: @TContractState);
-    fn move(self: @TContractState);
+    fn spawn(self: @TContractState, ip: felt252);
+    fn move(self: @TContractState, ip: felt252, x: u16, y: u16);
+}
+
+#[derive(Model, Copy, Drop, Serde)]
+struct Player {
+    #[key]
+    id: felt252,
+    account: felt252,
+    x: u16,
+    y: u16,
+    orientation: u8, // use enum
 }
 
 // dojo decorator
@@ -13,136 +23,92 @@ mod actions {
     use starknet::{ContractAddress, get_caller_address};
     use super::IActions;
 
-    // declaring custom event struct
-    #[event]
-    #[derive(Drop, starknet::Event)]
-    enum Event {
-        Moved: Moved,
-    }
-
-    // declaring custom event struct
-    #[derive(Drop, starknet::Event)]
-    struct Moved {
-        player: ContractAddress,
-    }
+    use super::Player;
 
     // impl: implement functions specified in trait
     #[external(v0)]
     impl ActionsImpl of IActions<ContractState> {
         // ContractState is defined by system decorator expansion
-        fn spawn(self: @ContractState) {
+        fn spawn(self: @ContractState, ip: felt252) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
 
             // Get the address of the current caller, possibly the player's address.
             let player = get_caller_address();
 
-            // // Retrieve the player's current position from the world.
-            // let position = get!(world, player, (Position));
-
-            // // Retrieve the player's move data, e.g., how many moves they have left.
-            // let moves = get!(world, player, (Moves));
-
-            // // Update the world state with the new data.
-            // // 1. Set players moves to 10
-            // // 2. Move the player's position 100 units in both the x and y direction.
-            // set!(
-            //     world,
-            //     (
-            //         Moves { player, remaining: 100, last_direction: Direction::None(()) },
-            //         Position { player, vec: Vec2 { x: 10, y: 10 } },
-            //     )
-            // );
+            set!(world, 
+                (
+                    Player { id: ip, orientation: 0, x: 0, y: 0 },
+                )
+            );
         }
 
         // Implementation of the move function for the ContractState struct.
-        fn move(self: @ContractState) {
+        fn move(self: @ContractState, ip: felt252, x: u16, y: u16) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
 
             // Get the address of the current caller, possibly the player's address.
             let player = get_caller_address();
 
-            // Retrieve the player's current position and moves data from the world.
-            // let (mut position, mut moves) = get!(world, player, (Position, Moves));
+            let orientation = get!(world, player, (Player)).orientation;
+            // TODO: check previous position to compute orientation
+            let nextOrientation = ((orientation + 1) % 4);
 
-            // // Deduct one from the player's remaining moves.
-            // moves.remaining -= 1;
-
-            // // Update the last direction the player moved in.
-            // moves.last_direction = direction;
-
-            // // Calculate the player's next position based on the provided direction.
-            // let next = next_position(position, direction);
-
-            // // Update the world state with the new moves data and position.
-            // set!(world, (moves, next));
-
-            // // Emit an event to the world to notify about the player's move.
-            // emit!(world, Moved { player, direction });
+            set!(world,
+                (
+                    Player { id: ip, orientation: nextOrientation, x: x, y: y },
+                )
+            );
         }
     }
 }
 
-// #[cfg(test)]
-// mod tests {
-//     use starknet::class_hash::Felt252TryIntoClassHash;
+#[cfg(test)]
+mod tests {
+    use starknet::class_hash::Felt252TryIntoClassHash;
 
-//     // import world dispatcher
-//     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
+    // import world dispatcher
+    use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
-//     // import test utils
-//     use dojo::test_utils::{spawn_test_world, deploy_contract};
+    use super::{player, Player};
+    use debug::PrintTrait;
 
-//     // import models
-//     use dojo_examples::models::{position, moves};
-//     use dojo_examples::models::{Position, Moves, Direction, Vec2};
+    // import test utils
+    use dojo::test_utils::{spawn_test_world, deploy_contract};
 
-//     // import actions
-//     use super::{actions, IActionsDispatcher, IActionsDispatcherTrait};
+    // import actions
+    use super::{actions, IActionsDispatcher, IActionsDispatcherTrait};
 
-//     #[test]
-//     #[available_gas(30000000)]
-//     fn test_move() {
-//         // caller
-//         let caller = starknet::contract_address_const::<0x0>();
+    #[test]
+    #[available_gas(30000000)]
+    fn test_1() {
+        // caller
+        let caller = starknet::contract_address_const::<0x0>();
 
-//         // models
-//         let mut models = array![position::TEST_CLASS_HASH, moves::TEST_CLASS_HASH];
+        // models
+        let mut models = array![player::TEST_CLASS_HASH];
 
-//         // deploy world with models
-//         let world = spawn_test_world(models);
+        // deploy world with models
+        let world = spawn_test_world(models);
 
-//         // deploy systems contract
-//         let contract_address = world
-//             .deploy_contract('salt', actions::TEST_CLASS_HASH.try_into().unwrap());
-//         let actions_system = IActionsDispatcher { contract_address };
+        // deploy systems contract
+        let contract_address = world
+            .deploy_contract('salt', actions::TEST_CLASS_HASH.try_into().unwrap());
+        let actions_system = IActionsDispatcher { contract_address };
 
-//         // call spawn()
-//         actions_system.spawn();
+        // call spawn()
+        actions_system.spawn();
 
-//         // call move with direction right
-//         actions_system.move(Direction::Right(()));
+        let player = get!(world, caller, Player);
+        assert(player.x == 0 && player.y == 0, 'pos1 is wrong');
+        assert(player.orientation == 0, 'orient1 is wrong');
 
-//         // Check world state
-//         let moves = get!(world, caller, Moves);
+        // call move with direction right
+        actions_system.move(1, 0);
 
-//         // casting right direction
-//         let right_dir_felt: felt252 = Direction::Right(()).into();
-
-//         // check moves
-//         assert(moves.remaining == 99, 'moves is wrong');
-
-//         // check last direction
-//         assert(moves.last_direction.into() == right_dir_felt, 'last direction is wrong');
-
-//         // get new_position
-//         let new_position = get!(world, caller, Position);
-
-//         // check new position x
-//         assert(new_position.vec.x == 11, 'position x is wrong');
-
-//         // check new position y
-//         assert(new_position.vec.y == 10, 'position y is wrong');
-//     }
-// }
+        let player = get!(world, caller, Player);
+        assert(player.x == 1 && player.y == 0, 'pos2 is wrong');
+        assert(player.orientation == 1, 'orient2 is wrong');
+    }
+}
