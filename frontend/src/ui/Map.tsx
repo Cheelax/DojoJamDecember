@@ -9,6 +9,7 @@ interface MapProps {
 }
 
 const Map: React.FC<MapProps> = ({ hoveredTile }) => {
+  // TODO: move this in config file
   const gridSize = 50
   const halfGrid = Math.floor(gridSize / 2)
 

@@ -46,6 +46,7 @@ export function createSystemCalls(
         {
           contractAddress: import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS || '',
           entrypoint: 'move',
+          // TODO: use config map size / half map size (see other todo "= 50")
           calldata: [x + 25, y + 25], // avoid overflow if negative
         },
       ];

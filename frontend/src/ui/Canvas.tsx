@@ -1,5 +1,5 @@
 import { Container, Stage } from '@pixi/react';
-import { useEffect, useState } from 'react';
+import { PointerEvent, useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate } from '../utils/grid';
 import MapComponent from './Map';
@@ -25,11 +25,25 @@ const Canvas: React.FC<CanvasProps> = ({
   const [player, setPlayer] = useState({ x: 0, y: 0, id: 0, orientation: 0 })
 
   useEffect(() => {
+    // Played once
     spawn(account);
     defineSystem(world, [Has(Player)], ({ value: [newValue]}: any) => {
+      // Called whenever the player is updated
+      // TODO: (maybe) split position and orientation in submodels?
       setPlayer(newValue)
     });  
   }, [account])
+
+  function getTileCoordsFromEvent(e: PointerEvent) : Coordinate {
+    const gridPos = to_grid_coordinate({
+      x: e.nativeEvent.offsetX - WIDTH / 2,
+      y: e.nativeEvent.offsetY - H_OFFSET + 18, // 18 otherwise mouse not centered on the tile
+    });
+    const tileX = Math.round(gridPos.x);
+    const tileY = Math.round(gridPos.y);
+
+    return { x: tileX, y: tileY } as Coordinate;
+  }
 
   return (
     <div style={{ position: 'relative' }}>
@@ -38,27 +52,13 @@ const Canvas: React.FC<CanvasProps> = ({
         height={HEIGHT}
         // options={{ backgroundColor: '#242424' }}
         onPointerMove={(e) => {
-          const gridPos = to_grid_coordinate({
-            x: e.nativeEvent.offsetX - WIDTH / 2,
-            y: e.nativeEvent.offsetY - H_OFFSET + 18, // 18 otherwise mouse not centered on the tile
-          });
-          const tileX = Math.round(gridPos.x);
-          const tileY = Math.round(gridPos.y);
-
-          const tileCoords = { x: tileX, y: tileY };
+          const tileCoords = getTileCoordsFromEvent(e)
           if (hoveredTile === undefined || !areCoordsEqual(hoveredTile, tileCoords)) {
             setHoveredTile(tileCoords);
           }
         }}
         onPointerDown={(e) => {
-          const gridPos = to_grid_coordinate({
-            x: e.nativeEvent.offsetX - WIDTH / 2,
-            y: e.nativeEvent.offsetY - H_OFFSET + 18, // 18 otherwise mouse not centered on the tile
-          });
-          const tileX = Math.round(gridPos.x);
-          const tileY = Math.round(gridPos.y);
-
-          const tileCoords = { x: tileX, y: tileY };
+          const tileCoords = getTileCoordsFromEvent(e)
           move(account, tileCoords.x, tileCoords.y)
         }}
       >

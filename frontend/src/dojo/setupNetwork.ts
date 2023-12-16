@@ -8,7 +8,7 @@ export type SetupNetworkResult = Awaited<ReturnType<typeof setupNetwork>>;
 
 export async function setupNetwork() {
   // Extract environment variables for better readability.
-  const { VITE_PUBLIC_WORLD_ADDRESS, VITE_PUBLIC_NODE_URL, VITE_PUBLIC_TORII } = import.meta.env;
+  const { VITE_PUBLIC_WORLD_ADDRESS, VITE_PUBLIC_NODE_URL } = import.meta.env;
 
   // Create a new RPCProvider instance.
   const provider = new RPCProvider(VITE_PUBLIC_WORLD_ADDRESS, manifest, VITE_PUBLIC_NODE_URL);

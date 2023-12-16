@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
 import { to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import { Direction, getFramesFromType, Animation } from '../utils/animation';
-import { defineSystem, Has } from '@latticexyz/recs';
 
 export type MobType = 'knight';
 
