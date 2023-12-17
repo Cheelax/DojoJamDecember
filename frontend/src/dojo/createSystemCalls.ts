@@ -1,36 +1,23 @@
-import { Component, Components, EntityIndex, Schema, setComponent } from '@latticexyz/recs';
+import { Component, Components, EntityIndex, Schema, setComponent } from '@dojoengine/recs';
 import { poseidonHashMany } from 'micro-starknet';
-import { Account, Call, Event, InvokeTransactionReceiptResponse } from 'starknet';
+import { Account, Event } from 'starknet';
 import { SetupNetworkResult } from './setupNetwork';
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
-  { execute, contractComponents }: SetupNetworkResult,
+  { execute }: SetupNetworkResult,
 ) {
   const spawn = async (
     signer: Account,
   ) => {
     try {
-      const calls: Call[] = [
-        {
-          contractAddress: import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS || '',
-          entrypoint: 'spawn',
-          calldata: [import.meta.env.VITE_PUBLIC_WORLD_ADDRESS],
-        },
-      ];
-      const tx = await execute(signer, calls);
-
-      const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
-        retryInterval: 100,
-      })) as InvokeTransactionReceiptResponse;
-
-      const events = receipt.events;
-
-      if (events) {
-        const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
-        await executeEvents(eventsTransformed);
-      }
+      await execute(
+        signer,
+        "plaguestark::actions::actions",
+        "spawn",
+        []
+      );
     } catch (e) {
       console.error(e);
     }
@@ -42,34 +29,20 @@ export function createSystemCalls(
     y: number
   ) => {
     try {
-      const calls: Call[] = [
-        {
-          contractAddress: import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS || '',
-          entrypoint: 'move',
-          // TODO: use config map size / half map size (see other todo "= 50")
-          calldata: [x + 25, y + 25], // avoid overflow if negative
-        },
-      ];
-      const tx = await execute(signer, calls);
-
-      const receipt = (await signer.waitForTransaction(tx.transaction_hash, {
-        retryInterval: 100,
-      })) as InvokeTransactionReceiptResponse;
-
-      const events = receipt.events;
-
-      if (events) {
-        const eventsTransformed = await setComponentsFromEvents(contractComponents, events);
-        await executeEvents(eventsTransformed);
-      }
+      await execute(
+        signer,
+        "plaguestark::actions::actions",
+        "move",
+        [x, y]
+      );
     } catch (e) {
       console.error(e);
     }
   };
 
   return {
-    move,
     spawn,
+    move,
   };
 }
 

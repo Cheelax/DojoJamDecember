@@ -4,35 +4,35 @@ import { Coordinate } from '../type/GridElement';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate } from '../utils/grid';
 import MapComponent from './Map';
 import Mob from './Mob';
-import { defineSystem, Has } from '@latticexyz/recs';
+import { defineSystem, Has } from '@dojoengine/recs';
+import { NetworkLayer } from '../dojo/createNetworkLayer';
 
 interface CanvasProps {
-  spawn: any;
-  move: any;
-  world: any;
-  account: any;
-  Player: any;
+  networkLayer: NetworkLayer | null
 }
 
 const Canvas: React.FC<CanvasProps> = ({
-  move,
-  spawn,
-  world,
-  account,
-  Player
+  networkLayer
 }) => {
+  if (networkLayer == null) return null;
+  const {
+    systemCalls,
+    world,
+    account,
+    components: { Player }
+  } = networkLayer
+
+  const { spawn, move } = systemCalls
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
-  const [player, setPlayer] = useState({ x: 0, y: 0, id: 0, orientation: 0 })
+  const [players, setPlayers] = useState({});
 
   useEffect(() => {
-    // Played once
     spawn(account);
-    defineSystem(world, [Has(Player)], ({ value: [newValue]}: any) => {
-      // Called whenever the player is updated
-      // TODO: (maybe) split position and orientation in submodels?
-      setPlayer(newValue)
-    });  
-  }, [account])
+
+    defineSystem(world, [Has(Player)], function({ value: [newValue] }: any) {
+      setPlayers((prevPlayers) => { return { ...prevPlayers, [newValue.id]: newValue } });
+    });
+  }, []);
 
   function getTileCoordsFromEvent(e: PointerEvent) : Coordinate {
     const gridPos = to_grid_coordinate({
@@ -64,10 +64,13 @@ const Canvas: React.FC<CanvasProps> = ({
       >
         <Container sortableChildren={true}>
           <MapComponent hoveredTile={hoveredTile} />
-            <Mob
-              type="knight"
-              position={{x: player.x, y: player.y} as Coordinate}
-            />
+            {Object.values(players).map((player: typeof Player) => {
+              return <Mob
+                key={player.id}
+                type="knight"
+                position={{x: player.x, y: player.y} as Coordinate}
+              />
+            })}
         </Container>
       </Stage>
     </div>
