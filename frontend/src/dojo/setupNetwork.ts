@@ -1,4 +1,4 @@
-import { Query, RPCProvider } from '@dojoengine/core';
+import { RPCProvider } from '@dojoengine/core';
 import { Account, num } from 'starknet';
 import { defineContractComponents } from './contractComponents';
 import manifest from './manifest.json';
@@ -42,16 +42,6 @@ export async function setupNetwork() {
       call_data: num.BigNumberish[]
     ) => {
         return provider.execute(signer, contract, system, call_data);
-    },
-
-    // Entity query function.
-    entity: async (component: string, query: Query) => {
-      return provider.entity(component, query);
-    },
-
-    // Entities query function.
-    entities: async (component: string, partition: number) => {
-      return provider.entities(component, partition);
     },
   };
 }

@@ -29,6 +29,7 @@ const Canvas: React.FC<CanvasProps> = ({
   useEffect(() => {
     spawn(account);
 
+    // Player update sent my Torii
     defineSystem(world, [Has(Player)], function({ value: [newValue] }: any) {
       setPlayers((prevPlayers) => { return { ...prevPlayers, [newValue.id]: newValue } });
     });

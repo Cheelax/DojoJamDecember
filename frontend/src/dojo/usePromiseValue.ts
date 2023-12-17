@@ -15,9 +15,6 @@ export const usePromiseValue = <T>(promise: Promise<T> | null) => {
             if (promiseRef.current !== promise) return;
             setValue(resolvedValue);
         })
-        .catch((err) => {
-            console.error(err)
-        });
         return () => {
             isMounted = false;
         };
