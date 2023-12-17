@@ -29,6 +29,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({x: 0, y: 0});
   const [pointerPosition, setPointerPosition] = useState<any>();
 
+  // could be useful to check if "player.id" is the local player
   function isLocalPlayer(id: number): boolean {
     return "0x" + id.toString(16) == account.address
   }
