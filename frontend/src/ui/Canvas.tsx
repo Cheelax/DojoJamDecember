@@ -27,6 +27,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
   const [players, setPlayers] = useState({});
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({x: 0, y: 0});
+  const [pointerPosition, setPointerPosition] = useState<any>();
 
   function isLocalPlayer(id: number): boolean {
     return "0x" + id.toString(16) == account.address
@@ -58,6 +59,7 @@ const Canvas: React.FC<CanvasProps> = ({
         height={HEIGHT}
         // options={{ backgroundColor: '#242424' }}
         onPointerMove={(e) => {
+          setPointerPosition(e)
           const tileCoords = getTileCoordsFromEvent(e)
           if (hoveredTile === undefined || !areCoordsEqual(hoveredTile, tileCoords)) {
             setHoveredTile(tileCoords);
@@ -72,8 +74,8 @@ const Canvas: React.FC<CanvasProps> = ({
           move(account, tileCoords.x, tileCoords.y)
         }}
       >
+        <Camera setCameraOffset={setCameraOffset} pointerPosition={pointerPosition}/>
         <Container sortableChildren={true} x={-cameraOffset.x} y={-cameraOffset.y} >
-          <Camera setCameraOffset={setCameraOffset}/>
           <MapComponent hoveredTile={hoveredTile} cameraOffset={cameraOffset}/>
             {Object.values(players).map((player: typeof Player) => {
               return <Mob
