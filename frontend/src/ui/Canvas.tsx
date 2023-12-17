@@ -1,8 +1,9 @@
-import { Container, Stage } from '@pixi/react';
+import { Container, Stage, useTick } from '@pixi/react';
 import { PointerEvent, useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate } from '../utils/grid';
 import MapComponent from './Map';
+import Camera from './Camera';
 import Mob from './Mob';
 import { defineSystem, Has } from '@dojoengine/recs';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
@@ -25,10 +26,15 @@ const Canvas: React.FC<CanvasProps> = ({
   const { spawn, move } = systemCalls
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
   const [players, setPlayers] = useState({});
+  const [cameraOffset, setCameraOffset] = useState<Coordinate>({x: 0, y: 0});
+
+  function isLocalPlayer(id: number): boolean {
+    return "0x" + id.toString(16) == account.address
+  }
 
   useEffect(() => {
     spawn(account);
-
+  
     // Player update sent my Torii
     defineSystem(world, [Has(Player)], function({ value: [newValue] }: any) {
       setPlayers((prevPlayers) => { return { ...prevPlayers, [newValue.id]: newValue } });
@@ -37,12 +43,11 @@ const Canvas: React.FC<CanvasProps> = ({
 
   function getTileCoordsFromEvent(e: PointerEvent) : Coordinate {
     const gridPos = to_grid_coordinate({
-      x: e.nativeEvent.offsetX - WIDTH / 2,
-      y: e.nativeEvent.offsetY - H_OFFSET + 18, // 18 otherwise mouse not centered on the tile
+      x: e.nativeEvent.offsetX - WIDTH / 2 + cameraOffset.x,
+      y: e.nativeEvent.offsetY - H_OFFSET + 18 + cameraOffset.y, // 18 otherwise mouse not centered on the tile
     });
     const tileX = Math.round(gridPos.x);
     const tileY = Math.round(gridPos.y);
-
     return { x: tileX, y: tileY } as Coordinate;
   }
 
@@ -60,11 +65,16 @@ const Canvas: React.FC<CanvasProps> = ({
         }}
         onPointerDown={(e) => {
           const tileCoords = getTileCoordsFromEvent(e)
+          if (tileCoords.x < 0 || tileCoords.x >= 50 || tileCoords.y < 0 || tileCoords.y >= 50) {
+            // Out of map
+            return
+          }
           move(account, tileCoords.x, tileCoords.y)
         }}
       >
-        <Container sortableChildren={true}>
-          <MapComponent hoveredTile={hoveredTile} />
+        <Container sortableChildren={true} x={-cameraOffset.x} y={-cameraOffset.y} >
+          <Camera setCameraOffset={setCameraOffset}/>
+          <MapComponent hoveredTile={hoveredTile} cameraOffset={cameraOffset}/>
             {Object.values(players).map((player: typeof Player) => {
               return <Mob
                 key={player.id}

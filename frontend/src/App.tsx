@@ -2,8 +2,9 @@ import 'font-awesome/css/font-awesome.min.css';
 import Modal from 'react-modal';
 import Canvas from './ui/Canvas';
 import { store } from './store';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useNetworkLayer } from './dojo/useNetworkLayer';
+import { AppProvider } from '@pixi/react';
 
 function App() {
   const networkLayer = useNetworkLayer();
