@@ -1,4 +1,4 @@
-import { AnimatedSprite } from '@pixi/react';
+import { AnimatedSprite, useTick } from '@pixi/react';
 import { Assets, Texture } from 'pixi.js';
 import { useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
@@ -36,19 +36,46 @@ const getStartOrientation = (mob_coord: Coordinate, knight_position?: Coordinate
   return getDirection(mob_coord, knight_position ? knight_position : mob_coord, Direction.S);
 };
 
-const Mob: React.FC<MobProps> = ({
-  type,
-  position,
-}) => {
+const Mob: React.FC<MobProps> = ({ type, position }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
 
   // const [orientation, setOrientation] = useState<Direction>(getStartOrientation(targetPosition, knightPosition));
   const [frames, setFrames] = useState<Texture[]>([]);
   const [resource, setResource] = useState<any>(undefined);
   const [currentFrame, setCurrentFrame] = useState(0);
+  const [counterAnim, setCounterAnim] = useState(0);
 
   const [isMoving, setIsMoving] = useState(false);
 
+  useTick(() => {
+    if (shouldAnimate) {
+      setCounterAnim((prevCounter) => prevCounter + 1);
+      if (counterAnim === 1000) setCounterAnim(0);
+
+      if (counterAnim % 10 === 0) {
+        if (animation === Animation.Idle) {
+          // if IDLE, loop through frames
+          if (frames && frames.length > 0) {
+            setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
+          }
+        } else {
+          // otherwise we do only the frames, and then go IDLE
+          if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
+            setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
+          } else {
+            // last frame of the animation
+            if (animation === Animation.Death) {
+              setShouldAnimate(false);
+              setIsDead(true);
+            } else {
+              setCurrentFrame(0);
+              setAnimation(Animation.Idle);
+            }
+          }
+        }
+      }
+    }
+  });
   // useEffect(() => {
   //   if (resource) {
   //     if (animation === Animation.Walk) {
@@ -116,7 +143,7 @@ const Mob: React.FC<MobProps> = ({
         y={isDead ? -100 /*lol*/ : absolutePosition.y - 36}
         anchor={0.5}
         scale={2}
-        isPlaying={true}
+        isPlaying={false}
         textures={frames}
         initialFrame={currentFrame}
       />

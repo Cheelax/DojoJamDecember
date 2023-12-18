@@ -1,5 +1,10 @@
 {
-    "cairo1.languageServerPath": "$HOME/.dojo/bin/dojo-language-server",
-    "cairo1.enableLanguageServer": true,
-    "cairo1.enableScarb": true
+  "cairo1.languageServerPath": "$HOME/.dojo/bin/dojo-language-server",
+  "cairo1.enableLanguageServer": true,
+  "cairo1.enableScarb": true,
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 120,
+  "editor.rulers": [120],
+  "prettier.printWidth": 120,
+  "prettier.singleQuote": true
 }
