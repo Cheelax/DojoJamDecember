@@ -6,6 +6,7 @@ mod models {
     mod map;
     mod player;
     mod tile;
+    mod entity;
 }
 mod utils{
     mod dice;
