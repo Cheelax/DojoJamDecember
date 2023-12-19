@@ -5,25 +5,30 @@ import { store } from './store';
 import { useContext, useEffect } from 'react';
 import { useNetworkLayer } from './dojo/useNetworkLayer';
 import { AppProvider } from '@pixi/react';
+import NewGame from './ui/NewGame';
 
 function App() {
-  const networkLayer = useNetworkLayer();
+	const networkLayer = useNetworkLayer();
 
-  useEffect(() => {
-    if (!networkLayer || !networkLayer.account) return;
+	useEffect(() => {
+		if (!networkLayer || !networkLayer.account) return;
 
-    store.setState({ networkLayer });
-  }, [networkLayer]);
+		store.setState({ networkLayer });
+	}, [networkLayer]);
 
-  Modal.setAppElement('#root');
+	Modal.setAppElement('#root');
 
-  return (
-    <div className="flex flex-col min-h-screen w-full">
-      <div className="flex-grow mx-auto mt-2">
+	return (
+		<div className='flex flex-col min-h-screen w-full'>
+			<NewGame
+				onClick={() => 'te'}
+				onPseudoChange={() => 'te'}
+			/>
+			{/* <div className="flex-grow mx-auto mt-2">
         <Canvas networkLayer={networkLayer}/>
-      </div>
-    </div>
-  );
+      </div> */}
+		</div>
+	);
 }
 
 export default App;
