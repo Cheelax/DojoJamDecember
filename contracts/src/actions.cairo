@@ -7,22 +7,12 @@ trait IActions<TContractState> {
     fn move(self: @TContractState, x: u16, y: u16);
 }
 
-#[derive(Model, Copy, Drop, Serde)]
-struct Player {
-    #[key]
-    id: ContractAddress,
-    x: u16,
-    y: u16,
-    orientation: u8, // use enum
-}
-
 // dojo decorator
 #[dojo::contract]
 mod actions {
-    use starknet::get_caller_address;
+    use starknet::{get_caller_address, ContractAddress};
     use super::IActions;
-
-    use super::Player;
+    use plaguestark::models::player::{Player};
 
     // impl: implement functions specified in trait
     #[external(v0)]
@@ -33,11 +23,11 @@ mod actions {
             let world = self.world_dispatcher.read();
 
             // Get the address of the current caller, possibly the player's address.
-            let player = get_caller_address();
+            let playerId: felt252 = get_caller_address().into();
 
             set!(world,
                 (
-                    Player { id: player.into(), orientation: 0, x: 0, y: 0 },
+                    Player { id: playerId, orientation: 0, x: 0, y: 0 },
                 )
             );
         }
@@ -48,15 +38,15 @@ mod actions {
             let world = self.world_dispatcher.read();
 
             // Get the address of the current caller, possibly the player's address.
-            let player = get_caller_address();
+            let playerId: felt252 = get_caller_address().into();
 
-            let orientation = get!(world, player, (Player)).orientation;
+            let orientation = get!(world, playerId, (Player)).orientation;
             // TODO: check previous position to compute orientation
             let nextOrientation = ((orientation + 1) % 4);
 
             set!(world,
                 (
-                    Player { id: player.into(), orientation: nextOrientation, x: x, y: y },
+                    Player { id: playerId, orientation: nextOrientation, x: x, y: y },
                 )
             );
         }
