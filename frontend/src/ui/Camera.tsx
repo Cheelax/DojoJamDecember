@@ -29,12 +29,13 @@ const Camera: React.FC<CameraProps> = ({ setCameraOffset, pointerPosition }) => 
     
     useEffect(() => {
         setCameraDirection(() => { return {
-            left: pointerPosition.nativeEvent.offsetX < 60 || keys.q,
-            right: pointerPosition.nativeEvent.offsetX > WIDTH - 60 || keys.d,
-            up: pointerPosition.nativeEvent.offsetY < 60 || keys.z,
-            down: pointerPosition.nativeEvent.offsetY > HEIGHT - 60 || keys.s
+            left: pointerPosition && pointerPosition.nativeEvent.offsetX < 60 || keys.q,
+            right: pointerPosition && pointerPosition.nativeEvent.offsetX > WIDTH - 60 || keys.d,
+            up: pointerPosition && pointerPosition.nativeEvent.offsetY < 60 || keys.z,
+            down: pointerPosition && pointerPosition.nativeEvent.offsetY > HEIGHT - 60 || keys.s
         }})
-    }, [pointerPosition, keys])
+    // }, [pointerPosition, keys])
+    }, [keys])
 
     const speed = 10
     useTick((delta: number) => {

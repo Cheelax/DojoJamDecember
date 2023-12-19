@@ -20,7 +20,7 @@ const Canvas: React.FC<CanvasProps> = ({
     systemCalls,
     world,
     account,
-    components: { Player }
+    components: { Player, EntityLifeStatus }
   } = networkLayer
 
   const { spawn, move } = systemCalls
@@ -40,6 +40,10 @@ const Canvas: React.FC<CanvasProps> = ({
     // Player update sent my Torii
     defineSystem(world, [Has(Player)], function({ value: [newValue] }: any) {
       setPlayers((prevPlayers) => { return { ...prevPlayers, [newValue.id]: newValue } });
+    });
+
+    defineSystem(world, [Has(EntityLifeStatus)], function({ value: [newValue] }: any) {
+      console.log(newValue)
     });
   }, []);
 

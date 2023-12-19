@@ -4,6 +4,19 @@ import { defineComponent, Type as RecsType, World } from "@dojoengine/recs";
 
 export function defineContractComponents(world: World) {
   return {
+	  EntityLifeStatus: (() => {
+	    return defineComponent(
+	      world,
+	      { id: RecsType.BigInt, isInfected: RecsType.Boolean, deadAt: RecsType.Number, isDead: RecsType.Boolean },
+	      {
+	        metadata: {
+	          name: "EntityLifeStatus",
+	          types: ["felt252","bool","u64","bool"],
+	          customTypes: [],
+	        },
+	      }
+	    );
+	  })(),
 	  Player: (() => {
 	    return defineComponent(
 	      world,
@@ -11,7 +24,20 @@ export function defineContractComponents(world: World) {
 	      {
 	        metadata: {
 	          name: "Player",
-	          types: ["contractaddress","u16","u16","u8"],
+	          types: ["felt252","u16","u16","u8"],
+	          customTypes: [],
+	        },
+	      }
+	    );
+	  })(),
+	  Tile: (() => {
+	    return defineComponent(
+	      world,
+	      { game_id: RecsType.Number, id: RecsType.Number, x: RecsType.Number, y: RecsType.Number, _type: RecsType.Number },
+	      {
+	        metadata: {
+	          name: "Tile",
+	          types: ["u32","u8","u8","u8","u8"],
 	          customTypes: [],
 	        },
 	      }
