@@ -13,6 +13,8 @@ mod actions {
     use starknet::{get_caller_address, ContractAddress};
     use super::IActions;
     use plaguestark::models::player::{Player};
+    use plaguestark::models::map::{Map};
+    use plaguestark::models::tile::{Tile, TileTrait};
 
     // impl: implement functions specified in trait
     #[external(v0)]
@@ -40,9 +42,12 @@ mod actions {
             // Get the address of the current caller, possibly the player's address.
             let playerId: felt252 = get_caller_address().into();
 
-            let orientation = get!(world, playerId, (Player)).orientation;
+            let player = get!(world, playerId, (Player));
+            let orientation = player.orientation;
             // TODO: check previous position to compute orientation
             let nextOrientation = ((orientation + 1) % 4);
+
+            assert(sourceTile.is_close(x,y), 'Target position is not in range');
 
             set!(world,
                 (
@@ -59,9 +64,8 @@ mod tests {
 
     // import world dispatcher
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
-
-    use super::{player, Player};
     use debug::PrintTrait;
+    use plaguestark::models::player::{player,Player};
 
     // import test utils
     use dojo::test_utils::{spawn_test_world, deploy_contract};

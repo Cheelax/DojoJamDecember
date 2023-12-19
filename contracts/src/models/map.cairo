@@ -5,6 +5,7 @@ use array::{ArrayTrait, SpanTrait};
 use nullable::{NullableTrait, nullable_from_box, match_nullable, FromNullableResult};
 use poseidon::PoseidonTrait;
 use hash::HashStateTrait;
+use traits::Into;
 
 // External imports
 
@@ -14,6 +15,8 @@ use plaguestark::models::tile::{Tile, TileTrait};
 // Map struct.
 #[derive(Destruct)]
 struct Map {
+    #[key]
+    id: felt252,
     tilesMap: Felt252Dict<Nullable<Span<Tile>>>,
 }
 
@@ -38,7 +41,7 @@ trait MapTrait {
     /// * `army_count` - The number of army of each player.
     /// # Returns
     /// * The initialized `Map`.
-    fn new(game_id: u32, seed: felt252, grid_side: u8) -> Map;
+    fn new(game_id: u32, seed: felt252, grid_side: u16) -> Map;
     /// Returns the `Map` struct according to the tiles.
     /// # Arguments
     /// * `player_count` - The number of players.
@@ -58,7 +61,7 @@ trait MapTrait {
 /// Implementation of the `MapTrait` for the `Map` struct.
 impl MapImpl of MapTrait {
     fn new(
-        game_id: u32, seed: felt252, grid_side: u8
+        game_id: u32, seed: felt252, grid_side: u16
     ) -> Map {
         
         // [Compute] Seed in u256 for futher operations
@@ -67,8 +70,8 @@ impl MapImpl of MapTrait {
         let mut tilesMap: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
         let mut count_generated: u32 = 0;
 
-        let mut x: u8 = 0;
-        let mut y: u8 = 0;
+        let mut x: u16 = 0;
+        let mut y: u16 = 0;
         loop {
             if x==grid_side {
                 break;
@@ -79,8 +82,8 @@ impl MapImpl of MapTrait {
                 }
 
                 let mut tiles: Array<Tile> = array![];
-                let tile_id = (x * grid_side + y); // Calculez l'ID basé sur x et y
-                let tile = TileTrait::new(game_id, tile_id, x, y); // Assurez-vous que TileTrait::new accepte x et y
+                let tile_id = (x * grid_side + y); 
+                let tile = TileTrait::new(game_id, tile_id.into(), x, y); 
                 tiles.append(tile);
 
                 //todo: verify if this key is unique
@@ -90,9 +93,9 @@ impl MapImpl of MapTrait {
             };
             
             x= x+1;
-            y= 0_u8;
+            y= 0_u16;
         };
-        Map { tilesMap }
+        Map { id:0, tilesMap}
     }
 
     fn from_tiles(player_count: u32, tiles: Span<Tile>) -> Map {
@@ -116,7 +119,7 @@ impl MapImpl of MapTrait {
                 .insert(player_index.into(), nullable_from_box(BoxTrait::new(player_tiles.span())));
             player_index += 1;
         };
-        Map { tilesMap }
+        Map { id:0,tilesMap}
     }
 
     fn score(ref self: Map, player_index: u32) -> u32 {

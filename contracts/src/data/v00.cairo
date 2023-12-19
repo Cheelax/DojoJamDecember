@@ -2,5 +2,5 @@
 
 // Constants
 
-const TILE_NUMBER: u8 = 4;
+const TILE_NUMBER: u16 = 4;
 

@@ -19,9 +19,9 @@ struct Tile {
     #[key]
     game_id: u32,
     #[key]
-    id: u8,
-    x: u8,
-    y: u8,
+    id: u16,
+    x: u16,
+    y: u16,
     _type: u8,
 }
 
@@ -42,7 +42,7 @@ trait TileTrait {
     /// * `owner` - The owner id of the territory.
     /// # Returns
     /// * The initialized `Tile`.
-    fn new(game_id: u32, id: u8, x:u8, y:u8) -> Tile;
+    fn new(game_id: u32, id: u16, x:u16, y:u16) -> Tile;
     /// Returns a new `Option<Tile>` struct.
     /// # Arguments
     /// * `id` - The territory id.
@@ -50,30 +50,50 @@ trait TileTrait {
     /// * `owner` - The owner id of the territory.
     /// # Returns
     /// * The initialized `Option<Tile>`.
-    fn try_new(game_id: u32, id: u8) -> Option<Tile>;
-    /// Check validity.
-    /// # Arguments
-    /// * `self` - The tile.
-    /// # Returns
-    /// * Tile validity status.
-    fn check(self: @Tile) -> bool;
-    /// Assert validity.
-    /// # Arguments
-    /// * `self` - The tile.
-    fn assert(self: @Tile);
+    fn try_new(game_id: u32, id: u16) -> Option<Tile>;
+
+   fn is_close(self: Tile, x: u16, y: u16) -> bool;
+
+     fn distance(self: Tile, x:u16, y:u16) -> u16;
 }
 
 /// Implementation of the `TileTrait` for the `Tile` struct.
 impl TileImpl of TileTrait {
     #[inline(always)]
-    fn new(game_id: u32, id: u8, x:u8, y: u8) -> Tile {
+    fn new(game_id: u32, id: u16, x:u16, y: u16) -> Tile {
         // assert(config::TILE_NUMBER >= id.into() && id > 0, errors::INVALID_ID);
         // let neighbors = config::neighbors(id).expect(errors::INVALID_ID);
         Tile { game_id, id, x, y, _type:0}
     }
 
+    fn is_close(self: Tile, x: u16, y: u16) -> bool {
+        println!("distance: {}", self.distance(x,y));
+        self.distance(x,y) <= 1
+    }
+
+    fn distance(self: Tile, x:u16, y:u16) -> u16 {
+        println!("fromdist: {} {}", self.x, self.y);
+        println!("todist: {} {}", x, y);
+        let mut dx = 0;
+        if self.x > x {
+            dx = self.x - x;
+        } else {
+            dx = x - self.x;
+        };
+        println!("dx: {}", dx);
+        let mut dy = 0;
+        if self.y > y {
+            dy = self.y - y;
+        } else {
+            dy = y - self.y;
+        };
+        println!("dy: {}", dy);
+        dx * dx + dy * dy
+    }
+
+
     #[inline(always)]
-    fn try_new(game_id: u32, id: u8) -> Option<Tile> {
+    fn try_new(game_id: u32, id: u16) -> Option<Tile> {
         // let wrapped_neighbors = config::neighbors(id);
         // match wrapped_neighbors {
         //     Option::Some(neighbors) => {
@@ -85,14 +105,14 @@ impl TileImpl of TileTrait {
          Option::Some(Tile { game_id, id, x:0, y:0, _type:0})
     }
 
-    #[inline(always)]
-    fn check(self: @Tile) -> bool {
-        config::TILE_NUMBER >= (*self.id).into() && *self.id > 0
-    }
+    // #[inline(always)]
+    // fn check(self: @Tile) -> bool {
+    //     config::TILE_NUMBER >= (*self.id).into() && *self.id > 0
+    // }
 
-    #[inline(always)]
-    fn assert(self: @Tile) {
-        assert(self.check(), errors::INVALID_ID);
-    }
+    // #[inline(always)]
+    // fn assert(self: @Tile) {
+    //     assert(self.check(), errors::INVALID_ID);
+    // }
 
 }
