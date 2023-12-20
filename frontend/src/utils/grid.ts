@@ -15,10 +15,10 @@ export const HEIGHT = 600;
 
 export const H_OFFSET = (HEIGHT - (NUMBER_TILES * h) / 2) / 2;
 
-export function to_screen_coordinate(tile: { x: number; y: number }) {
+export function to_screen_coordinate(x: number, y: number) {
   return {
-    x: tile.x * i_x * 0.5 * w + tile.y * j_x * 0.5 * w,
-    y: tile.x * i_y * 0.5 * h + tile.y * j_y * 0.5 * h,
+    x: x * i_x * 0.5 * w + y * j_x * 0.5 * w,
+    y: x * i_y * 0.5 * h + y * j_y * 0.5 * h,
   };
 }
 
@@ -48,8 +48,8 @@ export function to_grid_coordinate(screen: { x: number; y: number }) {
   };
 }
 
-export function to_center(screen: { x: number; y: number }) {
-  return { x: screen.x + WIDTH / 2, y: screen.y + H_OFFSET };
+export function to_center(pos: { x: number, y: number }) {
+  return { x: pos.x + WIDTH / 2, y: pos.y + H_OFFSET };
 }
 
 export const areCoordsEqual = (c1: Coordinate, c2: Coordinate) => {

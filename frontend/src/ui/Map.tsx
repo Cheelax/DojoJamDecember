@@ -18,7 +18,7 @@ const Map: React.FC<MapProps> = ({ hoveredTile, cameraOffset }) => {
   return Array.from(Array(gridSize)).map((_: any, y: number) => {
     return Array.from(Array(gridSize)).map((_: any, x: number) => {
       const tile = { x, y, layer: "base", type: "ground" }
-      const screenPos = to_screen_coordinate({ x: tile.x, y: tile.y });
+      const screenPos = to_screen_coordinate(tile.x, tile.y);
 
       // Shift hovered tile up
       const adjustment = hoveredTile && hoveredTile.x === tile.x && hoveredTile.y === tile.y ? 5 : 0;

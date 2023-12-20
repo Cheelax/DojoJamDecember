@@ -76,7 +76,7 @@ const Mob: React.FC<MobProps> = ({ type, position }) => {
 
   // current position absolute during movement
   // will be changing during the movement, towards the absoluteTargetPosition
-  const [absolutePosition, setAbsolutePosition] = useState<Coordinate>(to_center(to_screen_coordinate(position)));
+  const [absolutePosition, setAbsolutePosition] = useState<Coordinate>(to_center(to_screen_coordinate(position.x, position.y)));
   // const [absoluteTargetPosition, setAbsoluteTargetPosition] = useState<Coordinate>(
   //   to_center(to_screen_coordinate(targetPosition))
   // );
@@ -91,12 +91,12 @@ const Mob: React.FC<MobProps> = ({ type, position }) => {
     load();
     // init position
     // setAbsolutePosition(to_center(to_screen_coordinate(targetPosition)));
-    setAbsolutePosition(to_center(to_screen_coordinate(position)));
+    setAbsolutePosition(to_center(to_screen_coordinate(position.x, position.y)));
   }, []);
 
   // If we receive a new targetPosition from props, we transform it into absolute pixel pos and work on it for the move
   useEffect(() => {
-    setAbsolutePosition(to_center(to_screen_coordinate(position)));
+    setAbsolutePosition(to_center(to_screen_coordinate(position.x, position.y)));
   }, [position]);
 
   const [isDead, setIsDead] = useState(false);

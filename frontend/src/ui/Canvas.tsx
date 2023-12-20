@@ -1,9 +1,8 @@
-import { Container, Stage, useTick } from '@pixi/react';
+import { Container, Stage } from '@pixi/react';
 import { PointerEvent, useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
-import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate } from '../utils/grid';
+import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import MapComponent from './Map';
-import Camera from './Camera';
 import Mob from './Mob';
 import { defineSystem, Has } from '@dojoengine/recs';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
@@ -25,21 +24,32 @@ const Canvas: React.FC<CanvasProps> = ({
 
   const { spawn, move } = systemCalls
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
-  const [players, setPlayers] = useState({});
+  const [players, setPlayers] = useState<any>({});
+  const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({x: 0, y: 0});
   const [pointerPosition, setPointerPosition] = useState<any>();
 
   // could be useful to check if "player.id" is the local player
   function isLocalPlayer(id: number): boolean {
-    return "0x" + id.toString(16) == account.address
+    return ("0x" + id.toString(16)) == account.address
   }
+
+  useEffect(() => {
+    if (localPlayer === undefined) return;
+    const pos = to_screen_coordinate(localPlayer.x, localPlayer.y)
+    const offset = { x: pos.x, y: pos.y - H_OFFSET }
+    setCameraOffset(offset)
+  }, [localPlayer])
 
   useEffect(() => {
     spawn(account);
   
     // Player update sent my Torii
     defineSystem(world, [Has(Player)], function({ value: [newValue] }: any) {
-      setPlayers((prevPlayers) => { return { ...prevPlayers, [newValue.id]: newValue } });
+      setPlayers((prevPlayers: any) => { return { ...prevPlayers, [newValue.id]: newValue } });
+      if (isLocalPlayer(newValue.id)) {
+        setLocalPlayer(newValue);
+      }
     });
 
     defineSystem(world, [Has(EntityLifeStatus)], function({ value: [newValue] }: any) {
@@ -79,7 +89,6 @@ const Canvas: React.FC<CanvasProps> = ({
           move(account, tileCoords.x, tileCoords.y)
         }}
       >
-        <Camera setCameraOffset={setCameraOffset} pointerPosition={pointerPosition}/>
         <Container sortableChildren={true} x={-cameraOffset.x} y={-cameraOffset.y} >
           <MapComponent hoveredTile={hoveredTile} cameraOffset={cameraOffset}/>
             {Object.values(players).map((player: typeof Player) => {
