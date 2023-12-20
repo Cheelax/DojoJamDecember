@@ -22,7 +22,7 @@ struct Tile {
     id: u16,
     x: u16,
     y: u16,
-    _type: u8,
+    _type: u8
 }
 
 /// Errors module

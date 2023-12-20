@@ -6,6 +6,10 @@ use nullable::{NullableTrait, nullable_from_box, match_nullable, FromNullableRes
 use poseidon::PoseidonTrait;
 use hash::HashStateTrait;
 use traits::Into;
+use plaguestark::constants::{
+   GROUND_TYPE,THREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE,
+};
+use poseidon::poseidon_hash_span;
 
 // External imports
 
@@ -13,11 +17,12 @@ use traits::Into;
 use plaguestark::config;
 use plaguestark::models::tile::{Tile, TileTrait};
 // Map struct.
-#[derive(Destruct)]
+#[derive(Model, Copy, Drop, Serde)]
 struct Map {
     #[key]
-    id: felt252,
-    tilesMap: Felt252Dict<Nullable<Span<Tile>>>,
+    id: u32,
+    seed: felt252,
+    size:u32,
 }
 
 
@@ -41,14 +46,14 @@ trait MapTrait {
     /// * `army_count` - The number of army of each player.
     /// # Returns
     /// * The initialized `Map`.
-    fn new(game_id: u32, seed: felt252, grid_side: u16) -> Map;
+    fn new(game_id: u32, seed: felt252, grid_side: u32) -> Map;
     /// Returns the `Map` struct according to the tiles.
     /// # Arguments
     /// * `player_count` - The number of players.
     /// * `tiles` - The tiles.
     /// # Returns
     /// * The initialized `Map`.
-    fn from_tiles(player_count: u32, tiles: Span<Tile>) -> Map;
+    // fn from_tiles(player_count: u32, tiles: Span<Tile>) -> Map;
     /// Computes the score of a player.
     /// # Arguments
     /// * `self` - The map.
@@ -56,78 +61,122 @@ trait MapTrait {
     /// # Returns
     /// * The score.
     fn score(ref self: Map, player_index: u32) -> u32;
+
+    fn generate(self: Map, seed: felt252) -> Span<u8>;
 }
 
 /// Implementation of the `MapTrait` for the `Map` struct.
 impl MapImpl of MapTrait {
     fn new(
-        game_id: u32, seed: felt252, grid_side: u16
+        game_id: u32, seed: felt252, grid_side: u32
     ) -> Map {
         
-        // [Compute] Seed in u256 for futher operations
-        let base_seed: u256 = seed.into();
-        // Each player draw R/N where R is the remaining cards and N the number of players left
-        let mut tilesMap: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
-        let mut count_generated: u32 = 0;
-
-        let mut x: u16 = 0;
-        let mut y: u16 = 0;
-        loop {
-            if x==grid_side {
-                break;
-            }
-            loop {
-                if y==grid_side {
-                    break;
-                }
-
-                let mut tiles: Array<Tile> = array![];
-                let tile_id = (x * grid_side + y); 
-                let tile = TileTrait::new(game_id, tile_id.into(), x, y); 
-                tiles.append(tile);
-
-                //todo: verify if this key is unique
-                let key = (x * grid_side + y);
-                tilesMap.insert(key.into(), nullable_from_box(BoxTrait::new(tiles.span())));
-                y= y+1;
-            };
-            
-            x= x+1;
-            y= 0_u16;
-        };
-        Map { id:0, tilesMap}
+       
+        Map { id:0_u32, size:grid_side, seed:seed }
     }
 
-    fn from_tiles(player_count: u32, tiles: Span<Tile>) -> Map {
-        let mut tilesMap: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
-        let mut player_index = 0;
-        loop {
-            if player_index == player_count {
-                break;
-            };
-            let mut player_tiles: Array<Tile> = array![];
-            let mut tile_index = 0;
-            loop {
-                if tile_index == tiles.len() {
-                    break;
-                };
-                let tile = tiles.at(tile_index);
+    fn generate(self: Map, seed: felt252) -> Span<u8> {
+        let seeds: Array<felt252> = array![
+            seed + 'three', seed + 'rock', seed + 'hideout',
+        ];
+        let _types: Array<u8> = array![
+            THREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE,
+        ];
+        let numbers: Array<u32> = array![self.size, 1_u32, 1_u32];
+
+        _generate(seeds.span(), numbers.span(), _types.span(), self.size * self.size)
+    }
+
+    
+
+    // fn from_tiles(player_count: u32, tiles: Span<Tile>) -> Map {
+    //     let mut tilesMap: Felt252Dict<Nullable<Span<Tile>>> = Default::default();
+    //     let mut player_index = 0;
+    //     loop {
+    //         if player_index == player_count {
+    //             break;
+    //         };
+    //         let mut player_tiles: Array<Tile> = array![];
+    //         let mut tile_index = 0;
+    //         loop {
+    //             if tile_index == tiles.len() {
+    //                 break;
+    //             };
+    //             let tile = tiles.at(tile_index);
                
-                tile_index += 1;
-            };
-            tilesMap
-                .insert(player_index.into(), nullable_from_box(BoxTrait::new(player_tiles.span())));
-            player_index += 1;
-        };
-        Map { id:0,tilesMap}
-    }
+    //             tile_index += 1;
+    //         };
+    //         tilesMap
+    //             .insert(player_index.into(), nullable_from_box(BoxTrait::new(player_tiles.span())));
+    //         player_index += 1;
+    //     };
+    //     Map { id:0_u32,size:10_u32}
+    // }
 
     fn score(ref self: Map, player_index: u32) -> u32 {
-        
-
         // [Return] Score
-        0
+        0_u32
     }
+}
+
+fn _generate(seeds: Span<felt252>, numbers: Span<u32>, types: Span<u8>, n_tiles: u32) -> Span<u8> {
+    // [Check] Inputs compliancy
+    assert(seeds.len() == numbers.len(), 'span lengths mismatch');
+
+    // [Compute] Types
+    let mut dict_types: Felt252Dict<u8> = Default::default();
+    let mut index = 0;
+    let length = seeds.len();
+    loop {
+        if index == length {
+            break;
+        };
+        let seed = seeds.at(index);
+        let number = numbers.at(index);
+        let _type = types.at(index);
+        __generate(*seed, *number, *_type, n_tiles, ref dict_types);
+        index += 1;
+    };
+
+    // [Compute] Convert from dict to span
+    _dict_to_span(dict_types, n_tiles)
+}
+
+fn __generate(
+    seed: felt252, n_objects: u32, _type: u8, n_tiles: u32, ref dict_types: Felt252Dict<u8>
+) {
+    // [Check] Too many objects
+    assert(n_objects < n_tiles, 'too many objects');
+
+    let mut objects_to_place = n_objects;
+    let mut iter = 0;
+    loop {
+        // [Check] Stop if all objects have been placed
+        if objects_to_place == 0 {
+            break;
+        }
+        // [Check] Stop if all tiles have been checked
+        if iter == n_tiles {
+            break;
+        }
+        // [Check] Skip if tile already has a type
+        if dict_types.get(iter.into()) != 0 {
+            iter += 1;
+            continue;
+        }
+        // [Compute] Uniform random number between 0 and max
+        let max= 3;
+        let rand = _uniform_random(seed + iter.into(), max);
+        println!("rand: {}", rand);
+        let tile_object_probability: u128 = objects_to_place.into()
+            * max
+            / (n_tiles - iter).into();
+        if rand <= tile_object_probability {
+            objects_to_place -= 1;
+            dict_types.insert(iter.into(), _type);
+        };
+        iter += 1;
+    };
 }
     
 
@@ -137,14 +186,33 @@ impl MapImpl of MapTrait {
 /// * `nonce` - The nonce.
 /// # Returns
 /// * The random number.
-    #[inline(always)]
-    fn _random(seed: felt252, nonce: u32) -> (u8, u32) {
-        let mut state = PoseidonTrait::new();
-        state = state.update(seed);
-        state = state.update(nonce.into());
-        let hash: u256 = state.finalize().into();
-        ((hash % 2).try_into().unwrap(), nonce + 1)
-    }
+#[inline(always)]
+fn _random(seed: felt252, nonce: u32) -> (u8, u32) {
+    let mut state = PoseidonTrait::new();
+    state = state.update(seed);
+    state = state.update(nonce.into());
+    let hash: u256 = state.finalize().into();
+    ((hash % 2).try_into().unwrap(), nonce + 1)
+}
+
+#[inline(always)]
+fn _uniform_random(seed: felt252, max: u128) -> u128 {
+    let hash: u256 = poseidon_hash_span(array![seed].span()).into();
+    hash.low % max
+}
+
+fn _dict_to_span(mut dict: Felt252Dict<u8>, length: u32) -> Span<u8> {
+    let mut array: Array<u8> = array![];
+    let mut index = 0;
+    loop {
+        if index == length {
+            break;
+        }
+        array.append(dict.get(index.into()));
+        index += 1;
+    };
+    array.span()
+}
 
 
 #[cfg(test)]
@@ -180,26 +248,19 @@ mod tests {
     #[test]
     #[available_gas(18_000_000)]
     fn test_map_new() {
-        let result = MapTrait::new(GAME_ID, SEED, config::TILE_NUMBER);
-         println!("Hello, World!");
-        
+        let result = MapTrait::new(GAME_ID, SEED, 50);
     }
 
-    // #[test]
-    // #[available_gas(18_000_000)]
-    // fn test_map_from_tiles() {
-    //     let mut tiles: Array<Tile> = array![];
-    //     tiles.append(TileTrait::new(GAME_ID, 1, 0,0));
-    //     tiles.append(TileTrait::new(GAME_ID, 2, 0,0));
-    //     MapTrait::from_tiles( 1,tiles.span());
-    // }
-
-
-
-
-
-
-
+    #[test]
+    #[available_gas(18_000_000_000)]
+    fn test_generate(){
+        let mut map= MapTrait::new(0, 0, 50);
+          
+        // create tile
+        let raw_types = map.generate(map.seed);
+        let mut index = 0;
+        let length = raw_types.len();
+    }
 
     // #[test]
     // #[available_gas(18_000_000)]
