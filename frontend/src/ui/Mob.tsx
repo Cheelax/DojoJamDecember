@@ -1,4 +1,4 @@
-import { AnimatedSprite, useTick } from '@pixi/react';
+import { AnimatedSprite, Text, useTick } from '@pixi/react';
 import { Assets, Texture } from 'pixi.js';
 import { useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
@@ -131,6 +131,12 @@ const Mob: React.FC<MobProps> = ({ type, position, lifeStatus }) => {
         textures={frames}
         initialFrame={currentFrame}
         animationSpeed={0.05 + (isInfected ? 0.1 : 0)}
+      />
+      <Text
+        text={isInfected ? "Infected" : (lifeStatus.infectionStacks + "/3")}
+        scale={0.8}
+        x={absolutePosition.x - 50}
+        y={absolutePosition.y - 80}
       />
     </>
   );
