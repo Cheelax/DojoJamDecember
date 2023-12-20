@@ -7,6 +7,7 @@ mod models {
     mod player;
     mod tile;
     mod entity;
+    mod entity_infection;
 }
 mod utils{
     mod dice;

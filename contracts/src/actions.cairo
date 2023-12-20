@@ -82,9 +82,16 @@ mod actions {
             let orientation = player.orientation;
             // TODO: check previous position to compute orientation
             let nextOrientation = ((orientation + 1) % 4);
-    
-            let sourceTile = get!(world, (player.x, player.y), (Tile));
-            assert(sourceTile.is_close(x,y), 'Target position is not in range');
+
+            let isNextToPlayer = (
+                (x == player.x - 1 && y == player.y) ||
+                (x == player.x + 1 && y == player.y) ||
+                (x == player.x && y == player.y - 1) ||
+                (x == player.x && y == player.y + 1)
+            );
+
+            // let sourceTile = get!(world, (player.x, player.y), (Tile));
+            assert(isNextToPlayer, 'Target position is not in range');
 
             let player = get!(world, playerId, Player);
             set!(world,
