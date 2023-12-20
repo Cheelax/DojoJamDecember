@@ -7,11 +7,11 @@ export function defineContractComponents(world: World) {
 	  EntityLifeStatus: (() => {
 	    return defineComponent(
 	      world,
-	      { id: RecsType.BigInt, isInfected: RecsType.Boolean, deadAt: RecsType.Number, isDead: RecsType.Boolean },
+	      { id: RecsType.BigInt, infectionStacks: RecsType.Number, isInfected: RecsType.Boolean, deadAt: RecsType.Number, isDead: RecsType.Boolean },
 	      {
 	        metadata: {
 	          name: "EntityLifeStatus",
-	          types: ["felt252","bool","u64","bool"],
+	          types: ["felt252","u8","bool","u64","bool"],
 	          customTypes: [],
 	        },
 	      }

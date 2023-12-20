@@ -112,7 +112,13 @@ mod actions {
             );
 
             let lifeStatus = get!(world, playerId, EntityLifeStatus);
-            lifeStatus.tick(world);
+            if (lifeStatus.randomlyAddInfectionStack(world)) {
+                // retrieve new infection stacks count
+                let updateLifeStatus = get!(world, playerId, EntityLifeStatus);
+                updateLifeStatus.tick(world);
+            } else {
+                lifeStatus.tick(world);
+            }
         }
     }
 }

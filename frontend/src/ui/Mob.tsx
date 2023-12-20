@@ -106,6 +106,7 @@ const Mob: React.FC<MobProps> = ({ type, position, lifeStatus }) => {
   useEffect(() => {
     if (lifeStatus === undefined) return;
 
+
     if (lifeStatus.isInfected && !isInfected) {
       setIsInfected(true);
     }
@@ -129,7 +130,7 @@ const Mob: React.FC<MobProps> = ({ type, position, lifeStatus }) => {
         isPlaying={!isDead}
         textures={frames}
         initialFrame={currentFrame}
-        animationSpeed={0.05 + (isInfected ? 0.2 : 0)}
+        animationSpeed={0.05 + (isInfected ? 0.1 : 0)}
       />
     </>
   );
