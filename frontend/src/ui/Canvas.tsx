@@ -25,6 +25,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const { spawn, move } = systemCalls
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
   const [players, setPlayers] = useState<any>({});
+  const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({x: 0, y: 0});
   const [pointerPosition, setPointerPosition] = useState<any>();
@@ -54,6 +55,7 @@ const Canvas: React.FC<CanvasProps> = ({
 
     defineSystem(world, [Has(EntityLifeStatus)], function({ value: [newValue] }: any) {
       console.log(newValue)
+      setEntitiesLifeStatus((prevEntities: any) => { return { ...prevEntities, [newValue.id]: newValue } });
     });
   }, []);
 
@@ -94,6 +96,7 @@ const Canvas: React.FC<CanvasProps> = ({
             {Object.values(players).map((player: typeof Player) => {
               return <Mob
                 key={player.id}
+                lifeStatus={entitiesLifeStatus[player.id]}
                 type="knight"
                 position={{x: player.x, y: player.y} as Coordinate}
               />

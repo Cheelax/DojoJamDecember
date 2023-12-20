@@ -10,6 +10,7 @@ export type MobType = 'knight';
 interface MobProps {
   type: MobType;
   position: Coordinate;
+  lifeStatus: any;
 }
 
 function lerp(start: number, end: number, t: number) {
@@ -36,7 +37,7 @@ const getStartOrientation = (mob_coord: Coordinate, knight_position?: Coordinate
   return getDirection(mob_coord, knight_position ? knight_position : mob_coord, Direction.S);
 };
 
-const Mob: React.FC<MobProps> = ({ type, position }) => {
+const Mob: React.FC<MobProps> = ({ type, position, lifeStatus }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
 
   // const [orientation, setOrientation] = useState<Direction>(getStartOrientation(targetPosition, knightPosition));
@@ -46,6 +47,9 @@ const Mob: React.FC<MobProps> = ({ type, position }) => {
   const [counterAnim, setCounterAnim] = useState(0);
 
   const [isMoving, setIsMoving] = useState(false);
+
+  const [isDead, setIsDead] = useState(false);
+  const [isInfected, setIsInfected] = useState(false);
 
   // useEffect(() => {
   //   if (resource) {
@@ -98,8 +102,17 @@ const Mob: React.FC<MobProps> = ({ type, position }) => {
   useEffect(() => {
     setAbsolutePosition(to_center(to_screen_coordinate(position.x, position.y)));
   }, [position]);
+  
+  useEffect(() => {
+    if (lifeStatus === undefined) return;
 
-  const [isDead, setIsDead] = useState(false);
+    if (lifeStatus.isInfected && !isInfected) {
+      setIsInfected(true);
+    }
+    if (lifeStatus.isDead && !isDead) {
+      setIsDead(true);
+    }
+  }, [lifeStatus])
 
   if (frames.length === 0) {
     return null;
@@ -113,10 +126,10 @@ const Mob: React.FC<MobProps> = ({ type, position }) => {
         y={isDead ? -100 /*lol*/ : absolutePosition.y - 36}
         anchor={0.5}
         scale={2}
-        isPlaying={true}
+        isPlaying={!isDead}
         textures={frames}
         initialFrame={currentFrame}
-        animationSpeed={0.05}
+        animationSpeed={0.05 + (isInfected ? 0.2 : 0)}
       />
     </>
   );

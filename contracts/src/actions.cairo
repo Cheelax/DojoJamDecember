@@ -10,7 +10,7 @@ trait IActions<TContractState> {
 // dojo decorator
 #[dojo::contract]
 mod actions {
-    use starknet::{get_caller_address, ContractAddress, get_block_info};
+    use starknet::{get_caller_address, ContractAddress};
     use super::IActions;
 
     use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
@@ -111,10 +111,8 @@ mod actions {
                 )
             );
 
-            let mut lifeStatus = get!(world, playerId, EntityLifeStatus);
-            let timestamp: u64 = get_block_info().unbox().block_timestamp;
-            lifeStatus.tick(world, timestamp);
-            set!(world, (lifeStatus));
+            let lifeStatus = get!(world, playerId, EntityLifeStatus);
+            lifeStatus.tick(world);
         }
     }
 }

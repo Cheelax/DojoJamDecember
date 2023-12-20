@@ -5,31 +5,54 @@ use plaguestark::models::entity::{EntityAtPosition};
 // External imports
 use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
+fn infectEntity(entityId: felt252, world: IWorldDispatcher, timestamp: u64) {
+    let mut entityLifeStatus = get!(world, entityId, EntityLifeStatus);
+    if (entityLifeStatus.isInfected) {
+        return;
+    }
+    entityLifeStatus.isInfected = true;
+    entityLifeStatus.deadAt = timestamp + 60; // after 60 seconds, dead
+    set!(world, (entityLifeStatus));
+}
+
+fn killEntity(entityId: felt252, world: IWorldDispatcher) {
+    let mut entityLifeStatus = get!(world, entityId, EntityLifeStatus);
+    if (entityLifeStatus.isDead) {
+        return;
+    }
+    entityLifeStatus.isDead = true;
+    set!(world, (entityLifeStatus));
+}
+
 // Check -2 to 2 square around the player. If there is an infected entity, returns true
-fn checkEntitySurroundingInfection(id: felt252, world: IWorldDispatcher) -> bool {
-    let player = get!(world, id, Player);
+fn spreadAndGetInfection(playerId: felt252, world: IWorldDispatcher, timestamp: u64) {
+    let (player, playerLifeStatus) = get!(world, playerId, (Player, EntityLifeStatus));
 
     let x = player.x;
     let y = player.y;
 
     let mut ty = player.y - 2;
-    let mut infectedClose = false;
     loop {
-        if infectedClose || ty > player.y + 2 {
+        if ty > player.y + 2 {
             break;
         }
 
         let mut tx = player.x - 2;
         loop {
-            if infectedClose || tx > player.x + 2 {
+            if tx > player.x + 2 {
                 break;
             }
 
             let entityId = get!(world, (tx, ty), (EntityAtPosition)).id;
-            if entityId != 0 && entityId != id {
+            if entityId != 0 && entityId != playerId {
                 let entityLifeStatus = get!(world, entityId, EntityLifeStatus);
-                if entityLifeStatus.isInfected && !entityLifeStatus.isDead {
-                    infectedClose = true;
+                // Is it an infected entity? If yes, I become infected
+                if !playerLifeStatus.isInfected && entityLifeStatus.isInfected && !entityLifeStatus.isDead {
+                    infectEntity(playerId, world, timestamp);
+                }
+                // Is it a non-infected entity that I can infect?
+                if playerLifeStatus.isInfected && !playerLifeStatus.isDead && !entityLifeStatus.isInfected {
+                    infectEntity(entityId, world, timestamp);
                 }
             }
 
@@ -37,8 +60,6 @@ fn checkEntitySurroundingInfection(id: felt252, world: IWorldDispatcher) -> bool
         };
         ty = ty + 1;
     };
-
-    return infectedClose;
 }
 
 // EntityLifeStatus
@@ -53,7 +74,7 @@ struct EntityLifeStatus {
 
 trait EntityLifeStatusTrait {
     fn new(id: felt252) -> EntityLifeStatus;
-    fn tick(ref self: EntityLifeStatus, world: IWorldDispatcher, timestamp: u64);
+    fn tick(self: @EntityLifeStatus, world: IWorldDispatcher);
     fn isInfected(self: @EntityLifeStatus) -> bool;
     fn isDead(self: @EntityLifeStatus) -> bool;
 }
@@ -66,19 +87,11 @@ impl EntityLifeStatusImpl of EntityLifeStatusTrait {
     }
 
     #[inline(always)]
-    fn tick(ref self: EntityLifeStatus, world: IWorldDispatcher, timestamp: u64) {
-        if (self.isInfected == false) {
-            self.isInfected = checkEntitySurroundingInfection(self.id, world);
-            return;
-        }
-
-        if (self.isInfected && self.deadAt == 0) {
-            self.deadAt = timestamp + 10; // after 10 seconds, dead
-            return;
-        }
-
-        if (self.isInfected && timestamp >= self.deadAt) {
-            self.isDead = true;
+    fn tick(self: @EntityLifeStatus, world: IWorldDispatcher) {
+        let timestamp: u64 = starknet::get_block_info().unbox().block_timestamp;
+        spreadAndGetInfection(*self.id, world, timestamp);
+        if (*self.isInfected && timestamp >= *self.deadAt) {
+            killEntity(*self.id, world);
             return;
         }
     }
