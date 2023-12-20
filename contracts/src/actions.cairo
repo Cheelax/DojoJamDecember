@@ -93,6 +93,9 @@ mod actions {
             // let sourceTile = get!(world, (player.x, player.y), (Tile));
             assert(isNextToPlayer, 'Target position is not in range');
 
+            let entityId = get!(world, (x,y), EntityAtPosition).id;
+            assert(entityId == 0, 'There is already someone here');
+
             let player = get!(world, playerId, Player);
             set!(world,
                 (
