@@ -47,35 +47,6 @@ const Mob: React.FC<MobProps> = ({ type, position }) => {
 
   const [isMoving, setIsMoving] = useState(false);
 
-  useTick(() => {
-    if (shouldAnimate) {
-      setCounterAnim((prevCounter) => prevCounter + 1);
-      if (counterAnim === 1000) setCounterAnim(0);
-
-      if (counterAnim % 10 === 0) {
-        if (animation === Animation.Idle) {
-          // if IDLE, loop through frames
-          if (frames && frames.length > 0) {
-            setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
-          }
-        } else {
-          // otherwise we do only the frames, and then go IDLE
-          if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
-            setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
-          } else {
-            // last frame of the animation
-            if (animation === Animation.Death) {
-              setShouldAnimate(false);
-              setIsDead(true);
-            } else {
-              setCurrentFrame(0);
-              setAnimation(Animation.Idle);
-            }
-          }
-        }
-      }
-    }
-  });
   // useEffect(() => {
   //   if (resource) {
   //     if (animation === Animation.Walk) {
@@ -128,7 +99,6 @@ const Mob: React.FC<MobProps> = ({ type, position }) => {
     setAbsolutePosition(to_center(to_screen_coordinate(position)));
   }, [position]);
 
-  const [shouldAnimate, setShouldAnimate] = useState(true);
   const [isDead, setIsDead] = useState(false);
 
   if (frames.length === 0) {
@@ -143,9 +113,10 @@ const Mob: React.FC<MobProps> = ({ type, position }) => {
         y={isDead ? -100 /*lol*/ : absolutePosition.y - 36}
         anchor={0.5}
         scale={2}
-        isPlaying={false}
+        isPlaying={true}
         textures={frames}
         initialFrame={currentFrame}
+        animationSpeed={0.05}
       />
     </>
   );
