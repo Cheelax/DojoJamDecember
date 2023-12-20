@@ -22,10 +22,16 @@ struct Map {
     #[key]
     id: u32,
     seed: felt252,
-    size:u32,
+    size:u16,
 }
 
-
+#[derive(Serde, Copy, Drop, PartialEq)]
+enum Type {
+    Ground: (),
+    Three: (),
+    Rock: (),
+    Hideout: (),
+}
 
 /// Errors module
 mod errors {
@@ -46,7 +52,7 @@ trait MapTrait {
     /// * `army_count` - The number of army of each player.
     /// # Returns
     /// * The initialized `Map`.
-    fn new(game_id: u32, seed: felt252, grid_side: u32) -> Map;
+    fn new(game_id: u32, seed: felt252, grid_side: u16) -> Map;
     /// Returns the `Map` struct according to the tiles.
     /// # Arguments
     /// * `player_count` - The number of players.
@@ -61,14 +67,15 @@ trait MapTrait {
     /// # Returns
     /// * The score.
     fn score(ref self: Map, player_index: u32) -> u32;
-
+    fn get_type(self: Map, raw_type: u8) -> Type;
     fn generate(self: Map, seed: felt252) -> Span<u8>;
+    fn decompose(self: Map, index: u16) -> (u16, u16);
 }
 
 /// Implementation of the `MapTrait` for the `Map` struct.
 impl MapImpl of MapTrait {
     fn new(
-        game_id: u32, seed: felt252, grid_side: u32
+        game_id: u32, seed: felt252, grid_side: u16
     ) -> Map {
         
        
@@ -82,9 +89,24 @@ impl MapImpl of MapTrait {
         let _types: Array<u8> = array![
             THREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE,
         ];
-        let numbers: Array<u32> = array![self.size, 1_u32, 1_u32];
+        let numbers: Array<u16> = array![self.size, 1_u16, 1_u16];
 
         _generate(seeds.span(), numbers.span(), _types.span(), self.size * self.size)
+    }
+
+    fn get_type(self: Map, raw_type: u8) -> Type {
+        if raw_type == THREE_TYPE {
+            return Type::Three(());
+        } else if raw_type == ROCK_TYPE {
+            return Type::Rock(());
+        } else if raw_type == HIDEOUT_TYPE {
+            return Type::Hideout(());
+        }
+        Type::Ground(())
+    }
+
+    fn decompose(self: Map, index: u16) -> (u16, u16) {
+        _decompose(index, self.size)
     }
 
     
@@ -119,7 +141,7 @@ impl MapImpl of MapTrait {
     }
 }
 
-fn _generate(seeds: Span<felt252>, numbers: Span<u32>, types: Span<u8>, n_tiles: u32) -> Span<u8> {
+fn _generate(seeds: Span<felt252>, numbers: Span<u16>, types: Span<u8>, n_tiles: u16) -> Span<u8> {
     // [Check] Inputs compliancy
     assert(seeds.len() == numbers.len(), 'span lengths mismatch');
 
@@ -143,7 +165,7 @@ fn _generate(seeds: Span<felt252>, numbers: Span<u32>, types: Span<u8>, n_tiles:
 }
 
 fn __generate(
-    seed: felt252, n_objects: u32, _type: u8, n_tiles: u32, ref dict_types: Felt252Dict<u8>
+    seed: felt252, n_objects: u16, _type: u8, n_tiles: u16, ref dict_types: Felt252Dict<u8>
 ) {
     // [Check] Too many objects
     assert(n_objects < n_tiles, 'too many objects');
@@ -201,7 +223,12 @@ fn _uniform_random(seed: felt252, max: u128) -> u128 {
     hash.low % max
 }
 
-fn _dict_to_span(mut dict: Felt252Dict<u8>, length: u32) -> Span<u8> {
+#[inline(always)]
+fn _decompose(index: u16, size: u16) -> (u16, u16) {
+    (index % size, index / size)
+}
+
+fn _dict_to_span(mut dict: Felt252Dict<u8>, length: u16) -> Span<u8> {
     let mut array: Array<u8> = array![];
     let mut index = 0;
     loop {
