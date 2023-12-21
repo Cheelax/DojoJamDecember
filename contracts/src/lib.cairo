@@ -5,6 +5,7 @@ mod data {
 }
 mod models {
     mod map;
+    mod game;
     mod player;
     mod tile;
     mod entity;

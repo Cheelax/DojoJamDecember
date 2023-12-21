@@ -16,37 +16,11 @@ mod actions {
     use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
 
     use plaguestark::models::player::{Player};
-    use plaguestark::models::map::{Map};
+    use plaguestark::models::map::{Map, MapTrait, Type};
     use plaguestark::models::tile::{Tile, TileTrait};
     use plaguestark::models::entity_infection::{EntityLifeStatus, EntityLifeStatusTrait};
     use plaguestark::models::entity::{EntityAtPosition};
-
-    fn spawn_coords(world: IWorldDispatcher, player: felt252, mut salt: felt252) -> (u16, u16) {
-        let mut x = 10;
-        let mut y = 10;
-        loop {
-            let hash = pedersen::pedersen(player, salt);
-            let rnd_seed = match u128s_from_felt252(hash) {
-                U128sFromFelt252Result::Narrow(low) => low,
-                U128sFromFelt252Result::Wide((high, low)) => low,
-            };
-            let MAP_SIZE: u128 = 50;
-            let (rnd_seed, x_) = u128_safe_divmod(rnd_seed, MAP_SIZE.try_into().unwrap());
-            let (rnd_seed, y_) = u128_safe_divmod(rnd_seed, MAP_SIZE.try_into().unwrap());
-            let x_: felt252 = x_.into();
-            let y_: felt252 = y_.into();
-
-            x = x_.try_into().unwrap();
-            y = y_.try_into().unwrap();
-            let occupied = get!(world, (x, y), (EntityAtPosition)).id;
-            if occupied == 0 {
-                break;
-            } else {
-                salt += 1; // Try new salt
-            }
-        };
-        (x, y)
-    }
+    use plaguestark::models::game::{Game};
 
     // impl: implement functions specified in trait
     #[external(v0)]
@@ -55,7 +29,68 @@ mod actions {
         fn spawn(self: @ContractState) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
+            let mut game=get!(world, 0, (Game));
 
+        if !game.isInit {
+            let mut map= MapTrait::new(0, 0, 50);
+            set!(world,
+                (
+                    map
+                ));
+
+            // create tile
+            let raw_types = map.generate(map.seed);
+            let mut index = 0;
+            let length = raw_types.len();
+            println!("length: {}", length);
+            loop {
+                if index == length {
+                    break;
+                }
+
+                let raw_type = *raw_types[index];
+                let tile_type = map.get_type(raw_type);
+                let indexreduced: u16 = index.try_into().unwrap();
+                let (x, y) = map.decompose(indexreduced);
+                let tile = Tile { game_id: 0, x, y, index:indexreduced, _type: raw_type };
+
+                // [Command] Set Tile and Character entities
+                match tile_type {
+                    Type::Ground(()) => { //
+                    },
+                    Type::Three(()) => {
+                        // [Command] Set Tile entity
+                        set!(world, (tile));
+                    },
+                    Type::Rock(()) => {
+                        // [Command] Set Tile entity
+                        set!(world, (tile));
+                    },
+                    Type::Hideout(()) => {
+                        // [Command] Set Tile entity
+                        set!(world, (tile));
+                        // TODO: set hideout 
+                        // let barbarian = Character {
+                        //     game_id: game_id,
+                        //     _type: raw_type,
+                        //     health: MOB_HEALTH,
+                        //     index,
+                        //     hitter: 0,
+                        //     hit: 0
+                        // };
+                        // set!(ctx.world, (barbarian));
+                    },
+                };
+
+                index += 1;
+            };
+            game.isInit=true;
+            set!(world,
+                (
+                    game
+                ));
+        }
+            
             // Get the address of the current caller, possibly the player's address.
             let playerId: felt252 = get_caller_address().into();
 
@@ -126,6 +161,33 @@ mod actions {
                 lifeStatus.tick(world);
             }
         }
+    }
+
+    fn spawn_coords(world: IWorldDispatcher, player: felt252, mut salt: felt252) -> (u16, u16) {
+        let mut x = 10;
+        let mut y = 10;
+        loop {
+            let hash = pedersen::pedersen(player, salt);
+            let rnd_seed = match u128s_from_felt252(hash) {
+                U128sFromFelt252Result::Narrow(low) => low,
+                U128sFromFelt252Result::Wide((high, low)) => low,
+            };
+            let MAP_SIZE: u128 = 50;
+            let (rnd_seed, x_) = u128_safe_divmod(rnd_seed, MAP_SIZE.try_into().unwrap());
+            let (rnd_seed, y_) = u128_safe_divmod(rnd_seed, MAP_SIZE.try_into().unwrap());
+            let x_: felt252 = x_.into();
+            let y_: felt252 = y_.into();
+
+            x = x_.try_into().unwrap();
+            y = y_.try_into().unwrap();
+            let occupied = get!(world, (x, y), (EntityAtPosition)).id;
+            if occupied == 0 {
+                break;
+            } else {
+                salt += 1; // Try new salt
+            }
+        };
+        (x, y)
     }
 }
 
