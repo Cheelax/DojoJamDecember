@@ -109,6 +109,8 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     return null;
   }
 
+  const hintText = lifeStatus.isDead ? "Dead" : (lifeStatus.isInfected ? "Infected" : (lifeStatus.infectionStacks + "/3"))
+
   return (
     <>
       <AnimatedSprite
@@ -122,9 +124,9 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
         initialFrame={currentFrame}
       />
       <Text
-        text={lifeStatus.isInfected ? "Infected" : (lifeStatus.infectionStacks + "/3")}
+        text={hintText}
         scale={0.8}
-        x={absolutePosition.x - 50}
+        x={absolutePosition.x - hintText.length * 6}
         y={absolutePosition.y - 80}
       />
     </>

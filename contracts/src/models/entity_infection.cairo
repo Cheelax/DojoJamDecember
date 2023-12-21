@@ -47,16 +47,21 @@ fn spreadAndGetInfection(playerId: felt252, world: IWorldDispatcher, timestamp: 
             let entityId = get!(world, (tx, ty), (EntityAtPosition)).id;
             if entityId != 0 && entityId != playerId {
                 let entityLifeStatus = get!(world, entityId, EntityLifeStatus);
-                // Is it an infected entity? If yes, I become infected
-                if !playerLifeStatus.isInfected && entityLifeStatus.isInfected && !entityLifeStatus.isDead {
-                    infectEntity(playerId, world, timestamp);
+                // Is entity dead?
+                if (entityLifeStatus.isInfected && timestamp >= entityLifeStatus.deadAt) {
+                    killEntity(entityLifeStatus.id, world);
+                } else {
+                    // Is it an infected entity? If yes, I become infected
+                    if !playerLifeStatus.isInfected && entityLifeStatus.isInfected && !entityLifeStatus.isDead {
+                        infectEntity(playerId, world, timestamp);
+                    }
+                    // Is it a non-infected entity that I can infect?
+                    if playerLifeStatus.isInfected && !playerLifeStatus.isDead && !entityLifeStatus.isInfected {
+                        infectEntity(entityId, world, timestamp);
+                    }
                 }
-                // Is it a non-infected entity that I can infect?
-                if playerLifeStatus.isInfected && !playerLifeStatus.isDead && !entityLifeStatus.isInfected {
-                    infectEntity(entityId, world, timestamp);
-                }
-            }
 
+            }
             tx = tx + 1;
         };
         ty = ty + 1;

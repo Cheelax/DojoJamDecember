@@ -30,6 +30,19 @@ export function defineContractComponents(world: World) {
 	      }
 	    );
 	  })(),
+	  PlayerScore: (() => {
+	    return defineComponent(
+	      world,
+	      { id: RecsType.BigInt, nb_tiles_explored: RecsType.Number },
+	      {
+	        metadata: {
+	          name: "PlayerScore",
+	          types: ["felt252","u16"],
+	          customTypes: [],
+	        },
+	      }
+	    );
+	  })(),
 	  Tile: (() => {
 	    return defineComponent(
 	      world,

@@ -4,7 +4,8 @@ import { Coordinate } from '../type/GridElement';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import MapComponent from './Map';
 import Mob from './Mob';
-import { defineSystem, Has } from '@dojoengine/recs';
+import Leaderboard from './Leaderboard';
+import { defineSystem, Has, defineEnterSystem } from '@dojoengine/recs';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
 import Camera from './Camera';
 
@@ -20,12 +21,13 @@ const Canvas: React.FC<CanvasProps> = ({
     systemCalls,
     world,
     account,
-    components: { Player, EntityLifeStatus }
+    components: { Player, EntityLifeStatus, PlayerScore }
   } = networkLayer
 
   const { spawn, move } = systemCalls
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
   const [players, setPlayers] = useState<any>({});
+  const [playersScores, setPlayersScores] = useState<any>({});
   const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({x: 0, y: 0});
@@ -57,6 +59,13 @@ const Canvas: React.FC<CanvasProps> = ({
     defineSystem(world, [Has(EntityLifeStatus)], function({ value: [newValue] }: any) {
       setEntitiesLifeStatus((prevEntities: any) => { return { ...prevEntities, [newValue.id]: newValue } });
     });
+
+    defineEnterSystem(world, [Has(PlayerScore)], function({ value: [newValue] }: any) {
+      setPlayersScores((prevPlayers: any) => { return { ...prevPlayers, [newValue.id]: newValue } });
+    });
+    defineSystem(world, [Has(PlayerScore)], function({ value: [newValue] }: any) {
+      setPlayersScores((prevPlayers: any) => { return { ...prevPlayers, [newValue.id]: newValue } });
+    });
   }, []);
 
   function getTileCoordsFromEvent(e: PointerEvent) : Coordinate {
@@ -68,6 +77,8 @@ const Canvas: React.FC<CanvasProps> = ({
     const tileY = Math.round(gridPos.y);
     return { x: tileX, y: tileY } as Coordinate;
   }
+
+  if (localPlayer === undefined) return;
 
   return (
     <div style={{ position: 'relative' }}>
@@ -104,6 +115,7 @@ const Canvas: React.FC<CanvasProps> = ({
               />
             })}
         </Container>
+        <Leaderboard playersScores={playersScores} localPlayerId={localPlayer.id}/>
       </Stage>
     </div>
   );
