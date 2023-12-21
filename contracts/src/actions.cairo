@@ -15,7 +15,7 @@ mod actions {
 
     use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
 
-    use plaguestark::models::player::{Player};
+    use plaguestark::models::player::{Player, PlayerScore};
     use plaguestark::models::map::{Map, MapTrait, Type};
     use plaguestark::models::tile::{Tile, TileTrait};
     use plaguestark::models::entity_infection::{EntityLifeStatus, EntityLifeStatusTrait};
@@ -31,65 +31,65 @@ mod actions {
             let world = self.world_dispatcher.read();
             let mut game=get!(world, 0, (Game));
 
-        if !game.isInit {
-            let mut map= MapTrait::new(0, 0, 50);
-            set!(world,
-                (
-                    map
-                ));
+            // if !game.isInit {
+            //     let mut map= MapTrait::new(0, 0, 50);
+            //     set!(world,
+            //         (
+            //             map
+            //         ));
 
-            // create tile
-            let raw_types = map.generate(map.seed);
-            let mut index = 0;
-            let length = raw_types.len();
-            println!("length: {}", length);
-            loop {
-                if index == length {
-                    break;
-                }
+            //     // create tile
+            //     let raw_types = map.generate(map.seed);
+            //     let mut index = 0;
+            //     let length = raw_types.len();
+            //     println!("length: {}", length);
+            //     loop {
+            //         if index >= length {
+            //             break;
+            //         }
 
-                let raw_type = *raw_types[index];
-                let tile_type = map.get_type(raw_type);
-                let indexreduced: u16 = index.try_into().unwrap();
-                let (x, y) = map.decompose(indexreduced);
-                let tile = Tile { game_id: 0, x, y, index:indexreduced, _type: raw_type };
+            //         let raw_type = *raw_types[index];
+            //         let tile_type = map.get_type(raw_type);
+            //         let indexreduced: u16 = index.try_into().unwrap();
+            //         let (x, y) = map.decompose(indexreduced);
+            //         let tile = Tile { game_id: 0, x, y, index:indexreduced, _type: raw_type };
 
-                // [Command] Set Tile and Character entities
-                match tile_type {
-                    Type::Ground(()) => { //
-                    },
-                    Type::Three(()) => {
-                        // [Command] Set Tile entity
-                        set!(world, (tile));
-                    },
-                    Type::Rock(()) => {
-                        // [Command] Set Tile entity
-                        set!(world, (tile));
-                    },
-                    Type::Hideout(()) => {
-                        // [Command] Set Tile entity
-                        set!(world, (tile));
-                        // TODO: set hideout 
-                        // let barbarian = Character {
-                        //     game_id: game_id,
-                        //     _type: raw_type,
-                        //     health: MOB_HEALTH,
-                        //     index,
-                        //     hitter: 0,
-                        //     hit: 0
-                        // };
-                        // set!(ctx.world, (barbarian));
-                    },
-                };
+            //         // [Command] Set Tile and Character entities
+            //         match tile_type {
+            //             Type::Ground(()) => { //
+            //             },
+            //             Type::Three(()) => {
+            //                 // [Command] Set Tile entity
+            //                 set!(world, (tile));
+            //             },
+            //             Type::Rock(()) => {
+            //                 // [Command] Set Tile entity
+            //                 set!(world, (tile));
+            //             },
+            //             Type::Hideout(()) => {
+            //                 // [Command] Set Tile entity
+            //                 set!(world, (tile));
+            //                 // TODO: set hideout 
+            //                 // let barbarian = Character {
+            //                 //     game_id: game_id,
+            //                 //     _type: raw_type,
+            //                 //     health: MOB_HEALTH,
+            //                 //     index,
+            //                 //     hitter: 0,
+            //                 //     hit: 0
+            //                 // };
+            //                 // set!(ctx.world, (barbarian));
+            //             },
+            //         };
 
-                index += 1;
-            };
-            game.isInit=true;
-            set!(world,
-                (
-                    game
-                ));
-        }
+            //         index += 1;
+            //     };
+            //     game.isInit=true;
+            //     set!(world,
+            //         (
+            //             game
+            //         ));
+            // }
             
             // Get the address of the current caller, possibly the player's address.
             let playerId: felt252 = get_caller_address().into();
@@ -99,6 +99,7 @@ mod actions {
             set!(world,
                 (
                     Player { id: playerId, orientation: 1, x: x, y: y },
+                    PlayerScore { id: playerId, nb_tiles_explored: 0 },
                     EntityLifeStatusTrait::new(playerId),
                     EntityAtPosition { x: x, y: y, id: playerId },
                 )
@@ -114,6 +115,9 @@ mod actions {
             let playerId: felt252 = get_caller_address().into();
 
             let player = get!(world, playerId, (Player));
+
+            let lifeStatus = get!(world, playerId, EntityLifeStatus);
+            assert(lifeStatus.isDead() == false, 'You are dead');
 
             let isNextToPlayer = (
                 (x == player.x - 1 && y == player.y) ||
@@ -137,24 +141,23 @@ mod actions {
             let entityId = get!(world, (x,y), EntityAtPosition).id;
             assert(entityId == 0, 'There is already someone here');
 
-            let player = get!(world, playerId, Player);
+            let (player, score) = get!(world, playerId, (Player, PlayerScore));
+            // Remove player from previous tile
             set!(world,
                 (
                     EntityAtPosition { x: player.x, y: player.y, id: 0 },
                 )
             );
 
-            // Call tick
             set!(world,
                 (
                     Player { id: playerId, orientation: nextOrientation, x: x, y: y },
+                    PlayerScore { id: playerId, nb_tiles_explored: score.nb_tiles_explored + 1 },
                     EntityAtPosition { x: x, y: y, id: playerId },
                 )
             );
 
-            let lifeStatus = get!(world, playerId, EntityLifeStatus);
             if (lifeStatus.randomlyAddInfectionStack(world)) {
-                // retrieve new infection stacks count
                 let updateLifeStatus = get!(world, playerId, EntityLifeStatus);
                 updateLifeStatus.tick(world);
             } else {
