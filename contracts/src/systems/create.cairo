@@ -41,6 +41,9 @@ mod Create {
                     // [Command] Set Tile entity
                     set!(world, (tile));
                 },
+                Type::AlchemyLabs(()) => {
+                    set!(world, (tile));
+                },
                 Type::Hideout(()) => {
                     // [Command] Set Tile entity
                     set!(world, (tile));

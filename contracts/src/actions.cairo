@@ -30,66 +30,67 @@ mod actions {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
             let mut game=get!(world, 0, (Game));
+            if !game.isInit {
+                let mut map= MapTrait::new(0, 0, 50);
+                set!(world,
+                    (
+                        map
+                    ));
 
-            // if !game.isInit {
-            //     let mut map= MapTrait::new(0, 0, 50);
-            //     set!(world,
-            //         (
-            //             map
-            //         ));
+                // create tile
+                let raw_types = map.generate(map.seed);
+                let mut index = 0;
+                let length = raw_types.len();
+                loop {
+                    if index >= length {
+                        break;
+                    }
 
-            //     // create tile
-            //     let raw_types = map.generate(map.seed);
-            //     let mut index = 0;
-            //     let length = raw_types.len();
-            //     println!("length: {}", length);
-            //     loop {
-            //         if index >= length {
-            //             break;
-            //         }
+                    let raw_type = *raw_types[index];
+                    let tile_type = map.get_type(raw_type);
+                    let indexreduced: u16 = index.try_into().unwrap();
+                    let (x, y) = map.decompose(indexreduced);
+                    let tile = Tile { game_id: 0, x, y, index:indexreduced, _type: raw_type };
 
-            //         let raw_type = *raw_types[index];
-            //         let tile_type = map.get_type(raw_type);
-            //         let indexreduced: u16 = index.try_into().unwrap();
-            //         let (x, y) = map.decompose(indexreduced);
-            //         let tile = Tile { game_id: 0, x, y, index:indexreduced, _type: raw_type };
+                    // [Command] Set Tile and Character entities
+                    match tile_type {
+                        Type::Ground(()) => { //
+                        },
+                        Type::Three(()) => {
+                            // [Command] Set Tile entity
+                            set!(world, (tile));
+                        },
+                        Type::Rock(()) => {
+                            // [Command] Set Tile entity
+                            set!(world, (tile));
+                        },
+                        Type::AlchemyLabs(()) => {
+                            // [Command] Set Tile entity
+                            set!(world, (tile));
+                            // TODO: set hideout 
+                            // let barbarian = Character {
+                            //     game_id: game_id,
+                            //     _type: raw_type,
+                            //     health: MOB_HEALTH,
+                            //     index,
+                            //     hitter: 0,
+                            //     hit: 0
+                            // };
+                            // set!(ctx.world, (barbarian));
+                        },
+                        Type::Hideout(()) => {
+                             set!(world, (tile));
+                        },
+                    };
 
-            //         // [Command] Set Tile and Character entities
-            //         match tile_type {
-            //             Type::Ground(()) => { //
-            //             },
-            //             Type::Three(()) => {
-            //                 // [Command] Set Tile entity
-            //                 set!(world, (tile));
-            //             },
-            //             Type::Rock(()) => {
-            //                 // [Command] Set Tile entity
-            //                 set!(world, (tile));
-            //             },
-            //             Type::Hideout(()) => {
-            //                 // [Command] Set Tile entity
-            //                 set!(world, (tile));
-            //                 // TODO: set hideout 
-            //                 // let barbarian = Character {
-            //                 //     game_id: game_id,
-            //                 //     _type: raw_type,
-            //                 //     health: MOB_HEALTH,
-            //                 //     index,
-            //                 //     hitter: 0,
-            //                 //     hit: 0
-            //                 // };
-            //                 // set!(ctx.world, (barbarian));
-            //             },
-            //         };
-
-            //         index += 1;
-            //     };
-            //     game.isInit=true;
-            //     set!(world,
-            //         (
-            //             game
-            //         ));
-            // }
+                    index += 1;
+                };
+                game.isInit=true;
+                set!(world,
+                    (
+                        game
+                    ));
+            }
             
             // Get the address of the current caller, possibly the player's address.
             let playerId: felt252 = get_caller_address().into();

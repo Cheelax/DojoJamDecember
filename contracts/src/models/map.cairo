@@ -30,6 +30,7 @@ enum Type {
     Ground: (),
     Three: (),
     Rock: (),
+    AlchemyLabs: (),
     Hideout: (),
 }
 
@@ -155,7 +156,7 @@ fn _generate(seeds: Span<felt252>, numbers: Span<u16>, types: Span<u8>, n_tiles:
         };
         let seed = seeds.at(index);
         let number = numbers.at(index);
-        let _type = types.at(index);
+        let _type = types.at(index);        
         __generate(*seed, *number, *_type, n_tiles, ref dict_types);
         index += 1;
     };
@@ -189,11 +190,10 @@ fn __generate(
         // [Compute] Uniform random number between 0 and max
         let max= 3;
         let rand = _uniform_random(seed + iter.into(), max);
-        println!("rand: {}", rand);
         let tile_object_probability: u128 = objects_to_place.into()
             * max
             / (n_tiles - iter).into();
-        if rand <= tile_object_probability {
+        if rand <= tile_object_probability {      
             objects_to_place -= 1;
             dict_types.insert(iter.into(), _type);
         };
