@@ -6,6 +6,7 @@ import MapComponent from './Map';
 import Mob from './Mob';
 import { defineSystem, Has } from '@dojoengine/recs';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
+import Camera from './Camera';
 
 interface CanvasProps {
   networkLayer: NetworkLayer | null
@@ -28,6 +29,7 @@ const Canvas: React.FC<CanvasProps> = ({
   const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({x: 0, y: 0});
+  const [targetCameraOffset, setTargetCameraOffset] = useState<Coordinate>({x: 0, y: 0});
   const [pointerPosition, setPointerPosition] = useState<any>();
 
   // could be useful to check if "player.id" is the local player
@@ -38,8 +40,7 @@ const Canvas: React.FC<CanvasProps> = ({
   useEffect(() => {
     if (localPlayer === undefined) return;
     const pos = to_screen_coordinate(localPlayer.x, localPlayer.y)
-    const offset = { x: pos.x, y: pos.y - H_OFFSET }
-    setCameraOffset(offset)
+    setTargetCameraOffset({ x: pos.x, y: pos.y - H_OFFSET })
   }, [localPlayer])
 
   useEffect(() => {
@@ -54,7 +55,6 @@ const Canvas: React.FC<CanvasProps> = ({
     });
 
     defineSystem(world, [Has(EntityLifeStatus)], function({ value: [newValue] }: any) {
-      console.log(newValue)
       setEntitiesLifeStatus((prevEntities: any) => { return { ...prevEntities, [newValue.id]: newValue } });
     });
   }, []);
@@ -92,13 +92,15 @@ const Canvas: React.FC<CanvasProps> = ({
         }}
       >
         <Container sortableChildren={true} x={-cameraOffset.x} y={-cameraOffset.y} >
-          <MapComponent hoveredTile={hoveredTile} cameraOffset={cameraOffset}/>
+          <Camera cameraOffset={cameraOffset} targetCameraOffset={targetCameraOffset} setCameraOffset={setCameraOffset}/>
+          <MapComponent hoveredTile={hoveredTile}/>
             {Object.values(players).map((player: typeof Player) => {
               return <Mob
                 key={player.id}
+                orientation={player.orientation}
                 lifeStatus={entitiesLifeStatus[player.id]}
                 type="knight"
-                position={{x: player.x, y: player.y} as Coordinate}
+                targetPosition={{x: player.x, y: player.y} as Coordinate}
               />
             })}
         </Container>

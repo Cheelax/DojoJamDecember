@@ -6,10 +6,9 @@ import { H_OFFSET, WIDTH, to_screen_coordinate } from '../utils/grid';
 
 interface MapProps {
   hoveredTile?: Coordinate;
-  cameraOffset: Coordinate;
 }
 
-const Map: React.FC<MapProps> = ({ hoveredTile, cameraOffset }) => {
+const Map: React.FC<MapProps> = ({ hoveredTile }) => {
   // TODO: move this in config file
   const gridSize = 50
 

@@ -63,7 +63,7 @@ mod actions {
 
             set!(world,
                 (
-                    Player { id: playerId, orientation: 0, x: x, y: y },
+                    Player { id: playerId, orientation: 1, x: x, y: y },
                     EntityLifeStatusTrait::new(playerId),
                     EntityAtPosition { x: x, y: y, id: playerId },
                 )
@@ -79,9 +79,6 @@ mod actions {
             let playerId: felt252 = get_caller_address().into();
 
             let player = get!(world, playerId, (Player));
-            let orientation = player.orientation;
-            // TODO: check previous position to compute orientation
-            let nextOrientation = ((orientation + 1) % 4);
 
             let isNextToPlayer = (
                 (x == player.x - 1 && y == player.y) ||
@@ -89,9 +86,18 @@ mod actions {
                 (x == player.x && y == player.y - 1) ||
                 (x == player.x && y == player.y + 1)
             );
-
-            // let sourceTile = get!(world, (player.x, player.y), (Tile));
             assert(isNextToPlayer, 'Target position is not in range');
+
+            let mut nextOrientation: u8 = 0;
+            if (x > player.x) {
+                nextOrientation = 1; // SE
+            } else if (y < player.y) {
+                nextOrientation = 3; // NE
+            } else if (x < player.x) {
+                nextOrientation = 5; // NW
+            } else if (y > player.y) {
+                nextOrientation = 7; // SW
+            }
 
             let entityId = get!(world, (x,y), EntityAtPosition).id;
             assert(entityId == 0, 'There is already someone here');
