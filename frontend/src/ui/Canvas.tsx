@@ -7,6 +7,7 @@ import Leaderboard from './Leaderboard';
 import { defineSystem, Has, defineEnterSystem } from '@dojoengine/recs';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
 import Camera from './Camera';
+import Inventory from './Inventory';
 
 interface CanvasProps {
   networkLayer: NetworkLayer | undefined;
@@ -89,6 +90,10 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
           />
         </Container>
         <Leaderboard
+          networkLayer={networkLayer}
+          localPlayer={localPlayer}
+        />
+        <Inventory
           networkLayer={networkLayer}
           localPlayer={localPlayer}
         />

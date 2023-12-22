@@ -73,7 +73,7 @@ trait MapTrait {
     fn get_type(self: Map, raw_type: u8) -> Type;
     fn generate(self: Map, seed: felt252) -> Span<u8>;
     fn decompose(self: Map, index: u16) -> (u16, u16);
-    fn addTileAtRandomEmptyPosition(self: Map, world: IWorldDispatcher, _type: u8);
+    fn addTileAtRandomEmptyPosition(self: Map, world: IWorldDispatcher, _type: u8, seed: felt252);
 }
 
 /// Implementation of the `MapTrait` for the `Map` struct.
@@ -109,8 +109,8 @@ impl MapImpl of MapTrait {
         _decompose(index, self.size)
     }
 
-    fn addTileAtRandomEmptyPosition(self: Map, world: IWorldDispatcher, _type: u8) {
-        let mut randValue = _uniform_random(self.seed, 50 * 50);
+    fn addTileAtRandomEmptyPosition(self: Map, world: IWorldDispatcher, _type: u8, seed: felt252) {
+        let mut randValue = _uniform_random(seed, 50 * 50);
         let mut x: u16 = (randValue % 50_u128).try_into().unwrap();
         let mut y: u16 = (randValue / 50_u128).try_into().unwrap();
         let mut retry: u8 = 0;
@@ -119,7 +119,7 @@ impl MapImpl of MapTrait {
             if tile._type == 0 || retry > 200_u8 { // Stop after 200 retry
                 break;
             }
-            randValue = _uniform_random(self.seed + retry.into(), 50 * 50);
+            randValue = _uniform_random(seed + retry.into(), 50 * 50);
             x = (randValue % 50_u128).try_into().unwrap();
             y = (randValue / 50_u128).try_into().unwrap();
             retry += 1;

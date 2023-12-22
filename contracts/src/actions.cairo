@@ -86,7 +86,8 @@ mod actions {
                     TileAtPosition { x, y, _type: 0 },
                     inventory
                 ));
-                get!(world, 0, (Map)).addTileAtRandomEmptyPosition(world, tile._type);
+                let seed = playerId + x.into() + y.into();
+                get!(world, 0, (Map)).addTileAtRandomEmptyPosition(world, tile._type, seed);
             }
             // Check if can walk on the tile
             assert(tile._type == 0 || tile._type == 5, 'You can\'t move here');
