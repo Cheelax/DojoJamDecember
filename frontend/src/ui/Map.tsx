@@ -1,7 +1,7 @@
 import { Container, Sprite } from '@pixi/react';
 import { SCALE_MODES, Texture } from 'pixi.js';
-import groundTile from '../assets/tilesets/0_1.png';
-import tree from '../assets/tilesets/0_2.png';
+import groundTile from '../assets/tilesets/1_2.png';
+import tree from '../assets/tree.png';
 import rock from '../assets/tilesets/3_0.png';
 import herb1 from '../assets/tilesets/herb1.png';
 import alchemyLabs from '../assets/tilesets/alchemyLabs.png';
@@ -34,8 +34,8 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
   Texture.from(groundTile).baseTexture.scaleMode = SCALE_MODES.NEAREST;
 
   useEffect(() => {
-    setPlayersList(Object.values(players))
-  }, [players])
+    setPlayersList(Object.values(players));
+  }, [players]);
 
   useEffect(() => {
     defineSystem(world, [Has(EntityLifeStatus)], function ({ value: [newValue] }: any) {
@@ -53,10 +53,10 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
     defineSystem(world, [Has(Tile)], function ({ value: [newValue] }: any) {
       setTiles((prevTiles: any) => {
         if (prevTiles[newValue.y] === undefined) {
-          prevTiles[newValue.y] = {}
+          prevTiles[newValue.y] = {};
         }
         prevTiles[newValue.y][newValue.x] = newValue;
-        return prevTiles
+        return prevTiles;
       });
     });
   }, []);
@@ -70,8 +70,8 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
     [2]: rock,
     [3]: alchemyLabs,
     // [4]: hideouts,
-    [5]: herb1
-  }
+    [5]: herb1,
+  };
 
   return Array.from(Array(gridSize)).map((_: any, y: number) => {
     return Array.from(Array(gridSize)).map((_: any, x: number) => {
@@ -81,23 +81,21 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
       // Shift hovered tile up
       const adjustment = hoveredTile && hoveredTile.x === tile.x && hoveredTile.y === tile.y ? 5 : 0;
 
-      let tileData
+      let tileData;
       if (tiles[tile.y] && tiles[tile.y][tile.x]) {
-        tileData = tiles[tile.y][tile.x]
+        tileData = tiles[tile.y][tile.x];
       }
 
-      let player: typeof Player = undefined
+      let player: typeof Player = undefined;
       if (playersList) {
-        const playersOnCell = playersList.filter((p: any) => p.x == tile.x && p.y == tile.y)
+        const playersOnCell = playersList.filter((p: any) => p.x == tile.x && p.y == tile.y);
         if (playersOnCell.length > 0) {
-          player = playersOnCell[0]
-        }  
+          player = playersOnCell[0];
+        }
       }
 
       return (
-        <Container
-          key={`${tile.x}-${tile.y}-container`}
-        >
+        <Container key={`${tile.x}-${tile.y}-container`}>
           <Sprite
             key={`${tile.x}-${tile.y}`}
             image={groundTile}
@@ -106,19 +104,17 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
             x={screenPos.x + WIDTH / 2}
             y={screenPos.y + H_OFFSET - adjustment}
           />
-          {
-            tileData && tileSprites[tileData._type] &&
+          {tileData && tileSprites[tileData._type] && (
             <Sprite
               key={`${tile.x}-${tile.y}-1`}
               image={tileSprites[tileData._type]}
               anchor={0.5}
-              scale={2}
+              scale={1}
               x={screenPos.x + WIDTH / 2}
               y={screenPos.y + H_OFFSET - adjustment - 25}
-            /> 
-          }
-          {
-            player &&
+            />
+          )}
+          {player && (
             <Mob
               key={player.id}
               orientation={player.orientation}
@@ -126,7 +122,7 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
               type="knight"
               targetPosition={{ x: player.x, y: player.y } as Coordinate}
             />
-          }
+          )}
         </Container>
       );
     });
