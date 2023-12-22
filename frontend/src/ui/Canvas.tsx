@@ -9,42 +9,36 @@ import { NetworkLayer } from '../dojo/createNetworkLayer';
 import Camera from './Camera';
 
 interface CanvasProps {
-  networkLayer: NetworkLayer | null;
+  networkLayer: NetworkLayer | undefined;
 }
 
 const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
   if (networkLayer == null) return null;
   const {
-    systemCalls,
+    systemCalls: { spawn, move },
     world,
     account,
     components: { Player },
   } = networkLayer;
 
-  const { spawn, move } = systemCalls;
-  const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
+  const [hoveredTile, setHoveredTile] = useState<Coordinate>();
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [targetCameraOffset, setTargetCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [pointerPosition, setPointerPosition] = useState<any>();
 
-  // could be useful to check if "player.id" is the local player
   function isLocalPlayer(id: number): boolean {
     return '0x' + id.toString(16) == account.address;
   }
 
   useEffect(() => {
-    if (localPlayer === undefined) return;
-    const pos = to_screen_coordinate(localPlayer.x, localPlayer.y);
-    setTargetCameraOffset({ x: pos.x, y: pos.y - H_OFFSET });
-  }, [localPlayer]);
-
-  useEffect(() => {
     spawn(account);
 
-    defineSystem(world, [Has(Player)], function ({ value: [newValue] }: any) {
-      if (isLocalPlayer(newValue.id)) {
-        setLocalPlayer(newValue);
+    defineSystem(world, [Has(Player)], function ({ value: [newLocalPlayer] }: any) {
+      if (newLocalPlayer && isLocalPlayer(newLocalPlayer.id)) {
+        setLocalPlayer(newLocalPlayer);
+        const pos = to_screen_coordinate(newLocalPlayer.x, newLocalPlayer.y);
+        setTargetCameraOffset({ x: pos.x, y: pos.y - H_OFFSET });
       }
     });
   }, []);

@@ -50,18 +50,20 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     }, [targetPosition]);
 
   useTick(() => {
-    const currentX = absolutePosition.x;
-    const currentY = absolutePosition.y;
-    const targetX = absoluteTargetPosition.x;
-    const targetY = absoluteTargetPosition.y;
-    if (Math.abs(targetX - currentX) >= 1 || Math.abs(targetY - currentY) >= 1) {
-      setIsMoving(true);
-      const newX = lerp(currentX, targetX, 0.05);
-      const newY = lerp(currentY, targetY, 0.05);
-      setAbsolutePosition({ x: newX, y: newY });
-    } else {
-      setIsMoving(false);
-    }
+    setAbsolutePosition(absoluteTargetPosition);
+    // TODO: fix animation
+    // const currentX = absolutePosition.x;
+    // const currentY = absolutePosition.y;
+    // const targetX = absoluteTargetPosition.x;
+    // const targetY = absoluteTargetPosition.y;
+    // if (Math.abs(targetX - currentX) >= 1 || Math.abs(targetY - currentY) >= 1) {
+    //   setIsMoving(true);
+    //   const newX = lerp(currentX, targetX, 0.05);
+    //   const newY = lerp(currentY, targetY, 0.05);
+    //   setAbsolutePosition({ x: newX, y: newY });
+    // } else {
+    //   setIsMoving(false);
+    // }
   });
 
   useEffect(() => {
