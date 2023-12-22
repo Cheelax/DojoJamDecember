@@ -3,7 +3,6 @@ import { PointerEvent, useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
 import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import MapComponent from './Map';
-import Mob from './Mob';
 import Leaderboard from './Leaderboard';
 import { defineSystem, Has, defineEnterSystem } from '@dojoengine/recs';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
@@ -19,18 +18,14 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
     systemCalls,
     world,
     account,
-    components: { Player, EntityLifeStatus, PlayerScore, Tile },
+    components: { Player },
   } = networkLayer;
 
   const { spawn, move } = systemCalls;
   const [hoveredTile, setHoveredTile] = useState<Coordinate | undefined>(undefined);
-  const [players, setPlayers] = useState<any>({});
-  const [playersScores, setPlayersScores] = useState<any>({});
-  const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [targetCameraOffset, setTargetCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
-  const [tiles, setTiles] = useState<(typeof Tile)[]>([]);
   const [pointerPosition, setPointerPosition] = useState<any>();
 
   // could be useful to check if "player.id" is the local player
@@ -47,37 +42,10 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
   useEffect(() => {
     spawn(account);
 
-    // Player update sent my Torii
     defineSystem(world, [Has(Player)], function ({ value: [newValue] }: any) {
-      setPlayers((prevPlayers: any) => {
-        return { ...prevPlayers, [newValue.id]: newValue };
-      });
       if (isLocalPlayer(newValue.id)) {
         setLocalPlayer(newValue);
       }
-    });
-
-    defineSystem(world, [Has(EntityLifeStatus)], function ({ value: [newValue] }: any) {
-      setEntitiesLifeStatus((prevEntities: any) => {
-        return { ...prevEntities, [newValue.id]: newValue };
-      });
-    });
-
-    defineEnterSystem(world, [Has(PlayerScore)], function ({ value: [newValue] }: any) {
-      setPlayersScores((prevPlayers: any) => {
-        return { ...prevPlayers, [newValue.id]: newValue };
-      });
-    });
-    defineSystem(world, [Has(PlayerScore)], function ({ value: [newValue] }: any) {
-      setPlayersScores((prevPlayers: any) => {
-        return { ...prevPlayers, [newValue.id]: newValue };
-      });
-    });
-    defineSystem(world, [Has(Tile)], function ({ value: [newValue] }: any) {
-      console.log('tile', newValue);
-      setTiles((prevTile: any) => {
-        return [newValue, ...prevTile];
-      });
     });
   }, []);
 
@@ -121,20 +89,15 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
             targetCameraOffset={targetCameraOffset}
             setCameraOffset={setCameraOffset}
           />
-          <MapComponent hoveredTile={hoveredTile} tiles={tiles} />
-          {Object.values(players).map((player: typeof Player) => {
-            return (
-              <Mob
-                key={player.id}
-                orientation={player.orientation}
-                lifeStatus={entitiesLifeStatus[player.id]}
-                type="knight"
-                targetPosition={{ x: player.x, y: player.y } as Coordinate}
-              />
-            );
-          })}
+          <MapComponent
+            hoveredTile={hoveredTile}
+            networkLayer={networkLayer}
+          />
         </Container>
-        <Leaderboard playersScores={playersScores} localPlayerId={localPlayer.id} />
+        <Leaderboard
+          networkLayer={networkLayer}
+          localPlayer={localPlayer}
+        />
       </Stage>
     </div>
   );

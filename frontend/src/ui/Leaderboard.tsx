@@ -1,15 +1,23 @@
 import { Container, Text } from "@pixi/react";
 import { TextStyle } from "pixi.js";
 import { useEffect, useState } from "react";
+import { defineEnterSystem, defineSystem, Has } from '@dojoengine/recs';
 
 interface LeaderboardProps {
-  playersScores?: any;
-  localPlayerId: number;
+    networkLayer: any;
+    localPlayer: any;
 }
 
-const Leaderboard: React.FC<LeaderboardProps> = ({ playersScores, localPlayerId }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ networkLayer, localPlayer }) => {
+    if (networkLayer == null) return null;
+    const {
+        world,
+        components: { PlayerScore },
+    } = networkLayer;
+    const [playersScores, setPlayersScores] = useState<any>({});
     const [list, setList] = useState<any>();
 
+    // Compute players scores
     useEffect(() => {
         if (playersScores === undefined) return;
         // Sort players scores
@@ -18,7 +26,22 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ playersScores, localPlayerId 
         setList(newList.slice(0,5))
     }, [playersScores])
 
-    if (list === undefined || localPlayerId === undefined) return;
+    // Retrieve players scores
+    useEffect(() => {
+        defineEnterSystem(world, [Has(PlayerScore)], function ({ value: [newValue] }: any) {
+            setPlayersScores((prevPlayers: any) => {
+                return { ...prevPlayers, [newValue.id]: newValue };
+            });
+        });
+        defineSystem(world, [Has(PlayerScore)], function ({ value: [newValue] }: any) {
+            setPlayersScores((prevPlayers: any) => {
+                return { ...prevPlayers, [newValue.id]: newValue };
+            });
+        });
+    }, []);
+
+    if (list === undefined || localPlayer === undefined) return;
+
     return (
         <Container>
             <Text text={"Highscores"} x={20} y={20} style={
@@ -33,10 +56,12 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ playersScores, localPlayerId 
         {
             list.map((elem: any, key: number) => {
                 return (
-                    <Container>
+                    <Container
+                        key={`${elem.id.toString()}-container`}
+                    >
                         <Text
                             key={elem.id.toString() + 'name'}
-                            text={localPlayerId === elem.id ? "you" : "0x" + elem.id.toString(16).slice(0,6)}
+                            text={localPlayer.id === elem.id ? "you" : "0x" + elem.id.toString(16).slice(0,6)}
                             x={20}
                             y={45 + (key + 1) * 20}
                             style={

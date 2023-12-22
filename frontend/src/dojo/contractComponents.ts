@@ -62,5 +62,18 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    TileAtPosition: (() => {
+      return defineComponent(
+        world,
+        { x: RecsType.Number, y: RecsType.Number, _type: RecsType.Number },
+        {
+          metadata: {
+            name: 'TileAtPosition',
+            types: [ 'u16', 'u16', 'u8'],
+            customTypes: [],
+          },
+        }
+      );
+    })(),
   };
 }

@@ -1,19 +1,67 @@
-import { Sprite } from '@pixi/react';
+import { Container, Sprite } from '@pixi/react';
 import { SCALE_MODES, Texture } from 'pixi.js';
 import groundTile from '../assets/tilesets/0_1.png';
+import tree from '../assets/tilesets/0_2.png';
+import rock from '../assets/tilesets/3_0.png';
 import { Coordinate } from '../type/GridElement';
 import { H_OFFSET, WIDTH, to_screen_coordinate } from '../utils/grid';
+import Mob from './Mob';
+import { useEffect, useState } from 'react';
+import { defineSystem, Has } from '@dojoengine/recs';
 
 interface MapProps {
   hoveredTile?: Coordinate;
-  tiles: any[];
+  networkLayer: any;
 }
 
-const Map: React.FC<MapProps> = ({ hoveredTile, tiles }) => {
+const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
+  if (networkLayer == null) return null;
+  const {
+    world,
+    components: { EntityLifeStatus, Player, Tile },
+  } = networkLayer;
+
+  const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
+  const [players, setPlayers] = useState<any>({});
+  const [playersList, setPlayersList] = useState<any>([]);
+  const [tiles, setTiles] = useState<any>({});
+
   // TODO: move this in config file
   const gridSize = 50;
 
   Texture.from(groundTile).baseTexture.scaleMode = SCALE_MODES.NEAREST;
+
+  useEffect(() => {
+    setPlayersList(Object.values(players))
+  }, [players])
+
+  useEffect(() => {
+    defineSystem(world, [Has(EntityLifeStatus)], function ({ value: [newValue] }: any) {
+      setEntitiesLifeStatus((prevEntities: any) => {
+        return { ...prevEntities, [newValue.id]: newValue };
+      });
+    });
+
+    defineSystem(world, [Has(Player)], function ({ value: [newValue] }: any) {
+      setPlayers((prevPlayers: any) => {
+        return { ...prevPlayers, [newValue.id]: newValue };
+      });
+    });
+
+    defineSystem(world, [Has(Tile)], function ({ value: [newValue] }: any) {
+      setTiles((prevTiles: any) => {
+        if (prevTiles[newValue.y] === undefined) {
+          prevTiles[newValue.y] = {}
+        }
+        prevTiles[newValue.y][newValue.x] = newValue;
+        return prevTiles
+      });
+    });
+  }, []);
+
+  if (tiles === undefined) {
+    return;
+  }
 
   return Array.from(Array(gridSize)).map((_: any, y: number) => {
     return Array.from(Array(gridSize)).map((_: any, x: number) => {
@@ -23,15 +71,53 @@ const Map: React.FC<MapProps> = ({ hoveredTile, tiles }) => {
       // Shift hovered tile up
       const adjustment = hoveredTile && hoveredTile.x === tile.x && hoveredTile.y === tile.y ? 5 : 0;
 
+      let tileData
+      if (tiles[tile.y] && tiles[tile.y][tile.x]) {
+        tileData = tiles[tile.y][tile.x]
+      }
+
+      let player: typeof Player = undefined
+      if (playersList) {
+        const playersOnCell = playersList.filter((p: any) => p.x == tile.x && p.y == tile.y)
+        if (playersOnCell.length > 0) {
+          player = playersOnCell[0]
+        }  
+      }
+
       return (
-        <Sprite
-          key={`${tile.x}-${tile.y}`}
-          image={groundTile}
-          anchor={0.5}
-          scale={2}
-          x={screenPos.x + WIDTH / 2}
-          y={screenPos.y + H_OFFSET - adjustment}
-        />
+        <Container
+          key={`${tile.x}-${tile.y}-container`}
+        >
+          <Sprite
+            key={`${tile.x}-${tile.y}`}
+            image={groundTile}
+            anchor={0.5}
+            scale={2}
+            x={screenPos.x + WIDTH / 2}
+            y={screenPos.y + H_OFFSET - adjustment}
+          />
+          {
+            tileData && tileData._type > 0 &&
+            <Sprite
+              key={`${tile.x}-${tile.y}-1`}
+              image={tileData._type == 1 ? tree : rock}
+              anchor={0.5}
+              scale={2}
+              x={screenPos.x + WIDTH / 2}
+              y={screenPos.y + H_OFFSET - adjustment - 25}
+            /> 
+          }
+          {
+            player &&
+            <Mob
+              key={player.id}
+              orientation={player.orientation}
+              lifeStatus={entitiesLifeStatus[player.id]}
+              type="knight"
+              targetPosition={{ x: player.x, y: player.y } as Coordinate}
+            />
+          }
+        </Container>
       );
     });
   });

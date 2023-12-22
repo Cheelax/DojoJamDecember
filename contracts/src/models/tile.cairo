@@ -23,6 +23,15 @@ struct Tile {
     _type: u8
 }
 
+#[derive(Model, Copy, Drop, Serde)]
+struct TileAtPosition {
+    #[key]
+    x: u16,
+    #[key]
+    y: u16,
+    _type: u8
+}
+
 /// Errors module
 mod errors {
     const INVALID_ID: felt252 = 'Tile: invalid id';

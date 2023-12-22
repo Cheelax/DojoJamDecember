@@ -13,14 +13,16 @@ mod actions {
     use starknet::{get_caller_address, ContractAddress};
     use super::IActions;
 
+    use debug::PrintTrait;
+
     use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
 
     use plaguestark::models::player::{Player, PlayerScore};
-    use plaguestark::models::map::{Map, MapTrait, Type};
-    use plaguestark::models::tile::{Tile, TileTrait};
+    use plaguestark::models::tile::{Tile, TileTrait, TileAtPosition};
     use plaguestark::models::entity_infection::{EntityLifeStatus, EntityLifeStatusTrait};
     use plaguestark::models::entity::{EntityAtPosition};
     use plaguestark::models::game::{Game};
+    use plaguestark::systems::create::{initGame};
 
     // impl: implement functions specified in trait
     #[external(v0)]
@@ -29,67 +31,11 @@ mod actions {
         fn spawn(self: @ContractState) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
-            let mut game=get!(world, 0, (Game));
+
+            // Init game once
+            let game = get!(world, 0, (Game));
             if !game.isInit {
-                let mut map= MapTrait::new(0, 0, 50);
-                set!(world,
-                    (
-                        map
-                    ));
-
-                // create tile
-                let raw_types = map.generate(map.seed);
-                let mut index = 0;
-                let length = raw_types.len();
-                loop {
-                    if index >= length {
-                        break;
-                    }
-
-                    let raw_type = *raw_types[index];
-                    let tile_type = map.get_type(raw_type);
-                    let indexreduced: u16 = index.try_into().unwrap();
-                    let (x, y) = map.decompose(indexreduced);
-                    let tile = Tile { x, y, index:indexreduced, _type: raw_type };
-
-                    // [Command] Set Tile and Character entities
-                    match tile_type {
-                        Type::Ground(()) => { //
-                        },
-                        Type::Tree(()) => {
-                            // [Command] Set Tile entity
-                            set!(world, (tile));
-                        },
-                        Type::Rock(()) => {
-                            // [Command] Set Tile entity
-                            set!(world, (tile));
-                        },
-                        Type::AlchemyLabs(()) => {
-                            // [Command] Set Tile entity
-                            set!(world, (tile));
-                            // TODO: set hideout 
-                            // let barbarian = Character {
-                            //     game_id: game_id,
-                            //     _type: raw_type,
-                            //     health: MOB_HEALTH,
-                            //     index,
-                            //     hitter: 0,
-                            //     hit: 0
-                            // };
-                            // set!(ctx.world, (barbarian));
-                        },
-                        Type::Hideout(()) => {
-                             set!(world, (tile));
-                        },
-                    };
-
-                    index += 1;
-                };
-                game.isInit=true;
-                set!(world,
-                    (
-                        game
-                    ));
+                initGame(world);
             }
             
             // Get the address of the current caller, possibly the player's address.
@@ -127,6 +73,10 @@ mod actions {
                 (x == player.x && y == player.y + 1)
             );
             assert(isNextToPlayer, 'Target position is not in range');
+
+            let tile: TileAtPosition = get!(world, (x, y), (TileAtPosition));
+            // Check if can walk on the tile
+            assert(tile._type == 0, 'You can\'t move here');
 
             let mut nextOrientation: u8 = 0;
             if (x > player.x) {
@@ -184,8 +134,11 @@ mod actions {
 
             x = x_.try_into().unwrap();
             y = y_.try_into().unwrap();
-            let occupied = get!(world, (x, y), (EntityAtPosition)).id;
-            if occupied == 0 {
+
+            let (entity, tile) = get!(world, (x, y), (EntityAtPosition, TileAtPosition));
+
+            // Ensure there is no entity + tile is of type Ground
+            if entity.id == 0 && tile._type == 0 {
                 break;
             } else {
                 salt += 1; // Try new salt

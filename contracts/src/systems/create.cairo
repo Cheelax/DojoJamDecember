@@ -1,72 +1,43 @@
-// #[dojo::contract]
-// mod Create {
-//     use plaguestark::models::map::{Map, MapTrait, Type};
-//     use plaguestark::models::tile::Tile;
-//     use starknet::{ContractAddress, get_caller_address};
+use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
-//     fn execute(self: @ContractState, seed: felt252, size:u16) {
-//         // create game
-//         let world = self.world_dispatcher.read();
-//             let mut map= MapTrait::new(0, seed, size);
-//             set!(world,
-//                 (
-//                     map
-//                 ));
+use plaguestark::models::game::{Game};
+use plaguestark::models::map::{Map, MapTrait, Type};
+use plaguestark::models::tile::{Tile, TileTrait, TileAtPosition};
 
-//         // create tile
-//         let raw_types = map.generate(map.seed);
-//         let mut index = 0;
-//         let length = raw_types.len();
-//         println!("length: {}", length);
-//         loop {
-//             if index == length {
-//                 break;
-//             }
 
-//             let raw_type = *raw_types[index];
-//             let tile_type = map.get_type(raw_type);
-//             let indexreduced: u16 = index.try_into().unwrap();
-//             let (x, y) = map.decompose(indexreduced);
-//             let tile = Tile { game_id: 0, x, y, index:indexreduced, _type: raw_type };
+fn initGame(world: IWorldDispatcher) {
+    let mut game = get!(world, 0, (Game));
+    game.isInit = true;
+    set!(world, (game));
 
-//             // [Command] Set Tile and Character entities
-//             match tile_type {
-//                 Type::Ground(()) => { //
-//                 },
-//                 Type::Tree(()) => {
-//                     // [Command] Set Tile entity
-//                     set!(world, (tile));
-//                 },
-//                 Type::Rock(()) => {
-//                     // [Command] Set Tile entity
-//                     set!(world, (tile));
-//                 },
-//                 Type::AlchemyLabs(()) => {
-//                     set!(world, (tile));
-//                 },
-//                 Type::Hideout(()) => {
-//                     // [Command] Set Tile entity
-//                     set!(world, (tile));
-//                     // TODO: set hideout 
-//                     // let barbarian = Character {
-//                     //     game_id: game_id,
-//                     //     _type: raw_type,
-//                     //     health: MOB_HEALTH,
-//                     //     index,
-//                     //     hitter: 0,
-//                     //     hit: 0
-//                     // };
-//                     // set!(ctx.world, (barbarian));
-//                 },
-//             };
+    let mut map = MapTrait::new(0, 0, 50);
+    set!(world, (map));
 
-//             index += 1;
-//         }
-//     }
+    // create tile
+    let raw_types = map.generate(map.seed);
+    let mut index = 0;
+    let length = raw_types.len();
+    loop {
+        if index >= length {
+            break;
+        }
 
-//     // #[test]
-//     // #[available_gas(30000000)]
-//     // fn test_1() {
-//     //     Create::execute(0, 10);
-//     // }
-// }
+        let raw_type = *raw_types[index];
+        let tile_type = map.get_type(raw_type);
+        let indexreduced: u16 = index.try_into().unwrap();
+        let (x, y) = map.decompose(indexreduced);
+        set!(world, (
+            Tile { x, y, index:indexreduced, _type: raw_type },
+            TileAtPosition { x, y, _type: raw_type }
+        ));
+
+        // if raw_type == Type::AlchemyLabs.into() {
+        //     // Create Alchemy Labs?
+        // }
+        // if raw_type == Type::Hideout.into() {
+        //     // Create Hideout?
+        // }
+
+        index += 1;
+    };
+}
