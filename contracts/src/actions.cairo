@@ -77,10 +77,21 @@ mod actions {
             assert(isNextToPlayer, 'Target position is not in range');
 
             let tile: TileAtPosition = get!(world, (x, y), (TileAtPosition));
+            if tile._type == 3 {
+                // Alchemy labs
+                let mut inventory = get!(world, playerId, (PlayerInventory));
+                let potentialPotions = inventory.nb_white_herbs / 3; // need 3 herbs for 1 potion
+                if potentialPotions > 0 {
+                    inventory.nb_white_herbs -= potentialPotions * 3;
+                    inventory.nb_red_potions += potentialPotions;
+                    set!(world, (inventory));
+                }
+            }
+
             if tile._type == 5 {
+                // Grab flower
                 let mut inventory = get!(world, playerId, (PlayerInventory));
                 inventory.nb_white_herbs += 1;
-                // Grab flower
                 set!(world, (
                     Tile { index: x + y * 50, x, y, _type: 0 },
                     TileAtPosition { x, y, _type: 0 },
@@ -90,7 +101,7 @@ mod actions {
                 get!(world, 0, (Map)).addTileAtRandomEmptyPosition(world, tile._type, seed);
             }
             // Check if can walk on the tile
-            assert(tile._type == 0 || tile._type == 5, 'You can\'t move here');
+            assert(tile._type == 0 || tile._type ==  3 || tile._type == 5, 'You can\'t move here');
 
             let mut nextOrientation: u8 = 0;
             if (x > player.x) {

@@ -95,10 +95,10 @@ impl MapImpl of MapTrait {
             return Type::Tree(());
         } else if raw_type == ROCK_TYPE {
             return Type::Rock(());
-        } else if raw_type == HIDEOUT_TYPE {
-            return Type::Hideout(());
         } else if raw_type == ALCHEMY_LABS_TYPE {
             return Type::AlchemyLabs(());
+        } else if raw_type == HIDEOUT_TYPE {
+            return Type::Hideout(());
         } else if raw_type == HERB_1 {
             return Type::Herb1(());
         }
@@ -147,6 +147,8 @@ fn _generate(seed: felt252, n_tiles: u16) -> Span<u8> {
         } else if randValue > 83 { // 2%
             _type = ALCHEMY_LABS_TYPE;
         } else if randValue > 81 { // 2%
+            _type = HIDEOUT_TYPE;
+        } else if randValue > 79 { // 2%
             _type = HERB_1;
         }
         dict_types.insert(index.into(), _type);

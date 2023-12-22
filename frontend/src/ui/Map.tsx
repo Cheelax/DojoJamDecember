@@ -4,6 +4,7 @@ import groundTile from '../assets/tilesets/0_1.png';
 import tree from '../assets/tilesets/0_2.png';
 import rock from '../assets/tilesets/3_0.png';
 import herb1 from '../assets/tilesets/herb1.png';
+import alchemyLabs from '../assets/tilesets/alchemyLabs.png';
 import { Coordinate } from '../type/GridElement';
 import { H_OFFSET, WIDTH, to_screen_coordinate } from '../utils/grid';
 import Mob from './Mob';
@@ -67,6 +68,8 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
   const tileSprites: any = {
     [1]: tree,
     [2]: rock,
+    [3]: alchemyLabs,
+    // [4]: hideouts,
     [5]: herb1
   }
 
