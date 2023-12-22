@@ -13,3 +13,11 @@ struct PlayerScore {
     id: felt252,
     nb_tiles_explored: u16,
 }
+
+#[derive(Model, Copy, Drop, Serde)]
+struct PlayerInventory {
+    #[key]
+    id: felt252,
+    nb_white_herbs: u8,
+    nb_red_potions: u8,
+}

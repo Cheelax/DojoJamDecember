@@ -75,5 +75,18 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    PlayerInventory: (() => {
+      return defineComponent(
+        world,
+        { id: RecsType.BigInt, nb_white_herbs: RecsType.Number, nb_red_potions: RecsType.Number },
+        {
+          metadata: {
+            name: 'PlayerInventory',
+            types: [ 'felt252', 'u8', 'u8'],
+            customTypes: [],
+          },
+        }
+      );
+    })(),
   };
 }

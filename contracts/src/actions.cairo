@@ -17,11 +17,12 @@ mod actions {
 
     use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
 
-    use plaguestark::models::player::{Player, PlayerScore};
+    use plaguestark::models::player::{Player, PlayerScore, PlayerInventory};
     use plaguestark::models::tile::{Tile, TileTrait, TileAtPosition};
     use plaguestark::models::entity_infection::{EntityLifeStatus, EntityLifeStatusTrait};
     use plaguestark::models::entity::{EntityAtPosition};
     use plaguestark::models::game::{Game};
+    use plaguestark::models::map::{Map, MapTrait};
     use plaguestark::systems::create::{initGame};
 
     // impl: implement functions specified in trait
@@ -49,6 +50,7 @@ mod actions {
                     PlayerScore { id: playerId, nb_tiles_explored: 0 },
                     EntityLifeStatusTrait::new(playerId),
                     EntityAtPosition { x: x, y: y, id: playerId },
+                    PlayerInventory { id: playerId, nb_red_potions: 1, nb_white_herbs: 3 }
                 )
             );
         }
@@ -75,8 +77,19 @@ mod actions {
             assert(isNextToPlayer, 'Target position is not in range');
 
             let tile: TileAtPosition = get!(world, (x, y), (TileAtPosition));
+            if tile._type == 5 {
+                let mut inventory = get!(world, playerId, (PlayerInventory));
+                inventory.nb_white_herbs += 1;
+                // Grab flower
+                set!(world, (
+                    Tile { index: x + y * 50, x, y, _type: 0 },
+                    TileAtPosition { x, y, _type: 0 },
+                    inventory
+                ));
+                get!(world, 0, (Map)).addTileAtRandomEmptyPosition(world, tile._type);
+            }
             // Check if can walk on the tile
-            assert(tile._type == 0, 'You can\'t move here');
+            assert(tile._type == 0 || tile._type == 5, 'You can\'t move here');
 
             let mut nextOrientation: u8 = 0;
             if (x > player.x) {

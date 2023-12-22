@@ -1,5 +1,6 @@
 // Core imports
 
+use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 use dict::{Felt252Dict, Felt252DictTrait};
 use array::{ArrayTrait, SpanTrait};
 use nullable::{NullableTrait, nullable_from_box, match_nullable, FromNullableResult};
@@ -15,14 +16,15 @@ use poseidon::poseidon_hash_span;
 
 
 use plaguestark::config;
-use plaguestark::models::tile::{Tile, TileTrait};
+use plaguestark::models::tile::{Tile, TileTrait, TileAtPosition};
+
 // Map struct.
 #[derive(Model, Copy, Drop, Serde)]
 struct Map {
     #[key]
     id: u32,
     seed: felt252,
-    size:u16,
+    size: u16,
 }
 
 #[derive(Serde, Copy, Drop, PartialEq)]
@@ -71,6 +73,7 @@ trait MapTrait {
     fn get_type(self: Map, raw_type: u8) -> Type;
     fn generate(self: Map, seed: felt252) -> Span<u8>;
     fn decompose(self: Map, index: u16) -> (u16, u16);
+    fn addTileAtRandomEmptyPosition(self: Map, world: IWorldDispatcher, _type: u8);
 }
 
 /// Implementation of the `MapTrait` for the `Map` struct.
@@ -104,6 +107,27 @@ impl MapImpl of MapTrait {
 
     fn decompose(self: Map, index: u16) -> (u16, u16) {
         _decompose(index, self.size)
+    }
+
+    fn addTileAtRandomEmptyPosition(self: Map, world: IWorldDispatcher, _type: u8) {
+        let mut randValue = _uniform_random(self.seed, 50 * 50);
+        let mut x: u16 = (randValue % 50_u128).try_into().unwrap();
+        let mut y: u16 = (randValue / 50_u128).try_into().unwrap();
+        let mut retry: u8 = 0;
+        loop {
+            let tile = get!(world, (x,y), (TileAtPosition));
+            if tile._type == 0 || retry > 200_u8 { // Stop after 200 retry
+                break;
+            }
+            randValue = _uniform_random(self.seed + retry.into(), 50 * 50);
+            x = (randValue % 50_u128).try_into().unwrap();
+            y = (randValue / 50_u128).try_into().unwrap();
+            retry += 1;
+        };
+        set!(world, (
+            Tile { index: randValue.try_into().unwrap(), _type, x, y },
+            TileAtPosition { x, y, _type }
+        ))
     }
 }
 
