@@ -7,7 +7,7 @@ use poseidon::PoseidonTrait;
 use hash::HashStateTrait;
 use traits::Into;
 use plaguestark::constants::{
-   GROUND_TYPE,TREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE, ALCHEMY_LABS_TYPE,
+   GROUND_TYPE,TREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE, ALCHEMY_LABS_TYPE, HERB_1
 };
 use poseidon::poseidon_hash_span;
 
@@ -32,6 +32,7 @@ enum Type {
     Rock: (),
     AlchemyLabs: (),
     Hideout: (),
+    Herb1: (),
 }
 
 /// Errors module
@@ -95,6 +96,8 @@ impl MapImpl of MapTrait {
             return Type::Hideout(());
         } else if raw_type == ALCHEMY_LABS_TYPE {
             return Type::AlchemyLabs(());
+        } else if raw_type == HERB_1 {
+            return Type::Herb1(());
         }
         Type::Ground(())
     }
@@ -119,6 +122,8 @@ fn _generate(seed: felt252, n_tiles: u16) -> Span<u8> {
             _type = TREE_TYPE;
         } else if randValue > 83 { // 2%
             _type = ALCHEMY_LABS_TYPE;
+        } else if randValue > 81 { // 2%
+            _type = HERB_1;
         }
         dict_types.insert(index.into(), _type);
         index += 1;

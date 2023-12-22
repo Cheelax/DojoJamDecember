@@ -3,6 +3,7 @@ import { SCALE_MODES, Texture } from 'pixi.js';
 import groundTile from '../assets/tilesets/0_1.png';
 import tree from '../assets/tilesets/0_2.png';
 import rock from '../assets/tilesets/3_0.png';
+import herb1 from '../assets/tilesets/herb1.png';
 import { Coordinate } from '../type/GridElement';
 import { H_OFFSET, WIDTH, to_screen_coordinate } from '../utils/grid';
 import Mob from './Mob';
@@ -63,6 +64,12 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
     return;
   }
 
+  const tileSprites: any = {
+    [1]: tree,
+    [2]: rock,
+    [5]: herb1
+  }
+
   return Array.from(Array(gridSize)).map((_: any, y: number) => {
     return Array.from(Array(gridSize)).map((_: any, x: number) => {
       const tile = { x, y, layer: 'base', type: 'ground' };
@@ -97,10 +104,10 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
             y={screenPos.y + H_OFFSET - adjustment}
           />
           {
-            tileData && tileData._type > 0 &&
+            tileData && tileSprites[tileData._type] &&
             <Sprite
               key={`${tile.x}-${tile.y}-1`}
-              image={tileData._type == 1 ? tree : rock}
+              image={tileSprites[tileData._type]}
               anchor={0.5}
               scale={2}
               x={screenPos.x + WIDTH / 2}
