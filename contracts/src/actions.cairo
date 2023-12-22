@@ -18,7 +18,7 @@ mod actions {
     use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
 
     use plaguestark::models::player::{Player, PlayerScore, PlayerInventory};
-    use plaguestark::models::tile::{Tile, TileTrait, TileAtPosition};
+    use plaguestark::models::tile::{Tile, TileAtPosition};
     use plaguestark::models::entity_infection::{EntityLifeStatus, EntityLifeStatusTrait};
     use plaguestark::models::entity::{EntityAtPosition};
     use plaguestark::models::game::{Game};
@@ -69,10 +69,10 @@ mod actions {
             assert(lifeStatus.isDead() == false, 'You are dead');
 
             let isNextToPlayer = (
-                (x == player.x - 1 && y == player.y) ||
-                (x == player.x + 1 && y == player.y) ||
-                (x == player.x && y == player.y - 1) ||
-                (x == player.x && y == player.y + 1)
+                (player.x > 0 && x == player.x - 1 && y == player.y) ||
+                (player.x < 50 && x == player.x + 1 && y == player.y) ||
+                (player.y > 0 && x == player.x && y == player.y - 1) ||
+                (player.y < 50 && x == player.x && y == player.y + 1)
             );
             assert(isNextToPlayer, 'Target position is not in range');
 
@@ -101,7 +101,7 @@ mod actions {
                 get!(world, 0, (Map)).addTileAtRandomEmptyPosition(world, tile._type, seed);
             }
             // Check if can walk on the tile
-            assert(tile._type == 0 || tile._type ==  3 || tile._type == 5, 'You can\'t move here');
+            assert(tile._type != 1 && tile._type != 2, 'You can\'t move here');
 
             let mut nextOrientation: u8 = 0;
             if (x > player.x) {
@@ -127,9 +127,9 @@ mod actions {
 
             set!(world,
                 (
-                    Player { id: playerId, orientation: nextOrientation, x: x, y: y },
+                    Player { id: playerId, orientation: nextOrientation, x, y },
                     PlayerScore { id: playerId, nb_tiles_explored: score.nb_tiles_explored + 1 },
-                    EntityAtPosition { x: x, y: y, id: playerId },
+                    EntityAtPosition { x, y, id: playerId },
                 )
             );
 

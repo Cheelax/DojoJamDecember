@@ -11,9 +11,6 @@ mod models {
     mod entity;
     mod entity_infection;
 }
-mod utils{
-    mod dice;
-}
 
 mod systems {
     mod create;

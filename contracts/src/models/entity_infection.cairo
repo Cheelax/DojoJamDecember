@@ -32,38 +32,47 @@ fn spreadAndGetInfection(playerId: felt252, world: IWorldDispatcher, timestamp: 
     let x = player.x;
     let y = player.y;
 
-    let mut ty = player.y - 2;
+    let mut ty = 0;
+    if player.y >= 2 {
+        ty = player.y - 2;
+    }
     loop {
         if ty > player.y + 2 {
             break;
         }
 
-        let mut tx = player.x - 2;
-        loop {
-            if tx > player.x + 2 {
-                break;
+        if ty >= 0 && ty < 50 {
+            let mut tx = 0;
+            if player.x >= 2 {
+                tx = player.x - 2;
             }
-
-            let entityId = get!(world, (tx, ty), (EntityAtPosition)).id;
-            if entityId != 0 && entityId != playerId {
-                let entityLifeStatus = get!(world, entityId, EntityLifeStatus);
-                // Is entity dead?
-                if (entityLifeStatus.isInfected && timestamp >= entityLifeStatus.deadAt) {
-                    killEntity(entityLifeStatus.id, world);
-                } else {
-                    // Is it an infected entity? If yes, I become infected
-                    if !playerLifeStatus.isInfected && entityLifeStatus.isInfected && !entityLifeStatus.isDead {
-                        infectEntity(playerId, world, timestamp);
-                    }
-                    // Is it a non-infected entity that I can infect?
-                    if playerLifeStatus.isInfected && !playerLifeStatus.isDead && !entityLifeStatus.isInfected {
-                        infectEntity(entityId, world, timestamp);
-                    }
+            loop {
+                if tx > player.x + 2 {
+                    break;
                 }
 
-            }
-            tx = tx + 1;
-        };
+                if tx >= 0 && tx < 50 {
+                    let entityId = get!(world, (tx, ty), (EntityAtPosition)).id;
+                    if entityId != 0 && entityId != playerId {
+                        let entityLifeStatus = get!(world, entityId, EntityLifeStatus);
+                        // Is entity dead?
+                        if (entityLifeStatus.isInfected && timestamp >= entityLifeStatus.deadAt) {
+                            killEntity(entityLifeStatus.id, world);
+                        } else {
+                            // Is it an infected entity? If yes, I become infected
+                            if !playerLifeStatus.isInfected && entityLifeStatus.isInfected && !entityLifeStatus.isDead {
+                                infectEntity(playerId, world, timestamp);
+                            }
+                            // Is it a non-infected entity that I can infect?
+                            if playerLifeStatus.isInfected && !playerLifeStatus.isDead && !entityLifeStatus.isInfected {
+                                infectEntity(entityId, world, timestamp);
+                            }
+                        }
+                    }
+                }
+                tx = tx + 1;
+            };
+        }
         ty = ty + 1;
     };
 }

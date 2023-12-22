@@ -16,7 +16,7 @@ use poseidon::poseidon_hash_span;
 
 
 use plaguestark::config;
-use plaguestark::models::tile::{Tile, TileTrait, TileAtPosition};
+use plaguestark::models::tile::{Tile, TileAtPosition};
 
 // Map struct.
 #[derive(Model, Copy, Drop, Serde)]
@@ -206,7 +206,7 @@ mod tests {
     // Internal imports
 
     use plaguestark::config;
-    use plaguestark::models::tile::{Tile, TileTrait};
+    use plaguestark::models::tile::{Tile};
     // use plaguestark::models::set::{Set, SetTrait};
 
     // Local imports
@@ -243,49 +243,4 @@ mod tests {
         let mut index = 0;
         let length = raw_types.len();
     }
-
-    // #[test]
-    // #[available_gas(18_000_000)]
-    // fn test_map_player_tiles() {
-    //     let mut tiles: Array<Tile> = array![];
-    //     tiles.append(TileTrait::new(GAME_ID, 1, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 2, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 3, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 4, 0, PLAYER_2));
-    //     tiles.append(TileTrait::new(GAME_ID, 5, 0, PLAYER_2));
-    //     let mut map = MapTrait::from_tiles(PLAYER_NUMBER, tiles.span());
-    //     assert(map.player_tiles(PLAYER_1).len() == 3, 'Map: wrong player tiles');
-    //     assert(map.player_tiles(PLAYER_2).len() == 2, 'Map: wrong player tiles');
-    // }
-
-    // #[test]
-    // #[available_gas(18_000_000)]
-    // fn test_map_score_full() {
-    //     let mut tiles: Array<Tile> = array![];
-    //     tiles.append(TileTrait::new(GAME_ID, 1, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 2, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 3, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 4, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 5, 0, PLAYER_1));
-    //     let mut map = MapTrait::from_tiles(PLAYER_NUMBER, tiles.span());
-    //     assert(map.score(PLAYER_1) >= 5, 'Map: wrong score');
-    // }
-
-    // #[test]
-    // #[available_gas(18_000_000)]
-    // fn test_map_deploy() {
-    //     let mut tiles: Array<Tile> = array![];
-    //     tiles.append(TileTrait::new(GAME_ID, 1, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 2, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 3, 0, PLAYER_2));
-    //     tiles.append(TileTrait::new(GAME_ID, 4, 0, PLAYER_1));
-    //     tiles.append(TileTrait::new(GAME_ID, 5, 0, PLAYER_1));
-    //     let mut map = MapTrait::from_tiles(PLAYER_NUMBER, tiles.span());
-    //     let set = SetTrait::new(1, 2, 3);
-    //     let player_tiles = map.deploy(PLAYER_1, @set);
-    //     assert(player_tiles.at(0).army == @2, 'Map: wrong tile army 0');
-    //     assert(player_tiles.at(1).army == @2, 'Map: wrong tile army 1');
-    //     assert(player_tiles.at(2).army == @0, 'Map: wrong tile army 3');
-    //     assert(player_tiles.at(3).army == @0, 'Map: wrong tile army 4');
-    // }
 }

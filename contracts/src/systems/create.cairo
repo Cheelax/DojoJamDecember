@@ -2,8 +2,7 @@ use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
 use plaguestark::models::game::{Game};
 use plaguestark::models::map::{Map, MapTrait, Type};
-use plaguestark::models::tile::{Tile, TileTrait, TileAtPosition};
-
+use plaguestark::models::tile::{Tile, TileAtPosition};
 
 fn initGame(world: IWorldDispatcher) {
     let mut game = get!(world, 0, (Game));
