@@ -30,7 +30,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [targetCameraOffset, setTargetCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
-  const [tile, setTile] = useState<(typeof Tile)[]>([]);
+  const [tiles, setTiles] = useState<(typeof Tile)[]>([]);
   const [pointerPosition, setPointerPosition] = useState<any>();
 
   // could be useful to check if "player.id" is the local player
@@ -75,7 +75,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
     });
     defineSystem(world, [Has(Tile)], function ({ value: [newValue] }: any) {
       console.log('tile', newValue);
-      setTile((prevTile: any) => {
+      setTiles((prevTile: any) => {
         return [newValue, ...prevTile];
       });
     });
@@ -121,7 +121,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
             targetCameraOffset={targetCameraOffset}
             setCameraOffset={setCameraOffset}
           />
-          <MapComponent hoveredTile={hoveredTile} />
+          <MapComponent hoveredTile={hoveredTile} tiles={tiles} />
           {Object.values(players).map((player: typeof Player) => {
             return (
               <Mob

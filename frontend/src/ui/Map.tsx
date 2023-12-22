@@ -6,17 +6,18 @@ import { H_OFFSET, WIDTH, to_screen_coordinate } from '../utils/grid';
 
 interface MapProps {
   hoveredTile?: Coordinate;
+  tiles: any[];
 }
 
-const Map: React.FC<MapProps> = ({ hoveredTile }) => {
+const Map: React.FC<MapProps> = ({ hoveredTile, tiles }) => {
   // TODO: move this in config file
-  const gridSize = 50
+  const gridSize = 50;
 
   Texture.from(groundTile).baseTexture.scaleMode = SCALE_MODES.NEAREST;
 
   return Array.from(Array(gridSize)).map((_: any, y: number) => {
     return Array.from(Array(gridSize)).map((_: any, x: number) => {
-      const tile = { x, y, layer: "base", type: "ground" }
+      const tile = { x, y, layer: 'base', type: 'ground' };
       const screenPos = to_screen_coordinate(tile.x, tile.y);
 
       // Shift hovered tile up
