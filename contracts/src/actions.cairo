@@ -50,13 +50,13 @@ mod actions {
                     let tile_type = map.get_type(raw_type);
                     let indexreduced: u16 = index.try_into().unwrap();
                     let (x, y) = map.decompose(indexreduced);
-                    let tile = Tile { game_id: 0, x, y, index:indexreduced, _type: raw_type };
+                    let tile = Tile { x, y, index:indexreduced, _type: raw_type };
 
                     // [Command] Set Tile and Character entities
                     match tile_type {
                         Type::Ground(()) => { //
                         },
-                        Type::Three(()) => {
+                        Type::Tree(()) => {
                             // [Command] Set Tile entity
                             set!(world, (tile));
                         },

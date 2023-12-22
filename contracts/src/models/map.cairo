@@ -7,7 +7,7 @@ use poseidon::PoseidonTrait;
 use hash::HashStateTrait;
 use traits::Into;
 use plaguestark::constants::{
-   GROUND_TYPE,THREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE,
+   GROUND_TYPE,TREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE,
 };
 use poseidon::poseidon_hash_span;
 
@@ -28,7 +28,7 @@ struct Map {
 #[derive(Serde, Copy, Drop, PartialEq)]
 enum Type {
     Ground: (),
-    Three: (),
+    Tree: (),
     Rock: (),
     AlchemyLabs: (),
     Hideout: (),
@@ -88,16 +88,17 @@ impl MapImpl of MapTrait {
             seed + 'three', seed + 'rock', seed + 'hideout',
         ];
         let _types: Array<u8> = array![
-            THREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE,
+            TREE_TYPE, ROCK_TYPE, HIDEOUT_TYPE,
         ];
-        let numbers: Array<u16> = array![self.size, 1_u16, 1_u16];
+        //DEFINE HERE HOW MUCH ELEMENTS YOU WANT
+        let numbers: Array<u16> = array![200_u16, 200_u16, 50_u16];
 
         _generate(seeds.span(), numbers.span(), _types.span(), self.size * self.size)
     }
 
     fn get_type(self: Map, raw_type: u8) -> Type {
-        if raw_type == THREE_TYPE {
-            return Type::Three(());
+        if raw_type == TREE_TYPE {
+            return Type::Tree(());
         } else if raw_type == ROCK_TYPE {
             return Type::Rock(());
         } else if raw_type == HIDEOUT_TYPE {
