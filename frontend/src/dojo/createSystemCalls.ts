@@ -38,8 +38,24 @@ export function createSystemCalls(
     }
   };
 
+  const drink_potion = async (
+    signer: Account,
+  ) => {
+    try {
+      await execute(
+        signer,
+        "plaguestark::actions::actions",
+        "drink_potion",
+        []
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   return {
     spawn,
     move,
+    drink_potion,
   };
 }

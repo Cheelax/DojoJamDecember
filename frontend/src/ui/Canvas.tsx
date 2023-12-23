@@ -76,7 +76,6 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
       <Stage
         width={WIDTH}
         height={HEIGHT}
-        options={{ backgroundColor: '#242424' }}
         onPointerMove={(e) => {
           setPointerPosition(e);
         }}

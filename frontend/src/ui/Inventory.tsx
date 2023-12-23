@@ -14,6 +14,8 @@ const Inventory: React.FC<InventoryProps> = ({ networkLayer, localPlayer }) => {
     if (networkLayer == null) return null;
     const {
         world,
+        account,
+        systemCalls: { drink_potion },
         components: { PlayerInventory },
     } = networkLayer;
     const [inventory, setInventory] = useState<any>();
@@ -36,33 +38,38 @@ const Inventory: React.FC<InventoryProps> = ({ networkLayer, localPlayer }) => {
               scale={2}
               anchor={0.5}
               x={25} y={600 - 30}
-            /> 
-            <Text text={`${inventory.nb_white_herbs}`} x={50} y={600 - 50} style={
-                new TextStyle({
-                    align: 'center',
-                    fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
-                    fontSize: 30,
-                    fontWeight: '400',
-                    fill: 'fff',
-                })
-            }/>
-
+            >
+                <Text text={`${inventory.nb_white_herbs}`} x={15} y={-10} style={
+                    new TextStyle({
+                        align: 'left',
+                        fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
+                        fontSize: 15,
+                        fontWeight: '400',
+                        fill: 'fff',
+                    })
+                }/>
+            </Sprite>
 
             <Sprite
               image={redPotionSprite}
               scale={2}
               anchor={0.5}
+              eventMode={"static"}
               x={25 + 100} y={600 - 30}
-            /> 
-            <Text text={`${inventory.nb_red_potions}`} x={50 + 100} y={600 - 50} style={
-                new TextStyle({
-                    align: 'center',
-                    fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
-                    fontSize: 30,
-                    fontWeight: '400',
-                    fill: 'fff',
-                })
-            }/>
+              onpointerdown={() => {
+                drink_potion(account)
+              }}
+              >
+              <Text text={`${inventory.nb_red_potions}`} x={15} y={-10} style={
+                  new TextStyle({
+                      align: 'left',
+                      fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
+                      fontSize: 15,
+                      fontWeight: '400',
+                      fill: 'fff',
+                  })
+              }/>
+          </Sprite>
         </Container>
     )
 };

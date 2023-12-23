@@ -5,6 +5,7 @@ use starknet::ContractAddress;
 trait IActions<TContractState> {
     fn spawn(self: @TContractState);
     fn move(self: @TContractState, x: u16, y: u16);
+    fn drink_potion(self: @TContractState);
 }
 
 // dojo decorator
@@ -139,6 +140,21 @@ mod actions {
             } else {
                 lifeStatus.tick(world);
             }
+        }
+
+        fn drink_potion(self: @ContractState) {
+            let world = self.world_dispatcher.read();
+
+            // Get the address of the current caller, possibly the player's address.
+            let playerId: felt252 = get_caller_address().into();
+
+            let (mut inventory, mut lifeStatus) = get!(world, playerId, (PlayerInventory, EntityLifeStatus));
+            assert(lifeStatus.isInfected == false && lifeStatus.isDead == false, 'You are doomed');
+            assert(inventory.nb_red_potions > 0, 'You need a potion');
+
+            inventory.nb_red_potions -= 1;
+            lifeStatus.infectionStacks = 0;
+            set!(world, ( inventory, lifeStatus ));
         }
     }
 
