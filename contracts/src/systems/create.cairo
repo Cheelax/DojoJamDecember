@@ -25,10 +25,12 @@ fn initGame(world: IWorldDispatcher) {
         let tile_type = map.get_type(raw_type);
         let indexreduced: u16 = index.try_into().unwrap();
         let (x, y) = map.decompose(indexreduced);
-        set!(world, (
-            Tile { x, y, index:indexreduced, _type: raw_type },
-            TileAtPosition { x, y, _type: raw_type }
-        ));
+        if raw_type > 0 {
+            set!(world, (
+                Tile { x, y, index:indexreduced, _type: raw_type },
+                TileAtPosition { x, y, _type: raw_type }
+            ));
+        }
 
         // if raw_type == Type::AlchemyLabs.into() {
         //     // Create Alchemy Labs?
