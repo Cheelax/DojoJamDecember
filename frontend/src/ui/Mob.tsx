@@ -1,5 +1,5 @@
 import { AnimatedSprite, Text, useTick } from '@pixi/react';
-import { Assets, Resource, Texture } from 'pixi.js';
+import { Assets, Texture } from 'pixi.js';
 import { useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
 import { to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
@@ -50,20 +50,18 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     }, [targetPosition]);
 
   useTick(() => {
-    setAbsolutePosition(absoluteTargetPosition);
-    // TODO: fix animation
-    // const currentX = absolutePosition.x;
-    // const currentY = absolutePosition.y;
-    // const targetX = absoluteTargetPosition.x;
-    // const targetY = absoluteTargetPosition.y;
-    // if (Math.abs(targetX - currentX) >= 1 || Math.abs(targetY - currentY) >= 1) {
-    //   setIsMoving(true);
-    //   const newX = lerp(currentX, targetX, 0.05);
-    //   const newY = lerp(currentY, targetY, 0.05);
-    //   setAbsolutePosition({ x: newX, y: newY });
-    // } else {
-    //   setIsMoving(false);
-    // }
+    const currentX = absolutePosition.x;
+    const currentY = absolutePosition.y;
+    const targetX = absoluteTargetPosition.x;
+    const targetY = absoluteTargetPosition.y;
+    if (Math.abs(targetX - currentX) >= 1 || Math.abs(targetY - currentY) >= 1) {
+      setIsMoving(true);
+      const newX = lerp(currentX, targetX, 0.05);
+      const newY = lerp(currentY, targetY, 0.05);
+      setAbsolutePosition({ x: newX, y: newY });
+    } else {
+      setIsMoving(false);
+    }
   });
 
   useEffect(() => {
@@ -116,7 +114,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
   return (
     <>
       <AnimatedSprite
-        zIndex={to_grid_coordinate(absolutePosition).x + to_grid_coordinate(absolutePosition).y}
+        zIndex={to_grid_coordinate(absolutePosition).x + to_grid_coordinate(absolutePosition).y + 1.1}
         x={absolutePosition.x}
         y={absolutePosition.y - 36}
         anchor={0.5}

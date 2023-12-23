@@ -1,13 +1,14 @@
 import { Container, Stage } from '@pixi/react';
 import { PointerEvent, useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
-import { HEIGHT, H_OFFSET, WIDTH, areCoordsEqual, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
+import { HEIGHT, H_OFFSET, WIDTH, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import MapComponent from './Map';
 import Leaderboard from './Leaderboard';
-import { defineSystem, Has, defineEnterSystem } from '@dojoengine/recs';
+import { defineSystem, Has } from '@dojoengine/recs';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
 import Camera from './Camera';
 import Inventory from './Inventory';
+import Mob from './Mob';
 
 interface CanvasProps {
   networkLayer: NetworkLayer | undefined;
@@ -19,15 +20,17 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
     systemCalls: { spawn, move },
     world,
     account,
-    components: { Player },
+    components: { Player, EntityLifeStatus },
   } = networkLayer;
 
-  const [hoveredTile, setHoveredTile] = useState<Coordinate>();
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [targetCameraOffset, setTargetCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [pointerPosition, setPointerPosition] = useState<any>();
 
+  const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
+  const [players, setPlayers] = useState<any>({});
+ 
   function isLocalPlayer(id: number): boolean {
     return '0x' + id.toString(16) == account.address;
   }
@@ -35,6 +38,18 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
   useEffect(() => {
     spawn(account);
 
+    defineSystem(world, [Has(EntityLifeStatus)], function ({ value: [newValue] }: any) {
+      setEntitiesLifeStatus((prevEntities: any) => {
+        return { ...prevEntities, [newValue.id]: newValue };
+      });
+    });
+  
+    defineSystem(world, [Has(Player)], function ({ value: [newValue] }: any) {
+      setPlayers((prevPlayers: any) => {
+        return { ...prevPlayers, [newValue.id]: newValue };
+      });
+    });
+  
     defineSystem(world, [Has(Player)], function ({ value: [newLocalPlayer] }: any) {
       if (newLocalPlayer && isLocalPlayer(newLocalPlayer.id)) {
         setLocalPlayer(newLocalPlayer);
@@ -61,13 +76,9 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
       <Stage
         width={WIDTH}
         height={HEIGHT}
-        // options={{ backgroundColor: '#242424' }}
+        options={{ backgroundColor: '#242424' }}
         onPointerMove={(e) => {
           setPointerPosition(e);
-          const tileCoords = getTileCoordsFromEvent(e);
-          if (hoveredTile === undefined || !areCoordsEqual(hoveredTile, tileCoords)) {
-            setHoveredTile(tileCoords);
-          }
         }}
         onPointerDown={(e) => {
           const tileCoords = getTileCoordsFromEvent(e);
@@ -85,9 +96,21 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
             setCameraOffset={setCameraOffset}
           />
           <MapComponent
-            hoveredTile={hoveredTile}
             networkLayer={networkLayer}
           />
+          {
+            Object.values(players).map((player: any) => {
+              return (
+                <Mob
+                  key={player.id}
+                  orientation={player.orientation}
+                  lifeStatus={entitiesLifeStatus[player.id]}
+                  type="knight"
+                  targetPosition={{ x: player.x, y: player.y } as Coordinate}
+                />
+              )
+            })
+          }
         </Container>
         <Leaderboard
           networkLayer={networkLayer}

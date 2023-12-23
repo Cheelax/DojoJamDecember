@@ -1,13 +1,12 @@
-import { Container, Sprite } from '@pixi/react';
+import { Sprite } from '@pixi/react';
 import { SCALE_MODES, Texture } from 'pixi.js';
 import groundTile from '../assets/tilesets/1_2.png';
 import tree from '../assets/tree.png';
-import rock from '../assets/tilesets/3_0.png';
+import rock from '../assets/rock.png';
 import herb1 from '../assets/tilesets/herb1.png';
-import alchemyLabs from '../assets/tilesets/alchemyLabs.png';
+import alchemyLabs from '../assets/alchemylab.png';
 import { Coordinate } from '../type/GridElement';
-import { H_OFFSET, WIDTH, to_screen_coordinate } from '../utils/grid';
-import Mob from './Mob';
+import { H_OFFSET, WIDTH, to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import { useEffect, useState } from 'react';
 import { defineSystem, Has } from '@dojoengine/recs';
 
@@ -20,12 +19,9 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
   if (networkLayer == null) return null;
   const {
     world,
-    components: { EntityLifeStatus, Player, Tile },
+    components: { Tile },
   } = networkLayer;
 
-  const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
-  const [players, setPlayers] = useState<any>({});
-  const [playersList, setPlayersList] = useState<any>([]);
   const [tiles, setTiles] = useState<any>({});
 
   // TODO: move this in config file
@@ -34,22 +30,6 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
   Texture.from(groundTile).baseTexture.scaleMode = SCALE_MODES.NEAREST;
 
   useEffect(() => {
-    setPlayersList(Object.values(players));
-  }, [players]);
-
-  useEffect(() => {
-    defineSystem(world, [Has(EntityLifeStatus)], function ({ value: [newValue] }: any) {
-      setEntitiesLifeStatus((prevEntities: any) => {
-        return { ...prevEntities, [newValue.id]: newValue };
-      });
-    });
-
-    defineSystem(world, [Has(Player)], function ({ value: [newValue] }: any) {
-      setPlayers((prevPlayers: any) => {
-        return { ...prevPlayers, [newValue.id]: newValue };
-      });
-    });
-
     defineSystem(world, [Has(Tile)], function ({ value: [newValue] }: any) {
       setTiles((prevTiles: any) => {
         if (prevTiles[newValue.y] === undefined) {
@@ -86,44 +66,36 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
         tileData = tiles[tile.y][tile.x];
       }
 
-      let player: typeof Player = undefined;
-      if (playersList) {
-        const playersOnCell = playersList.filter((p: any) => p.x == tile.x && p.y == tile.y);
-        if (playersOnCell.length > 0) {
-          player = playersOnCell[0];
-        }
+      // Compute zIndex exactly like in Mob
+      const zIndexCoords = to_center(to_screen_coordinate(tile.x, tile.y))
+      const zIndex = to_grid_coordinate(zIndexCoords).x + to_grid_coordinate(zIndexCoords).y
+
+      let scaleTile = tileData && tileData._type == 1 ? 0.25 : 0.5;
+      if (tileData && (tileData._type == 2 || tileData._type == 3)) {
+        scaleTile = 0.1
       }
 
       return (
-        <Container key={`${tile.x}-${tile.y}-container`}>
-          <Sprite
-            key={`${tile.x}-${tile.y}`}
-            image={groundTile}
-            anchor={0.5}
-            scale={2}
-            x={screenPos.x + WIDTH / 2}
-            y={screenPos.y + H_OFFSET - adjustment}
-          />
+        <Sprite
+          zIndex={zIndex}
+          key={`${tile.x}-${tile.y}`}
+          image={groundTile}
+          anchor={0.5}
+          scale={2}
+          x={screenPos.x + WIDTH / 2}
+          y={screenPos.y + H_OFFSET - adjustment}
+        >
           {tileData && tileSprites[tileData._type] && (
             <Sprite
               key={`${tile.x}-${tile.y}-1`}
               image={tileSprites[tileData._type]}
               anchor={0.5}
-              scale={1}
-              x={screenPos.x + WIDTH / 2}
-              y={screenPos.y + H_OFFSET - adjustment - 25}
+              scale={scaleTile}
+              x={0}
+              y={tileData._type == 1 ? -20 : -10}
             />
           )}
-          {player && (
-            <Mob
-              key={player.id}
-              orientation={player.orientation}
-              lifeStatus={entitiesLifeStatus[player.id]}
-              type="knight"
-              targetPosition={{ x: player.x, y: player.y } as Coordinate}
-            />
-          )}
-        </Container>
+        </Sprite>
       );
     });
   });
