@@ -116,9 +116,9 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
       <AnimatedSprite
         zIndex={to_grid_coordinate(absolutePosition).x + to_grid_coordinate(absolutePosition).y + 1.1}
         x={absolutePosition.x}
-        y={absolutePosition.y - 36}
+        y={absolutePosition.y - 48}
         anchor={0.5}
-        scale={1}
+        scale={1.5}
         isPlaying={false}
         textures={frames}
         initialFrame={currentFrame}
@@ -126,9 +126,9 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
       <Text
         text={hintText}
         zIndex={to_grid_coordinate(absolutePosition).x + to_grid_coordinate(absolutePosition).y}
-        scale={0.8}
+        scale={1}
         x={absolutePosition.x - hintText.length * 6}
-        y={absolutePosition.y - 80}
+        y={absolutePosition.y - 130}
       />
     </>
   );

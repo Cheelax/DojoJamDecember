@@ -5,8 +5,8 @@ const i_y = 0.5;
 const j_x = -1;
 const j_y = 0.5;
 
-const w = 32 * 2;
-const h = 32 * 2;
+const w = 48 * 2;
+const h = 48 * 2;
 
 const NUMBER_TILES = 8;
 

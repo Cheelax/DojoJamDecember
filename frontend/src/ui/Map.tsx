@@ -72,7 +72,7 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
 
       let scaleTile = tileData && tileData._type == 1 ? 0.25 : 0.5;
       if (tileData && (tileData._type == 2 || tileData._type == 3)) {
-        scaleTile = 0.1
+        scaleTile = 0.08
       }
 
       return (
@@ -81,7 +81,7 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
           key={`${tile.x}-${tile.y}`}
           image={groundTile}
           anchor={0.5}
-          scale={2}
+          scale={3}
           x={screenPos.x + WIDTH / 2}
           y={screenPos.y + H_OFFSET - adjustment}
         >

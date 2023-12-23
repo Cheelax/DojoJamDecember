@@ -54,7 +54,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
       if (newLocalPlayer && isLocalPlayer(newLocalPlayer.id)) {
         setLocalPlayer(newLocalPlayer);
         const pos = to_screen_coordinate(newLocalPlayer.x, newLocalPlayer.y);
-        setTargetCameraOffset({ x: pos.x, y: pos.y - H_OFFSET });
+        setTargetCameraOffset({ x: pos.x, y: pos.y - H_OFFSET * 2 - 30 });
       }
     });
   }, []);
