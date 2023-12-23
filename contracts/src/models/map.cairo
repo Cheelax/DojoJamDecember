@@ -138,17 +138,17 @@ fn _generate(seed: felt252, n_tiles: u16) -> Span<u8> {
         if index >= n_tiles {
             break;
         }
-        let randValue = _uniform_random(seed + index.into(), 100);
+        let randValue = _uniform_random(seed + index.into(), 1000);
         let mut _type = GROUND_TYPE;
-        if randValue > 95 { // 5%
+        if randValue > 950 { // 5%
             _type = ROCK_TYPE;
-        } else if randValue > 85 { // 10%
+        } else if randValue > 890 { // 6%
             _type = TREE_TYPE;
-        } else if randValue > 83 { // 2%
+        } else if randValue > 885 { // 0.5%
             _type = ALCHEMY_LABS_TYPE;
-        } else if randValue > 81 { // 2%
+        } else if randValue > 880 { // 0.5%
             _type = HIDEOUT_TYPE;
-        } else if randValue > 79 { // 2%
+        } else if randValue > 860 { // 2%
             _type = HERB_1;
         }
         dict_types.insert(index.into(), _type);
