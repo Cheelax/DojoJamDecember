@@ -1,3 +1,8 @@
+export type AdventurerType = {
+    name: string;
+    value: Array<{ name: string; type: string; value: string }>;
+};
+
 export const adventurerList = [
     {
         name: 'Player 1',
