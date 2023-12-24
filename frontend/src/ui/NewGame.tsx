@@ -31,7 +31,7 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange }) => {
 			/>
 			<div className='w-full max-w-xs'>
 				<label
-					className='block text-gray-700 text-sm font-bold mb-2'
+					className='block text-[#fae8c8] text-sm font-bold mb-2'
 					htmlFor='pseudo'
 				>
 					Username
