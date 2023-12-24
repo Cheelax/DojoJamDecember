@@ -3,6 +3,7 @@ import { adventurerList } from '../utils/adventurerList';
 import StatsCard from './StatsCard';
 import NewGameButton from './NewGameButton';
 import { store } from '../store';
+import Logo from '../assets/plague.webp';
 
 interface NewGameProps {
 	onPseudoChange?: (pseudo: string) => void; // Callback function to update parent state
@@ -23,6 +24,11 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange }) => {
 
 	return (
 		<div className='w-full min-h-screen flex flex-col items-center justify-center'>
+			<img
+				src={Logo}
+				alt='Plague'
+				className='w-1/4 mb-16'
+			/>
 			<div className='w-full max-w-xs'>
 				<label
 					className='block text-gray-700 text-sm font-bold mb-2'
