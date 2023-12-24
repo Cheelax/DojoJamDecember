@@ -8,7 +8,7 @@ export type Store = {
     setLoggedIn: (loggedIn: boolean) => void;
     username: string;
     setUsername: (username: string) => void;
-    selectedAdventurer: {} | null;
+    selectedAdventurer: AdventurerType | null;
     setSelectedAdventurer: (adventurer: AdventurerType | null) => void;
 };
 
