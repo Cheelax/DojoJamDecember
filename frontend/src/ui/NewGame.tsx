@@ -1,21 +1,24 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import { adventurerList } from '../utils/adventurerList';
 import StatsCard from './StatsCard';
 import NewGameButton from './NewGameButton';
+import { store } from '../store';
 
 interface NewGameProps {
-	onClick: () => void;
-	onPseudoChange: (pseudo: string) => void; // Callback function to update parent state
+	onPseudoChange?: (pseudo: string) => void; // Callback function to update parent state
 }
 
-const NewGame: FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
-	const [username, setUsername] = useState('');
-	const [selectedAdventurer, setSelectedAdventurer] = useState<string | null>(null);
+const NewGame: FC<NewGameProps> = ({ onPseudoChange }) => {
+	const { setLoggedIn, setUsername, username, setSelectedAdventurer, selectedAdventurer } = store();
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
 		setUsername(value);
-		onPseudoChange(value); // Notify the parent of the change
+		// onPseudoChange(value); // Notify the parent of the change
+	};
+
+	const login = () => {
+		setLoggedIn(true);
 	};
 
 	return (
@@ -45,9 +48,11 @@ const NewGame: FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
 							<StatsCard
 								key={index}
 								data={adventurer}
-								onClick={() => setSelectedAdventurer(adventurer.name)}
+								onClick={() => setSelectedAdventurer(adventurer)}
 								isSelected={
-									selectedAdventurer === null ? undefined : selectedAdventurer === adventurer.name
+									selectedAdventurer === null
+										? undefined
+										: selectedAdventurer.name === adventurer.name
 								}
 							/>
 						);
@@ -55,7 +60,7 @@ const NewGame: FC<NewGameProps> = ({ onClick, onPseudoChange }) => {
 				</div>
 			</div>
 			<NewGameButton
-				onClick={onClick}
+				onClick={login}
 				disabled={!username || !selectedAdventurer}
 			/>
 		</div>

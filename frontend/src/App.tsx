@@ -9,7 +9,7 @@ import NewGame from './ui/NewGame';
 
 function App() {
 	const networkLayer = useNetworkLayer();
-
+	const { loggedIn, username, selectedAdventurer } = store();
 	useEffect(() => {
 		if (!networkLayer || !networkLayer.account) return;
 
@@ -17,16 +17,15 @@ function App() {
 	}, [networkLayer]);
 
 	Modal.setAppElement('#root');
-
 	return (
 		<div className='flex flex-col min-h-screen w-full'>
-			<NewGame
-				onClick={() => 'te'}
-				onPseudoChange={() => 'te'}
-			/>
-			{/* <div className="flex-grow mx-auto mt-2">
-        <Canvas networkLayer={networkLayer}/>
-      </div> */}
+			{loggedIn ? (
+				<div className='flex-grow mx-auto mt-2'>
+					<Canvas networkLayer={networkLayer} />
+				</div>
+			) : (
+				<NewGame />
+			)}
 		</div>
 	);
 }
