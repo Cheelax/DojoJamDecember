@@ -44,8 +44,6 @@ const StatsCard: FC<StatsCardProps> = ({ data, isSelected = undefined, onClick }
 		}
 	};
 
-	console.log(isSelected);
-
 	return (
 		<div
 			className={`flex flex-col w-[200px] px-6 py-4 min-h-[300px] justify-between items-center border-4 rounded-xl cursor-pointer ${
