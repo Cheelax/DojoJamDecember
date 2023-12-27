@@ -1,7 +1,6 @@
 import { Sprite } from '@pixi/react';
 import { SCALE_MODES, Texture } from 'pixi.js';
 import groundTile from '../assets/tilesets/tile.png';
-import tree from '../assets/tree.png';
 import tree1 from '../assets/trees_pngs/1.png';
 import tree2 from '../assets/trees_pngs/2.png';
 import tree3 from '../assets/trees_pngs/3.png';
@@ -10,9 +9,10 @@ import rock1 from '../assets/rocks_png/1.png';
 import rock2 from '../assets/rocks_png/2.png';
 import rock3 from '../assets/rocks_png/3.png';
 import rock4 from '../assets/rocks_png/4.png';
-import rock from '../assets/rock.png';
 import herb1 from '../assets/tilesets/herb1.png';
-import alchemyLabs from '../assets/alchemylab.png';
+import herb2 from '../assets/png_flower/2.png';
+import alchemyLab1 from '../assets/alchemylab/lab_1.png';
+import alchemyLab2 from '../assets/alchemylab/lab_2.png';
 import { Coordinate } from '../type/GridElement';
 import { H_OFFSET, WIDTH, to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import { useEffect, useState } from 'react';
@@ -54,11 +54,11 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
   }
 
   const tileSprites: any = {
-    [1]: tree1,
-    [2]: rock1,
-    [3]: alchemyLabs,
+    [1]: [tree1, tree2, tree3, tree4],
+    [2]: [rock1, rock2, rock3, rock4],
+    [3]: [alchemyLab1, alchemyLab2],
     // [4]: hideouts,
-    [5]: herb1,
+    [5]: [herb1, herb2],
   };
 
   return Array.from(Array(gridSize)).map((_: any, y: number) => {
@@ -83,6 +83,12 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
         scaleTile = 1;
       }
 
+      let tileSprite
+      if (tileData && tileSprites[tileData._type]) {
+        const sprites = tileSprites[tileData._type]
+        tileSprite = sprites[Math.floor(tile.x + tile.y) % sprites.length]
+      }
+
       return (
         <Sprite
           zIndex={zIndex}
@@ -93,10 +99,10 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
           x={screenPos.x + WIDTH / 2}
           y={screenPos.y + H_OFFSET - adjustment}
         >
-          {tileData && tileSprites[tileData._type] && (
+          {tileData && tileSprite && (
             <Sprite
               key={`${tile.x}-${tile.y}-1`}
-              image={tileSprites[tileData._type]}
+              image={tileSprite}
               anchor={0.5}
               scale={scaleTile}
               x={0}
