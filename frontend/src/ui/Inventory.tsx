@@ -37,9 +37,9 @@ const Inventory: React.FC<InventoryProps> = ({ networkLayer, localPlayer }) => {
               image={whiteHerbSprite}
               scale={2}
               anchor={0.5}
-              x={25} y={600 - 30}
+              x={40} y={600 - 50}
             >
-                <Text text={`${inventory.nb_white_herbs}`} x={15} y={-10} style={
+                <Text text={`${inventory.nb_white_herbs}`} x={15} y={-5} style={
                     new TextStyle({
                         align: 'left',
                         fontFamily: '"Source Sans Pro", Helvetica, sans-serif',
@@ -55,12 +55,12 @@ const Inventory: React.FC<InventoryProps> = ({ networkLayer, localPlayer }) => {
               scale={2}
               anchor={0.5}
               eventMode={"static"}
-              x={25 + 100} y={600 - 30}
+              x={40 + 100} y={600 - 50}
               onpointerdown={() => {
                 drink_potion(account)
               }}
               >
-              <Text text={`${inventory.nb_red_potions}`} x={15} y={-10} style={
+              <Text text={`${inventory.nb_red_potions}`} x={15} y={-5} style={
                   new TextStyle({
                       align: 'left',
                       fontFamily: '"Source Sans Pro", Helvetica, sans-serif',

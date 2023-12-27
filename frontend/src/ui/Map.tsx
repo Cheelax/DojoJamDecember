@@ -78,12 +78,9 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
       const zIndexCoords = to_center(to_screen_coordinate(tile.x, tile.y));
       const zIndex = to_grid_coordinate(zIndexCoords).x + to_grid_coordinate(zIndexCoords).y;
 
-      let scaleTile = tileData && tileData._type == 1 ? 0.5 : 1.5;
-      if (tileData && tileData._type == 2) {
-        scaleTile = 1.5;
-      }
+      let scaleTile = 1;
       if (tileData && tileData._type == 3) {
-        scaleTile = 0.16;
+        scaleTile = 1;
       }
 
       return (
@@ -100,10 +97,10 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
             <Sprite
               key={`${tile.x}-${tile.y}-1`}
               image={tileSprites[tileData._type]}
-              anchor={1}
+              anchor={0.5}
               scale={scaleTile}
               x={0}
-              y={tileData._type == 1 ? -20 : -10}
+              y={tileData._type == 3 ? -55 : -30}
             />
           )}
         </Sprite>
