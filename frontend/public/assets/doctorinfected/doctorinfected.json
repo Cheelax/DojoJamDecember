@@ -4009,7 +4009,7 @@
 
     "doctorinfected-death-S-0": {
       "frame": {
-        "x": 672,
+        "x": 1344,
         "y": 0,
         "w": 64,
         "h": 64
@@ -4017,7 +4017,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 672,
+        "x": 1344,
         "y": 0,
         "w": 64,
         "h": 64
@@ -4029,7 +4029,7 @@
     },
     "doctorinfected-death-S-1": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 0,
         "w": 64,
         "h": 64
@@ -4037,7 +4037,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 0,
         "w": 64,
         "h": 64
@@ -4049,7 +4049,7 @@
     },
     "doctorinfected-death-S-2": {
       "frame": {
-        "x": 736,
+        "x": 1472,
         "y": 0,
         "w": 64,
         "h": 64
@@ -4057,7 +4057,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 736,
+        "x": 1472,
         "y": 0,
         "w": 64,
         "h": 64
@@ -4069,7 +4069,7 @@
     },
     "doctorinfected-death-S-3": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 0,
         "w": 64,
         "h": 64
@@ -4077,7 +4077,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 0,
         "w": 64,
         "h": 64
@@ -4089,7 +4089,7 @@
     },
     "doctorinfected-death-SE-0": {
       "frame": {
-        "x": 672,
+        "x": 1344,
         "y": 64,
         "w": 64,
         "h": 64
@@ -4097,7 +4097,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 672,
+        "x": 1344,
         "y": 64,
         "w": 64,
         "h": 64
@@ -4109,7 +4109,7 @@
     },
     "doctorinfected-death-SE-1": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 64,
         "w": 64,
         "h": 64
@@ -4117,7 +4117,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 64,
         "w": 64,
         "h": 64
@@ -4129,7 +4129,7 @@
     },
     "doctorinfected-death-SE-2": {
       "frame": {
-        "x": 736,
+        "x": 1472,
         "y": 64,
         "w": 64,
         "h": 64
@@ -4137,7 +4137,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 736,
+        "x": 1472,
         "y": 64,
         "w": 64,
         "h": 64
@@ -4149,7 +4149,7 @@
     },
     "doctorinfected-death-SE-3": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 64,
         "w": 64,
         "h": 64
@@ -4157,7 +4157,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 64,
         "w": 64,
         "h": 64
@@ -4169,7 +4169,7 @@
     },
     "doctorinfected-death-E-0": {
       "frame": {
-        "x": 672,
+        "x": 1344,
         "y": 128,
         "w": 64,
         "h": 64
@@ -4177,7 +4177,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 672,
+        "x": 1344,
         "y": 128,
         "w": 64,
         "h": 64
@@ -4189,7 +4189,7 @@
     },
     "doctorinfected-death-E-1": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 128,
         "w": 64,
         "h": 64
@@ -4197,7 +4197,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 128,
         "w": 64,
         "h": 64
@@ -4209,7 +4209,7 @@
     },
     "doctorinfected-death-E-2": {
       "frame": {
-        "x": 736,
+        "x": 1472,
         "y": 128,
         "w": 64,
         "h": 64
@@ -4217,7 +4217,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 736,
+        "x": 1472,
         "y": 128,
         "w": 64,
         "h": 64
@@ -4229,7 +4229,7 @@
     },
     "doctorinfected-death-E-3": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 128,
         "w": 64,
         "h": 64
@@ -4237,7 +4237,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 128,
         "w": 64,
         "h": 64
@@ -4249,7 +4249,7 @@
     },
     "doctorinfected-death-NE-0": {
       "frame": {
-        "x": 672,
+        "x": 1344,
         "y": 192,
         "w": 64,
         "h": 64
@@ -4257,7 +4257,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 672,
+        "x": 1344,
         "y": 192,
         "w": 64,
         "h": 64
@@ -4269,7 +4269,7 @@
     },
     "doctorinfected-death-NE-1": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 192,
         "w": 64,
         "h": 64
@@ -4277,7 +4277,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 192,
         "w": 64,
         "h": 64
@@ -4289,7 +4289,7 @@
     },
     "doctorinfected-death-NE-2": {
       "frame": {
-        "x": 736,
+        "x": 1472,
         "y": 192,
         "w": 64,
         "h": 64
@@ -4297,7 +4297,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 736,
+        "x": 1472,
         "y": 192,
         "w": 64,
         "h": 64
@@ -4309,7 +4309,7 @@
     },
     "doctorinfected-death-NE-3": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 192,
         "w": 64,
         "h": 64
@@ -4317,7 +4317,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 192,
         "w": 64,
         "h": 64
@@ -4329,7 +4329,7 @@
     },
     "doctorinfected-death-N-0": {
       "frame": {
-        "x": 672,
+        "x": 1344,
         "y": 256,
         "w": 64,
         "h": 64
@@ -4337,7 +4337,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 672,
+        "x": 1344,
         "y": 256,
         "w": 64,
         "h": 64
@@ -4349,7 +4349,7 @@
     },
     "doctorinfected-death-N-1": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 256,
         "w": 64,
         "h": 64
@@ -4357,7 +4357,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 256,
         "w": 64,
         "h": 64
@@ -4369,7 +4369,7 @@
     },
     "doctorinfected-death-N-2": {
       "frame": {
-        "x": 736,
+        "x": 1472,
         "y": 256,
         "w": 64,
         "h": 64
@@ -4377,7 +4377,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 736,
+        "x": 1472,
         "y": 256,
         "w": 64,
         "h": 64
@@ -4389,7 +4389,7 @@
     },
     "doctorinfected-death-N-3": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 256,
         "w": 64,
         "h": 64
@@ -4397,7 +4397,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 256,
         "w": 64,
         "h": 64
@@ -4409,7 +4409,7 @@
     },
     "doctorinfected-death-NW-0": {
       "frame": {
-        "x": 672,
+        "x": 1344,
         "y": 320,
         "w": 64,
         "h": 64
@@ -4417,7 +4417,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 672,
+        "x": 1344,
         "y": 320,
         "w": 64,
         "h": 64
@@ -4429,7 +4429,7 @@
     },
     "doctorinfected-death-NW-1": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 320,
         "w": 64,
         "h": 64
@@ -4437,7 +4437,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 320,
         "w": 64,
         "h": 64
@@ -4449,7 +4449,7 @@
     },
     "doctorinfected-death-NW-2": {
       "frame": {
-        "x": 736,
+        "x": 1472,
         "y": 320,
         "w": 64,
         "h": 64
@@ -4457,7 +4457,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 736,
+        "x": 1472,
         "y": 320,
         "w": 64,
         "h": 64
@@ -4469,7 +4469,7 @@
     },
     "doctorinfected-death-NW-3": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 320,
         "w": 64,
         "h": 64
@@ -4477,7 +4477,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 320,
         "w": 64,
         "h": 64
@@ -4489,7 +4489,7 @@
     },
     "doctorinfected-death-W-0": {
       "frame": {
-        "x": 672,
+        "x": 1344,
         "y": 384,
         "w": 64,
         "h": 64
@@ -4497,7 +4497,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 672,
+        "x": 1344,
         "y": 384,
         "w": 64,
         "h": 64
@@ -4509,7 +4509,7 @@
     },
     "doctorinfected-death-W-1": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 384,
         "w": 64,
         "h": 64
@@ -4517,7 +4517,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 384,
         "w": 64,
         "h": 64
@@ -4529,7 +4529,7 @@
     },
     "doctorinfected-death-W-2": {
       "frame": {
-        "x": 736,
+        "x": 1472,
         "y": 384,
         "w": 64,
         "h": 64
@@ -4537,7 +4537,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 736,
+        "x": 1472,
         "y": 384,
         "w": 64,
         "h": 64
@@ -4549,7 +4549,7 @@
     },
     "doctorinfected-death-W-3": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 384,
         "w": 64,
         "h": 64
@@ -4557,7 +4557,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 384,
         "w": 64,
         "h": 64
@@ -4569,7 +4569,7 @@
     },
     "doctorinfected-death-SW-0": {
       "frame": {
-        "x": 672,
+        "x": 1344,
         "y": 448,
         "w": 64,
         "h": 64
@@ -4577,7 +4577,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 672,
+        "x": 1344,
         "y": 448,
         "w": 64,
         "h": 64
@@ -4589,7 +4589,7 @@
     },
     "doctorinfected-death-SW-1": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 448,
         "w": 64,
         "h": 64
@@ -4597,7 +4597,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 448,
         "w": 64,
         "h": 64
@@ -4609,7 +4609,7 @@
     },
     "doctorinfected-death-SW-2": {
       "frame": {
-        "x": 736,
+        "x": 1472,
         "y": 448,
         "w": 64,
         "h": 64
@@ -4617,7 +4617,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 736,
+        "x": 1472,
         "y": 448,
         "w": 64,
         "h": 64
@@ -4629,7 +4629,7 @@
     },
     "doctorinfected-death-SW-3": {
       "frame": {
-        "x": 704,
+        "x": 1408,
         "y": 448,
         "w": 64,
         "h": 64
@@ -4637,7 +4637,7 @@
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
-        "x": 704,
+        "x": 1408,
         "y": 448,
         "w": 64,
         "h": 64

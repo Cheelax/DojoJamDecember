@@ -47,6 +47,10 @@ export const getFramesFromType = (
   } else if (type === Animation.Walk) {
     // console.log('[', mob_name, ']', 'Walk Frame');
     filtered = frames.filter((e) => e.includes('walk'));
+  } else if (type === Animation.Death) {
+    frames = Object.keys(resource[secondResourceKey].data.frames);
+    // console.log('[', mob_name, ']', 'Death Frame');
+    filtered = frames.filter((e) => e.includes('death'));
   } else {
     throw new Error('Invalid AnimationType');
   }

@@ -34,7 +34,9 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
 
   useEffect(() => {
     if (resource === undefined || orientation === undefined) return;
-    if (lifeStatus.isInfected) {
+    if (lifeStatus.isDead) {
+      setFrames(getFramesFromType('doctorinfected', Animation.Death, orientation, resource));
+    } else if (lifeStatus.isInfected) {
       if (animation === Animation.Walk) {
         setFrames(getFramesFromType('doctorinfected', Animation.Walk, orientation, resource));
       } else {
