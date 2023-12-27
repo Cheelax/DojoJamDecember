@@ -1,7 +1,15 @@
 import { Sprite } from '@pixi/react';
 import { SCALE_MODES, Texture } from 'pixi.js';
-import groundTile from '../assets/tilesets/1_2.png';
+import groundTile from '../assets/tilesets/tile.png';
 import tree from '../assets/tree.png';
+import tree1 from '../assets/trees_pngs/1.png';
+import tree2 from '../assets/trees_pngs/2.png';
+import tree3 from '../assets/trees_pngs/3.png';
+import tree4 from '../assets/trees_pngs/4.png';
+import rock1 from '../assets/rocks_png/1.png';
+import rock2 from '../assets/rocks_png/2.png';
+import rock3 from '../assets/rocks_png/3.png';
+import rock4 from '../assets/rocks_png/4.png';
 import rock from '../assets/rock.png';
 import herb1 from '../assets/tilesets/herb1.png';
 import alchemyLabs from '../assets/alchemylab.png';
@@ -46,8 +54,8 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
   }
 
   const tileSprites: any = {
-    [1]: tree,
-    [2]: rock,
+    [1]: tree1,
+    [2]: rock1,
     [3]: alchemyLabs,
     // [4]: hideouts,
     [5]: herb1,
@@ -67,12 +75,15 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
       }
 
       // Compute zIndex exactly like in Mob
-      const zIndexCoords = to_center(to_screen_coordinate(tile.x, tile.y))
-      const zIndex = to_grid_coordinate(zIndexCoords).x + to_grid_coordinate(zIndexCoords).y
+      const zIndexCoords = to_center(to_screen_coordinate(tile.x, tile.y));
+      const zIndex = to_grid_coordinate(zIndexCoords).x + to_grid_coordinate(zIndexCoords).y;
 
-      let scaleTile = tileData && tileData._type == 1 ? 0.25 : 0.5;
-      if (tileData && (tileData._type == 2 || tileData._type == 3)) {
-        scaleTile = 0.08
+      let scaleTile = tileData && tileData._type == 1 ? 0.5 : 1.5;
+      if (tileData && tileData._type == 2) {
+        scaleTile = 1.5;
+      }
+      if (tileData && tileData._type == 3) {
+        scaleTile = 0.16;
       }
 
       return (
@@ -81,7 +92,7 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
           key={`${tile.x}-${tile.y}`}
           image={groundTile}
           anchor={0.5}
-          scale={3}
+          scale={1.5}
           x={screenPos.x + WIDTH / 2}
           y={screenPos.y + H_OFFSET - adjustment}
         >
@@ -89,7 +100,7 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
             <Sprite
               key={`${tile.x}-${tile.y}-1`}
               image={tileSprites[tileData._type]}
-              anchor={0.5}
+              anchor={1}
               scale={scaleTile}
               x={0}
               y={tileData._type == 1 ? -20 : -10}
