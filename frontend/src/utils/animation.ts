@@ -27,8 +27,20 @@ export const getFramesFromType = (
   direction: Direction,
   resource: any
 ): Texture[] => {
-  const frames = Object.keys(resource.data.frames);
+  let frames = [];
+  const firstResourceKey = Object.keys(resource)[0];
+
+  const secondResourceKey = Object.keys(resource)[1];
+
+  if (mob_name === 'doctorinfected') {
+    frames = Object.keys(resource[secondResourceKey].data.frames);
+  } else {
+    frames = Object.keys(resource[firstResourceKey].data.frames);
+  }
+
   let filtered = [];
+  filtered = frames.filter((e) => e.includes(mob_name));
+
   if (type === Animation.Idle) {
     // console.log('[', mob_name, ']', 'Idle Frame');
     filtered = frames.filter((e) => e.includes('idle'));

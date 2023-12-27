@@ -5,7 +5,7 @@ import { Coordinate } from '../type/GridElement';
 import { to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import { Direction, getFramesFromType, Animation } from '../utils/animation';
 
-export type MobType = 'knight';
+export type MobType = 'doctor1';
 
 interface MobProps {
   type: MobType;
@@ -28,26 +28,32 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
 
   // Allow animation (set target, then tick lerp to set position)
   const [absoluteTargetPosition, setAbsoluteTargetPosition] = useState<Coordinate>({ x: 0, y: 0 });
-  const [absolutePosition, setAbsolutePosition] = useState<Coordinate>({ x: 0, y: 0});
+  const [absolutePosition, setAbsolutePosition] = useState<Coordinate>({ x: 0, y: 0 });
 
   const [isMoving, setIsMoving] = useState(false);
 
   useEffect(() => {
     if (resource === undefined || orientation === undefined) return;
-    if (animation === Animation.Walk) {
+    if (lifeStatus.isInfected) {
+      if (animation === Animation.Walk) {
+        setFrames(getFramesFromType('doctorinfected', Animation.Walk, orientation, resource));
+      } else {
+        setFrames(getFramesFromType('doctorinfected', Animation.Idle, orientation, resource));
+      }
+    } else if (animation === Animation.Walk) {
       setFrames(getFramesFromType(type, Animation.Walk, orientation, resource));
     } else {
       setFrames(getFramesFromType(type, Animation.Idle, orientation, resource));
     }
-    setCurrentFrame(0)
-    setCounterAnim(0)
-  }, [animation, resource, orientation]);
+    setCurrentFrame(0);
+    setCounterAnim(0);
+  }, [animation, resource, orientation, lifeStatus]);
 
   useEffect(() => {
     if (targetPosition === undefined) return;
 
     setAbsoluteTargetPosition(to_center(to_screen_coordinate(targetPosition.x, targetPosition.y)));
-    }, [targetPosition]);
+  }, [targetPosition]);
 
   useTick(() => {
     const currentX = absolutePosition.x;
@@ -75,8 +81,11 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
   // Only at init
   useEffect(() => {
     const load = async () => {
-      const resource = await Assets.load(`assets/${type}/${type}.json`);
-      setResource(resource);
+      const resource = await Assets.load([`assets/${type}/${type}.json`, `assets/doctorinfected/doctorinfected.json`]);
+      setResource({
+        ...resource,
+      });
+
       setFrames(getFramesFromType(type, Animation.Idle, Direction.SE, resource));
     };
     load();
@@ -101,7 +110,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
           setAnimation(Animation.Idle);
         }
       }
-      setCounterAnim(0)
+      setCounterAnim(0);
     }
   });
 
@@ -109,7 +118,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     return null;
   }
 
-  const hintText = lifeStatus.isDead ? "Dead" : (lifeStatus.isInfected ? "Infected" : (lifeStatus.infectionStacks + "/3"))
+  const hintText = lifeStatus.isDead ? 'Dead' : lifeStatus.isInfected ? 'Infected' : lifeStatus.infectionStacks + '/3';
 
   return (
     <>

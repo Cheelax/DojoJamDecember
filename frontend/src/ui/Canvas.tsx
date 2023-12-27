@@ -30,7 +30,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
 
   const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
   const [players, setPlayers] = useState<any>({});
- 
+
   function isLocalPlayer(id: number): boolean {
     return '0x' + id.toString(16) == account.address;
   }
@@ -43,13 +43,13 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
         return { ...prevEntities, [newValue.id]: newValue };
       });
     });
-  
+
     defineSystem(world, [Has(Player)], function ({ value: [newValue] }: any) {
       setPlayers((prevPlayers: any) => {
         return { ...prevPlayers, [newValue.id]: newValue };
       });
     });
-  
+
     defineSystem(world, [Has(Player)], function ({ value: [newLocalPlayer] }: any) {
       if (newLocalPlayer && isLocalPlayer(newLocalPlayer.id)) {
         setLocalPlayer(newLocalPlayer);
@@ -94,31 +94,21 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
             targetCameraOffset={targetCameraOffset}
             setCameraOffset={setCameraOffset}
           />
-          <MapComponent
-            networkLayer={networkLayer}
-          />
-          {
-            Object.values(players).map((player: any) => {
-              return (
-                <Mob
-                  key={player.id}
-                  orientation={player.orientation}
-                  lifeStatus={entitiesLifeStatus[player.id]}
-                  type="knight"
-                  targetPosition={{ x: player.x, y: player.y } as Coordinate}
-                />
-              )
-            })
-          }
+          <MapComponent networkLayer={networkLayer} />
+          {Object.values(players).map((player: any) => {
+            return (
+              <Mob
+                key={player.id}
+                orientation={player.orientation}
+                lifeStatus={entitiesLifeStatus[player.id]}
+                type="doctor1"
+                targetPosition={{ x: player.x, y: player.y } as Coordinate}
+              />
+            );
+          })}
         </Container>
-        <Leaderboard
-          networkLayer={networkLayer}
-          localPlayer={localPlayer}
-        />
-        <Inventory
-          networkLayer={networkLayer}
-          localPlayer={localPlayer}
-        />
+        <Leaderboard networkLayer={networkLayer} localPlayer={localPlayer} />
+        <Inventory networkLayer={networkLayer} localPlayer={localPlayer} />
       </Stage>
     </div>
   );
