@@ -2,9 +2,8 @@ import 'font-awesome/css/font-awesome.min.css';
 import Modal from 'react-modal';
 import Canvas from './ui/Canvas';
 import { store } from './store';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNetworkLayer } from './dojo/useNetworkLayer';
-import { AppProvider } from '@pixi/react';
 import NewGame from './ui/NewGame';
 
 function App() {
@@ -14,6 +13,10 @@ function App() {
 		if (!networkLayer || !networkLayer.account) return;
 
 		store.setState({ networkLayer });
+
+		const connect = networkLayer.systemCalls.connect;
+		console.log("connect with ", networkLayer.account)
+		connect(networkLayer.account);
 	}, [networkLayer]);
 
 	Modal.setAppElement('#root');

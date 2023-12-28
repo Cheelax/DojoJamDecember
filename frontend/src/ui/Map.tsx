@@ -92,11 +92,14 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer, neighbor }) => {
         tileSprite = sprites[Math.floor(tile.x + tile.y) % sprites.length];
       }
       let showmarker = false;
-      neighbor?.map((n: any) => {
-        if (n.x == tile.x && n.y == tile.y) {
-          showmarker = true;
+
+      if (neighbor) {
+        for (const neighborTile of neighbor) {
+          if (neighborTile.x == tile.x && neighborTile.y == tile.y) {
+            showmarker = true;
+          }
         }
-      });
+      }
 
       return (
         <Sprite

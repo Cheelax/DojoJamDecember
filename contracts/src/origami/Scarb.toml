@@ -1,0 +1,19 @@
+[workspace]
+members = ["crates", "examples/*", "token"]
+
+[workspace.package]
+version = "0.0.0"
+description = "Community-maintained libraries for Cairo"
+homepage = "https://github.com/dojoengine/origami"
+authors = ["bal7hazar@proton.me"]
+
+[tool.dojo.env]
+rpc_url = "http://localhost:5050/"
+# Default account for katana with seed = 0
+account_address = "0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973"
+private_key = "0x1800000000300000180000000000030000000000003006001800006600"
+
+[workspace.dependencies]
+cubit = { git = "https://github.com/akhercha/cubit.git", rev = "d3869a3" }
+dojo = { git = "https://github.com/dojoengine/dojo", tag = "v0.4.2" }
+origami = { path = "crates" }

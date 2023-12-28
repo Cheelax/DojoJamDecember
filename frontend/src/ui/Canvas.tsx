@@ -29,13 +29,19 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
   const [targetCameraOffset, setTargetCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [pointerPosition, setPointerPosition] = useState<any>();
   const [tiles, setTiles] = useState<any>({});
-  const [neighbors, setNeighbors] = useState<any>({});
+  const [neighbors, setNeighbors] = useState<any>([]);
   const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
   const [players, setPlayers] = useState<any>({});
 
   function isLocalPlayer(id: number): boolean {
     return '0x' + id.toString(16) == account.address;
   }
+
+  useEffect(() => {
+    if (tiles === undefined || localPlayer === undefined) return;
+    console.log(tiles)
+    setNeighbors(getNeighbors(localPlayer, tiles, players));
+  }, [tiles, localPlayer])
 
   useEffect(() => {
     spawn(account);
@@ -55,7 +61,6 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
     defineSystem(world, [Has(Player)], function ({ value: [newLocalPlayer] }: any) {
       if (newLocalPlayer && isLocalPlayer(newLocalPlayer.id)) {
         setLocalPlayer(newLocalPlayer);
-        setNeighbors(getNeighbors({ x: newLocalPlayer.x, y: newLocalPlayer.y }, tiles, players));
         const pos = to_screen_coordinate(newLocalPlayer.x, newLocalPlayer.y);
         setTargetCameraOffset({ x: pos.x, y: pos.y - H_OFFSET * 2 - 30 });
       }
@@ -109,24 +114,13 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
           />
           <MapComponent networkLayer={networkLayer} neighbor={neighbors} />
           {Object.values(players).map((player: any) =>
-            player === localPlayer ? (
-              <Mob
-                key={player.id}
-                orientation={player.orientation}
-                lifeStatus={entitiesLifeStatus[player.id]}
-                type="doctor1"
-                targetPosition={{ x: player.x, y: player.y } as Coordinate}
-                neighbors={neighbors}
-              />
-            ) : (
-              <Mob
-                key={player.id}
-                orientation={player.orientation}
-                lifeStatus={entitiesLifeStatus[player.id]}
-                type="doctor1"
-                targetPosition={{ x: player.x, y: player.y } as Coordinate}
-              />
-            )
+            <Mob
+              key={player.id}
+              orientation={player.orientation}
+              lifeStatus={entitiesLifeStatus[player.id]}
+              type="doctor1"
+              targetPosition={{ x: player.x, y: player.y } as Coordinate}
+            />
           )}
         </Container>
         <Leaderboard networkLayer={networkLayer} localPlayer={localPlayer} />

@@ -1,0 +1,10 @@
+[package]
+name = "projectile"
+version = "0.0.0"
+description = "Example of algebria crate usage."
+homepage = "https://github.com/dojoengine/origami/tree/examples/projectile"
+
+[dependencies]
+cubit.workspace = true
+dojo.workspace = true
+origami.workspace = true

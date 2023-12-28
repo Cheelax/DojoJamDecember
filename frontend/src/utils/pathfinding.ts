@@ -1,6 +1,6 @@
 import { Coordinate } from '../type/GridElement';
 
-export const getNeighbors = (tile: Coordinate, grid: any[][], players: any): Coordinate[] => {
+export const getNeighbors = (tile: Coordinate, grid: any, players: any): Coordinate[] => {
   const directions = [
     { x: -1, y: 0 },
     { x: 1, y: 0 },
@@ -13,7 +13,10 @@ export const getNeighbors = (tile: Coordinate, grid: any[][], players: any): Coo
     const x = tile.x + dx;
     const y = tile.y + dy;
 
-    if (x >= 0 && y >= 0 && x < 50 && y < 50 && grid[y][x]._type !== 1 && grid[y][x]._type !== 2) {
+    if (
+      grid[y] === undefined || grid[y][x] == undefined ||
+      (grid[y] && grid[y][x] && grid[y][x]._type !== 1 && grid[y][x]._type !== 2))
+      {
       const neighbor: Coordinate = { x, y };
       let playerFound = false;
 
@@ -31,6 +34,8 @@ export const getNeighbors = (tile: Coordinate, grid: any[][], players: any): Coo
       }
     }
   }
+
+  console.log(neighbors)
 
   return neighbors;
 };

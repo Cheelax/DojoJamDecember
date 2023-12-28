@@ -6,6 +6,21 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 export function createSystemCalls(
   { execute }: SetupNetworkResult,
 ) {
+  const connect = async (
+    signer: Account,
+  ) => {
+    try {
+      await execute(
+        signer,
+        "plaguestark::actions::actions",
+        "connect",
+        []
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const spawn = async (
     signer: Account,
   ) => {
@@ -54,6 +69,7 @@ export function createSystemCalls(
   };
 
   return {
+    connect,
     spawn,
     move,
     drink_potion,

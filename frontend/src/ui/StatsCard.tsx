@@ -54,9 +54,9 @@ const StatsCard: FC<StatsCardProps> = ({ data, isSelected = undefined, onClick }
 			<p className='text-gray-600'>{data.name}</p>
 			<div className='text-4xl'>{statsClasses[highestStat()].icon}</div>
 			<div className='w-full flex flex-col gap-2 text-xs'>
-				{data.value.map((stat) => {
+				{data.value.map((stat: any) => {
 					return (
-						<div className={`flex justify-between w-full ${statColor(stat.name)}`}>
+						<div key={stat.name} className={`flex justify-between w-full ${statColor(stat.name)}`}>
 							<p className=''>{stat.name}</p>
 							<p className=''>{stat.value}</p>
 						</div>

@@ -120,7 +120,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     return null;
   }
 
-  const hintText = lifeStatus.isDead ? 'Dead' : lifeStatus.isInfected ? 'Infected' : lifeStatus.infectionStacks + '/3';
+  const hintText = !lifeStatus.isDead && !lifeStatus.isInfected ? lifeStatus.infectionStacks + '/3' : '';
 
   return (
     <>

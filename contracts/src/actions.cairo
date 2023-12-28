@@ -3,6 +3,9 @@ use starknet::ContractAddress;
 // define the interface
 #[starknet::interface]
 trait IActions<TContractState> {
+    fn set_lords_address(ref self: TContractState, erc20_contract_address: ContractAddress);
+    // Send 1000 tokens to the player
+    fn connect(self: @TContractState);
     fn spawn(self: @TContractState);
     fn move(self: @TContractState, x: u16, y: u16);
     fn drink_potion(self: @TContractState);
@@ -11,7 +14,7 @@ trait IActions<TContractState> {
 // dojo decorator
 #[dojo::contract]
 mod actions {
-    use starknet::{get_caller_address, ContractAddress};
+    use starknet::{get_caller_address, get_contract_address, ContractAddress};
     use super::IActions;
 
     use debug::PrintTrait;
@@ -26,9 +29,38 @@ mod actions {
     use plaguestark::models::map::{Map, MapTrait};
     use plaguestark::systems::create::{initGame};
 
+    #[storage]  
+    struct Storage {
+        erc20_contract_address: ContractAddress,
+    }
+
     // impl: implement functions specified in trait
     #[external(v0)]
     impl ActionsImpl of IActions<ContractState> {
+        fn set_lords_address(ref self: ContractState, erc20_contract_address: ContractAddress) {
+            let world = self.world_dispatcher.read();
+            self.erc20_contract_address.write(erc20_contract_address);
+
+            let mut payload: Array<felt252> = ArrayTrait::new();
+            let from_address: felt252 = get_caller_address().into();
+            payload.append(from_address);
+
+            starknet::call_contract_syscall(self.erc20_contract_address.read(), selector!("balanceOf"), payload.span());
+        }
+
+        fn connect(self: @ContractState) {
+            let mut payload: Array<felt252> = ArrayTrait::new();
+
+            let from_address: felt252 = get_contract_address().into();
+            payload.append(from_address);
+            let to_address: felt252 = get_caller_address().into();
+            payload.append(to_address);
+            payload.append(0);
+            payload.append(1000);
+
+            starknet::call_contract_syscall(self.erc20_contract_address.read(), selector!("transferFrom"), payload.span());
+        }
+
         // ContractState is defined by system decorator expansion
         fn spawn(self: @ContractState) {
             // Access the world dispatcher for reading.

@@ -1,5 +1,7 @@
 mod constants;
 mod actions;
+mod lords;
+
 mod data {
     mod v00;
 }
@@ -18,3 +20,13 @@ mod systems {
 
 use plaguestark::data::v00 as config;
 
+mod origami {
+    mod token {
+        mod src {
+            mod erc20 {
+                mod erc20;
+                mod models;
+            }
+        }
+    }
+}
