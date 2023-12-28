@@ -17,13 +17,16 @@ import { Coordinate } from '../type/GridElement';
 import { H_OFFSET, WIDTH, to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import { useEffect, useState } from 'react';
 import { defineSystem, Has } from '@dojoengine/recs';
+import overlay_blue from '../assets/tilesets/overlay_blue.png';
+import overlay_yellow from '../assets/tilesets/overlay_yellow.png';
 
 interface MapProps {
   hoveredTile?: Coordinate;
   networkLayer: any;
+  neighbor?: any[];
 }
 
-const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
+const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer, neighbor }) => {
   if (networkLayer == null) return null;
   const {
     world,
@@ -83,11 +86,17 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
         scaleTile = 1;
       }
 
-      let tileSprite
+      let tileSprite;
       if (tileData && tileSprites[tileData._type]) {
-        const sprites = tileSprites[tileData._type]
-        tileSprite = sprites[Math.floor(tile.x + tile.y) % sprites.length]
+        const sprites = tileSprites[tileData._type];
+        tileSprite = sprites[Math.floor(tile.x + tile.y) % sprites.length];
       }
+      let showmarker = false;
+      neighbor?.map((n: any) => {
+        if (n.x == tile.x && n.y == tile.y) {
+          showmarker = true;
+        }
+      });
 
       return (
         <Sprite
@@ -99,6 +108,7 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
           x={screenPos.x + WIDTH / 2}
           y={screenPos.y + H_OFFSET - adjustment}
         >
+          {showmarker && <Sprite image={overlay_blue} anchor={0.5} scale={2} x={0} y={0} />}
           {tileData && tileSprite && (
             <Sprite
               key={`${tile.x}-${tile.y}-1`}
@@ -109,6 +119,7 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer }) => {
               y={tileData._type == 3 ? -55 : -30}
             />
           )}
+          {}
         </Sprite>
       );
     });

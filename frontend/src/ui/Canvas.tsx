@@ -9,6 +9,7 @@ import { NetworkLayer } from '../dojo/createNetworkLayer';
 import Camera from './Camera';
 import Inventory from './Inventory';
 import Mob from './Mob';
+import { getNeighbors } from '../utils/pathfinding';
 
 interface CanvasProps {
   networkLayer: NetworkLayer | undefined;
@@ -20,14 +21,15 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
     systemCalls: { spawn, move },
     world,
     account,
-    components: { Player, EntityLifeStatus },
+    components: { Player, EntityLifeStatus, Tile },
   } = networkLayer;
 
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [targetCameraOffset, setTargetCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [pointerPosition, setPointerPosition] = useState<any>();
-
+  const [tiles, setTiles] = useState<any>({});
+  const [neighbors, setNeighbors] = useState<any>({});
   const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
   const [players, setPlayers] = useState<any>({});
 
@@ -53,9 +55,20 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
     defineSystem(world, [Has(Player)], function ({ value: [newLocalPlayer] }: any) {
       if (newLocalPlayer && isLocalPlayer(newLocalPlayer.id)) {
         setLocalPlayer(newLocalPlayer);
+        setNeighbors(getNeighbors({ x: newLocalPlayer.x, y: newLocalPlayer.y }, tiles, players));
         const pos = to_screen_coordinate(newLocalPlayer.x, newLocalPlayer.y);
         setTargetCameraOffset({ x: pos.x, y: pos.y - H_OFFSET * 2 - 30 });
       }
+    });
+
+    defineSystem(world, [Has(Tile)], function ({ value: [newValue] }: any) {
+      setTiles((prevTiles: any) => {
+        if (prevTiles[newValue.y] === undefined) {
+          prevTiles[newValue.y] = {};
+        }
+        prevTiles[newValue.y][newValue.x] = newValue;
+        return prevTiles;
+      });
     });
   }, []);
 
@@ -94,9 +107,18 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
             targetCameraOffset={targetCameraOffset}
             setCameraOffset={setCameraOffset}
           />
-          <MapComponent networkLayer={networkLayer} />
-          {Object.values(players).map((player: any) => {
-            return (
+          <MapComponent networkLayer={networkLayer} neighbor={neighbors} />
+          {Object.values(players).map((player: any) =>
+            player === localPlayer ? (
+              <Mob
+                key={player.id}
+                orientation={player.orientation}
+                lifeStatus={entitiesLifeStatus[player.id]}
+                type="doctor1"
+                targetPosition={{ x: player.x, y: player.y } as Coordinate}
+                neighbors={neighbors}
+              />
+            ) : (
               <Mob
                 key={player.id}
                 orientation={player.orientation}
@@ -104,8 +126,8 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
                 type="doctor1"
                 targetPosition={{ x: player.x, y: player.y } as Coordinate}
               />
-            );
-          })}
+            )
+          )}
         </Container>
         <Leaderboard networkLayer={networkLayer} localPlayer={localPlayer} />
         <Inventory networkLayer={networkLayer} localPlayer={localPlayer} />
