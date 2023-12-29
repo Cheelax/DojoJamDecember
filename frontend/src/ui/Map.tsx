@@ -18,7 +18,6 @@ import { H_OFFSET, WIDTH, to_center, to_grid_coordinate, to_screen_coordinate } 
 import { useEffect, useState } from 'react';
 import { defineSystem, Has } from '@dojoengine/recs';
 import overlay_blue from '../assets/tilesets/overlay_blue.png';
-import overlay_yellow from '../assets/tilesets/overlay_yellow.png';
 
 interface MapProps {
   hoveredTile?: Coordinate;

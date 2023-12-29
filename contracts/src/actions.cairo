@@ -4,7 +4,7 @@ use starknet::ContractAddress;
 #[starknet::interface]
 trait IActions<TContractState> {
     fn set_lords_address(ref self: TContractState, erc20_contract_address: ContractAddress);
-    fn spawn(self: @TContractState, amount: u256);
+    fn spawn(self: @TContractState, amount: u256, character: u8);
     fn move(self: @TContractState, x: u16, y: u16);
     fn drink_potion(self: @TContractState);
 }
@@ -41,7 +41,8 @@ mod actions {
         }
 
         // ContractState is defined by system decorator expansion
-        fn spawn(self: @ContractState, amount: u256) {
+
+        fn spawn(self: @ContractState, amount: u256, character: u8) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
 
@@ -74,7 +75,7 @@ mod actions {
             let (x,y) = spawn_coords(world, playerId, playerId);
             set!(world,
                 (
-                    Player { id: playerId, orientation: 1, x: x, y: y },
+                    Player { id: playerId, orientation: 1, x: x, y: y , character: character },
                     PlayerScore { id: playerId, nb_tiles_explored: 0 },
                     EntityLifeStatusTrait::new(playerId),
                     EntityAtPosition { x: x, y: y, id: playerId },
@@ -155,7 +156,7 @@ mod actions {
 
             set!(world,
                 (
-                    Player { id: playerId, orientation: nextOrientation, x, y },
+                    Player { id: playerId, orientation: nextOrientation, x, y, character: player.character },
                     PlayerScore { id: playerId, nb_tiles_explored: score.nb_tiles_explored + 1 },
                     EntityAtPosition { x, y, id: playerId },
                 )
@@ -163,9 +164,9 @@ mod actions {
 
             if (lifeStatus.randomlyAddInfectionStack(world)) {
                 let updateLifeStatus = get!(world, playerId, EntityLifeStatus);
-                updateLifeStatus.tick(world);
+                updateLifeStatus.tick(world, playerId);
             } else {
-                lifeStatus.tick(world);
+                lifeStatus.tick(world, playerId);
             }
         }
 

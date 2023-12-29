@@ -2,10 +2,15 @@
 struct Player {
     #[key]
     id: felt252,
+    character: u8,
     x: u16,
     y: u16,
     orientation: u8, // use enum
 }
+
+// 0:strength
+// 1:dexterity
+// 2:vitality
 
 #[derive(Model, Copy, Drop, Serde)]
 struct PlayerScore {

@@ -11,6 +11,7 @@ import Inventory from './Inventory';
 import Mob from './Mob';
 import { getNeighbors } from '../utils/pathfinding';
 import Coins from './Coins';
+import { store } from '../store';
 
 interface CanvasProps {
   networkLayer: NetworkLayer | undefined;
@@ -25,6 +26,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
     components: { Player, EntityLifeStatus, Tile },
   } = networkLayer;
 
+  const { selectedAdventurer } = store();
   const [localPlayer, setLocalPlayer] = useState<any>();
   const [cameraOffset, setCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
   const [targetCameraOffset, setTargetCameraOffset] = useState<Coordinate>({ x: 0, y: 0 });
@@ -41,10 +43,26 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
   useEffect(() => {
     if (tiles === undefined || localPlayer === undefined) return;
     setNeighbors(getNeighbors(localPlayer, tiles, players));
-  }, [tiles, localPlayer])
+  }, [tiles, localPlayer]);
 
   useEffect(() => {
-    spawn(account, 10);
+    let maxIndex = 0;
+    let maxValue = 0;
+
+    if (selectedAdventurer) {
+      maxValue = parseInt(selectedAdventurer?.value[0].value);
+      for (let i = 1; i < selectedAdventurer?.value.length; i++) {
+        let currentValue = parseInt(selectedAdventurer?.value[i].value);
+        if (currentValue > maxValue) {
+          maxValue = currentValue;
+          maxIndex = i;
+        }
+      }
+    }
+    console.log('maxIndex');
+    console.log(maxIndex);
+    let character = maxIndex;
+    spawn(account, 10, character);
 
     defineSystem(world, [Has(EntityLifeStatus)], function ({ value: [newValue] }: any) {
       setEntitiesLifeStatus((prevEntities: any) => {
@@ -113,7 +131,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
             setCameraOffset={setCameraOffset}
           />
           <MapComponent networkLayer={networkLayer} neighbor={neighbors} />
-          {Object.values(players).map((player: any) =>
+          {Object.values(players).map((player: any) => (
             <Mob
               key={player.id}
               orientation={player.orientation}
@@ -121,7 +139,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
               type="doctor1"
               targetPosition={{ x: player.x, y: player.y } as Coordinate}
             />
-          )}
+          ))}
         </Container>
         <Leaderboard networkLayer={networkLayer} localPlayer={localPlayer} />
         <Inventory networkLayer={networkLayer} localPlayer={localPlayer} />

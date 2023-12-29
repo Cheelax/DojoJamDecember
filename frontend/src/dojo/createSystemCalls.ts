@@ -3,82 +3,46 @@ import { SetupNetworkResult } from './setupNetwork';
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
-export function createSystemCalls(
-  { execute }: SetupNetworkResult,
-) {
-  const approveLords = async (
-    signer: Account,
-  ) => {
+export function createSystemCalls({ execute }: SetupNetworkResult) {
+  const approveLords = async (signer: Account) => {
     try {
-      await execute(
-        signer,
-        "plaguestark::lords::lords",
-        "approve",
-        [import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS!,1000,0]
-      );
+      await execute(signer, 'plaguestark::lords::lords', 'approve', [
+        import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS!,
+        1000,
+        0,
+      ]);
     } catch (e) {
       console.error(e);
     }
   };
 
-  const faucetLords = async (
-    signer: Account,
-  ) => {
+  const faucetLords = async (signer: Account) => {
     try {
-      await execute(
-        signer,
-        "plaguestark::lords::lords",
-        "faucet",
-        []
-      );
+      await execute(signer, 'plaguestark::lords::lords', 'faucet', []);
     } catch (e) {
       console.error(e);
     }
   };
 
-  const spawn = async (
-    signer: Account,
-    amount: number
-  ) => {
+  const spawn = async (signer: Account, amount: number, character: number) => {
     try {
-      await execute(
-        signer,
-        "plaguestark::actions::actions",
-        "spawn",
-        [amount, 0]
-      );
+      await execute(signer, 'plaguestark::actions::actions', 'spawn', [amount, 0, character]);
     } catch (e) {
       console.error(e);
     }
   };
 
-  const move = async (
-    signer: Account,
-    x: number,
-    y: number
-  ) => {
+  const move = async (signer: Account, x: number, y: number) => {
     try {
-      await execute(
-        signer,
-        "plaguestark::actions::actions",
-        "move",
-        [x, y]
-      );
+      await execute(signer, 'plaguestark::actions::actions', 'move', [x, y]);
     } catch (e) {
       console.error(e);
     }
   };
 
-  const drink_potion = async (
-    signer: Account,
-  ) => {
+  const drink_potion = async (signer: Account) => {
     try {
-      await execute(
-        signer,
-        "plaguestark::actions::actions",
-        "drink_potion",
-        []
-      );
+      await execute(signer, 'plaguestark::actions::actions', 'drink_potion', []);
     } catch (e) {
       console.error(e);
     }

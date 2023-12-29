@@ -12,7 +12,14 @@ fn infectEntity(entityId: felt252, world: IWorldDispatcher, timestamp: u64) {
         return;
     }
     entityLifeStatus.isInfected = true;
-    entityLifeStatus.deadAt = timestamp + 60; // after 60 seconds, dead
+    
+    let player = get!(world, entityId, plaguestark::models::player::Player);
+    
+    let mut timeOffestDeath = 60;
+    if(player.character == 0) {
+        timeOffestDeath = 90;
+    }
+    entityLifeStatus.deadAt = timestamp + timeOffestDeath; // after 60 seconds, dead
     set!(world, (entityLifeStatus));
 }
 
@@ -90,7 +97,7 @@ struct EntityLifeStatus {
 
 trait EntityLifeStatusTrait {
     fn new(id: felt252) -> EntityLifeStatus;
-    fn tick(self: @EntityLifeStatus, world: IWorldDispatcher);
+    fn tick(self: @EntityLifeStatus, world: IWorldDispatcher, playerId:felt252);
     fn randomlyAddInfectionStack(self: @EntityLifeStatus, world: IWorldDispatcher) -> bool;
     fn isInfected(self: @EntityLifeStatus) -> bool;
     fn isDead(self: @EntityLifeStatus) -> bool;
@@ -104,10 +111,16 @@ impl EntityLifeStatusImpl of EntityLifeStatusTrait {
     }
 
     #[inline(always)]
-    fn tick(self: @EntityLifeStatus, world: IWorldDispatcher) {
+    fn tick(self: @EntityLifeStatus, world: IWorldDispatcher, playerId:felt252) {
         let timestamp: u64 = starknet::get_block_info().unbox().block_timestamp;
+        let player = get!(world, playerId, plaguestark::models::player::Player);
+
         spreadAndGetInfection(*self.id, world, timestamp);
-        if (*self.infectionStacks >= 3) { // if 3 or more stacks, becomes infected
+        let mut stackToInfection = 3;
+        if(player.character == 2) {
+            stackToInfection = 5;
+        }
+        if (*self.infectionStacks >= stackToInfection) { // if 3 or more stacks, becomes infected
             infectEntity(*self.id, world, timestamp);
         }
         if (*self.isInfected && timestamp >= *self.deadAt) {
@@ -128,7 +141,11 @@ impl EntityLifeStatusImpl of EntityLifeStatusTrait {
         };
         let max_rand: u128 = 100;
         let (rnd_seed, rnd_value) = u128_safe_divmod(rnd_seed, max_rand.try_into().unwrap());
-        if (rnd_value <= 10) { // 10% chance to get one stack
+        let mut stackChance = 10;
+        if(player.character == 1) {
+            stackChance = 5;
+        }
+        if (rnd_value <= stackChance) { // 10% chance to get one stack
             let mut lifeStatus = get!(world, entityId, EntityLifeStatus);
             lifeStatus.infectionStacks += 1;
             set!(world, (lifeStatus));
