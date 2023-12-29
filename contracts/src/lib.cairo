@@ -24,7 +24,6 @@ mod origami {
     mod token {
         mod src {
             mod erc20 {
-                mod erc20;
                 mod models;
             }
         }

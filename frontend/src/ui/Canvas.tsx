@@ -10,6 +10,7 @@ import Camera from './Camera';
 import Inventory from './Inventory';
 import Mob from './Mob';
 import { getNeighbors } from '../utils/pathfinding';
+import Coins from './Coins';
 
 interface CanvasProps {
   networkLayer: NetworkLayer | undefined;
@@ -39,12 +40,11 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
 
   useEffect(() => {
     if (tiles === undefined || localPlayer === undefined) return;
-    console.log(tiles)
     setNeighbors(getNeighbors(localPlayer, tiles, players));
   }, [tiles, localPlayer])
 
   useEffect(() => {
-    spawn(account);
+    spawn(account, 10);
 
     defineSystem(world, [Has(EntityLifeStatus)], function ({ value: [newValue] }: any) {
       setEntitiesLifeStatus((prevEntities: any) => {
@@ -125,6 +125,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
         </Container>
         <Leaderboard networkLayer={networkLayer} localPlayer={localPlayer} />
         <Inventory networkLayer={networkLayer} localPlayer={localPlayer} />
+        <Coins networkLayer={networkLayer} localPlayer={localPlayer} />
       </Stage>
     </div>
   );

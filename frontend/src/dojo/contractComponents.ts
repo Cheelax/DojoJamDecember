@@ -36,6 +36,19 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    PlayerCoins: (() => {
+      return defineComponent(
+        world,
+        { id: RecsType.BigInt, balance: RecsType.Number },
+        {
+          metadata: {
+            name: 'PlayerCoins',
+            types: ['felt252', 'u32'],
+            customTypes: [],
+          },
+        }
+      );
+    })(),
     PlayerScore: (() => {
       return defineComponent(
         world,

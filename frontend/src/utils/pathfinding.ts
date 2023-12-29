@@ -35,7 +35,5 @@ export const getNeighbors = (tile: Coordinate, grid: any, players: any): Coordin
     }
   }
 
-  console.log(neighbors)
-
   return neighbors;
 };

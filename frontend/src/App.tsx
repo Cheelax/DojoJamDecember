@@ -15,7 +15,6 @@ function App() {
 		store.setState({ networkLayer });
 
 		const connect = networkLayer.systemCalls.connect;
-		console.log("connect with ", networkLayer.account)
 		connect(networkLayer.account);
 	}, [networkLayer]);
 

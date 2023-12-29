@@ -23,13 +23,14 @@ export function createSystemCalls(
 
   const spawn = async (
     signer: Account,
+    amount: number
   ) => {
     try {
       await execute(
         signer,
         "plaguestark::actions::actions",
         "spawn",
-        []
+        [amount]
       );
     } catch (e) {
       console.error(e);

@@ -21,3 +21,10 @@ struct PlayerInventory {
     nb_white_herbs: u8,
     nb_red_potions: u8,
 }
+
+#[derive(Model, Copy, Drop, Serde)]
+struct PlayerCoins {
+    #[key]
+    id: felt252,
+    balance: u32,
+}

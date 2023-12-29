@@ -122,7 +122,6 @@ const Map: React.FC<MapProps> = ({ hoveredTile, networkLayer, neighbor }) => {
               y={tileData._type == 3 ? -55 : -30}
             />
           )}
-          {}
         </Sprite>
       );
     });
