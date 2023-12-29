@@ -949,7 +949,7 @@
     {
       "name": "plaguestark::actions::actions",
       "address": "0x2ca8dbe9c89ee5a3fd917f790d34032faa623b0466f40c0e8e93cac1e92b0f0",
-      "class_hash": "0x97fafbf4404f643b43a1df19fa77aa6768f6634477b73829c76847a09449de",
+      "class_hash": "0x7a872874c4d880f4fd1d1204bb31c365437db5441c1bb2aefee2487719b6e61",
       "abi": [
         {
           "type": "impl",
@@ -989,6 +989,20 @@
           "interface_name": "plaguestark::actions::IActions"
         },
         {
+          "type": "struct",
+          "name": "core::integer::u256",
+          "members": [
+            {
+              "name": "low",
+              "type": "core::integer::u128"
+            },
+            {
+              "name": "high",
+              "type": "core::integer::u128"
+            }
+          ]
+        },
+        {
           "type": "interface",
           "name": "plaguestark::actions::IActions",
           "items": [
@@ -1006,18 +1020,15 @@
             },
             {
               "type": "function",
-              "name": "connect",
-              "inputs": [],
-              "outputs": [],
-              "state_mutability": "view"
-            },
-            {
-              "type": "function",
               "name": "spawn",
               "inputs": [
                 {
                   "name": "amount",
                   "type": "core::integer::u256"
+                },
+                {
+                  "name": "character",
+                  "type": "core::integer::u8"
                 }
               ],
               "outputs": [],
@@ -1126,7 +1137,7 @@
     {
       "name": "plaguestark::lords::lords",
       "address": "0x7802dad86390bd868f00c229c887c4e03848dc6876d457d8c9b379e33812d08",
-      "class_hash": "0x3d02f9d9379ebf4ccc9f8acf16b5e34bd6a2ecc6c4daffa427d49e9d92e00e0",
+      "class_hash": "0x3dc9c51e4877f1718331c1e53858e6d752054d6e000d5e1ece2eb1b375100",
       "abi": [
         {
           "type": "impl",
@@ -1310,7 +1321,7 @@
                 },
                 {
                   "name": "amount",
-                  "type": "core::integer::u32"
+                  "type": "core::integer::u256"
                 }
               ],
               "outputs": [
@@ -2309,6 +2320,11 @@
           "key": true
         },
         {
+          "name": "character",
+          "type": "u8",
+          "key": false
+        },
+        {
           "name": "x",
           "type": "u16",
           "key": false
@@ -2324,7 +2340,7 @@
           "key": false
         }
       ],
-      "class_hash": "0x36f3879c845fa5093c67065b88ca6a6b2f1791e3c4314a5f038ab7ec61614fd",
+      "class_hash": "0x7c5ec3fdc0d127e17c266d51fd6ed395f3fce5a3e7cb68c693bae86059fd42b",
       "abi": [
         {
           "type": "function",
@@ -2482,183 +2498,6 @@
         {
           "type": "event",
           "name": "plaguestark::models::player::player::Event",
-          "kind": "enum",
-          "variants": []
-        }
-      ]
-    },
-    {
-      "name": "plaguestark::models::player::player_coins",
-      "members": [
-        {
-          "name": "id",
-          "type": "felt252",
-          "key": true
-        },
-        {
-          "name": "balance",
-          "type": "u32",
-          "key": false
-        }
-      ],
-      "class_hash": "0x383b953d2be9524d1a4f5effbfd4270da20b1ddbcdb69e37e5cd0be048832a8",
-      "abi": [
-        {
-          "type": "function",
-          "name": "name",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::felt252"
-            }
-          ],
-          "state_mutability": "view"
-        },
-        {
-          "type": "function",
-          "name": "unpacked_size",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::integer::u32"
-            }
-          ],
-          "state_mutability": "view"
-        },
-        {
-          "type": "function",
-          "name": "packed_size",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::integer::u32"
-            }
-          ],
-          "state_mutability": "view"
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::integer::u8>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::integer::u8>"
-            }
-          ]
-        },
-        {
-          "type": "function",
-          "name": "layout",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::array::Span::<core::integer::u8>"
-            }
-          ],
-          "state_mutability": "view"
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::felt252>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::felt252>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<core::array::Span::<core::felt252>>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<core::array::Span::<core::felt252>>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::database::introspect::Struct",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<core::array::Span::<core::felt252>>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "core::array::Span::<(core::felt252, core::array::Span::<core::felt252>)>",
-          "members": [
-            {
-              "name": "snapshot",
-              "type": "@core::array::Array::<(core::felt252, core::array::Span::<core::felt252>)>"
-            }
-          ]
-        },
-        {
-          "type": "struct",
-          "name": "dojo::database::introspect::Enum",
-          "members": [
-            {
-              "name": "name",
-              "type": "core::felt252"
-            },
-            {
-              "name": "attrs",
-              "type": "core::array::Span::<core::felt252>"
-            },
-            {
-              "name": "children",
-              "type": "core::array::Span::<(core::felt252, core::array::Span::<core::felt252>)>"
-            }
-          ]
-        },
-        {
-          "type": "enum",
-          "name": "dojo::database::introspect::Ty",
-          "variants": [
-            {
-              "name": "Primitive",
-              "type": "core::felt252"
-            },
-            {
-              "name": "Struct",
-              "type": "dojo::database::introspect::Struct"
-            },
-            {
-              "name": "Enum",
-              "type": "dojo::database::introspect::Enum"
-            },
-            {
-              "name": "Tuple",
-              "type": "core::array::Span::<core::array::Span::<core::felt252>>"
-            }
-          ]
-        },
-        {
-          "type": "function",
-          "name": "schema",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "dojo::database::introspect::Ty"
-            }
-          ],
-          "state_mutability": "view"
-        },
-        {
-          "type": "event",
-          "name": "plaguestark::models::player::player_coins::Event",
           "kind": "enum",
           "variants": []
         }

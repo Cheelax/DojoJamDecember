@@ -138,6 +138,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
               lifeStatus={entitiesLifeStatus[player.id]}
               type="doctor1"
               targetPosition={{ x: player.x, y: player.y } as Coordinate}
+              nbInfectionStacks={player.character == 2 ? 5 : 3}
             />
           ))}
         </Container>

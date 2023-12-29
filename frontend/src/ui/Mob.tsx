@@ -12,13 +12,14 @@ interface MobProps {
   lifeStatus: any;
   orientation: number;
   targetPosition: Coordinate;
+  nbInfectionStacks: number;
 }
 
 function lerp(start: number, end: number, t: number) {
   return start * (1 - t) + end * t;
 }
 
-const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition }) => {
+const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition, nbInfectionStacks }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
   const [frames, setFrames] = useState<Texture[]>([]);
   const [resource, setResource] = useState<any>(undefined);
@@ -120,7 +121,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     return null;
   }
 
-  const hintText = !lifeStatus.isDead && !lifeStatus.isInfected ? lifeStatus.infectionStacks + '/3' : '';
+  const hintText = !lifeStatus.isDead && !lifeStatus.isInfected ? lifeStatus.infectionStacks + '/' + Math.floor(nbInfectionStacks) : '';
 
   return (
     <>
@@ -139,7 +140,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
         zIndex={to_grid_coordinate(absolutePosition).x + to_grid_coordinate(absolutePosition).y}
         scale={1}
         x={absolutePosition.x - hintText.length * 6}
-        y={absolutePosition.y - 130}
+        y={absolutePosition.y - 110}
       />
     </>
   );
