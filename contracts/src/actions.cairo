@@ -5,7 +5,7 @@ use starknet::ContractAddress;
 trait IActions<TContractState> {
     fn set_lords_address(ref self: TContractState, contract_address: ContractAddress);
     fn set_randomness_address(ref self: TContractState, contract_address: ContractAddress);
-    fn spawn(self: @TContractState, amount: u128, character: u8);
+    fn spawn(self: @TContractState, amount: u128, character: u8, name: felt252);
     fn move(self: @TContractState, x: u16, y: u16);
     fn drink_potion(self: @TContractState);
     fn receive_random_words(
@@ -54,8 +54,7 @@ mod actions {
         }
 
         // ContractState is defined by system decorator expansion
-
-        fn spawn(self: @ContractState, amount: u128, character: u8) {
+        fn spawn(self: @ContractState, amount: u128, character: u8, name: felt252) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
 
@@ -90,8 +89,8 @@ mod actions {
             let (x,y) = spawn_coords(world, playerId, playerId);
             set!(world,
                 (
-                    Player { id: playerId, orientation: 1, x: x, y: y , character: character, amount_vested: amount },
-                    PlayerScore { id: playerId, nb_tiles_explored: 0 },
+                    Player { id: playerId, orientation: 1, x: x, y: y , character: character, amount_vested: amount, name: name },
+                    PlayerScore { id: playerId, nb_tiles_explored: 0, name: name },
                     EntityLifeStatusTrait::new(playerId),
                     EntityAtPosition { x: x, y: y, id: playerId },
                     PlayerInventory { id: playerId, nb_red_potions: 1, nb_white_herbs: 3 },
@@ -171,8 +170,8 @@ mod actions {
 
             set!(world,
                 (
-                    Player { id: playerId, orientation: nextOrientation, x, y, character: player.character, amount_vested: player.amount_vested },
-                    PlayerScore { id: playerId, nb_tiles_explored: score.nb_tiles_explored + 1 },
+                    Player { id: playerId, orientation: nextOrientation, x, y, character: player.character, amount_vested: player.amount_vested, name: player.name },
+                    PlayerScore { id: playerId, nb_tiles_explored: score.nb_tiles_explored + 1, name: player.name },
                     EntityAtPosition { x, y, id: playerId },
                 )
             );
