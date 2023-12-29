@@ -2848,6 +2848,11 @@
           "key": true
         },
         {
+          "name": "name",
+          "type": "felt252",
+          "key": false
+        },
+        {
           "name": "nb_tiles_explored",
           "type": "u16",
           "key": false

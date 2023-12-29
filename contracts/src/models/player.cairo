@@ -2,6 +2,7 @@
 struct Player {
     #[key]
     id: felt252,
+    name: felt252,
     x: u16,
     y: u16,
     orientation: u8, // use enum
@@ -11,6 +12,7 @@ struct Player {
 struct PlayerScore {
     #[key]
     id: felt252,
+    name: felt252,
     nb_tiles_explored: u16,
 }
 

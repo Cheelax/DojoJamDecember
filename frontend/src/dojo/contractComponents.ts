@@ -52,14 +52,14 @@ export function defineContractComponents(world: World) {
     PlayerScore: (() => {
       return defineComponent(
         world,
-        { id: RecsType.BigInt, nb_tiles_explored: RecsType.Number },
-        {
-          metadata: {
-            name: 'PlayerScore',
-            types: ['felt252', 'u16'],
-            customTypes: [],
-          },
-        }
+        { id: RecsType.BigInt, name: RecsType.String, nb_tiles_explored: RecsType.Number }
+        // {
+        //   metadata: {
+        //     name: 'PlayerScore',
+        //     types: ['felt252', 'felt252', 'u16'],
+        //     customTypes: [],
+        //   },
+        // }
       );
     })(),
     Tile: (() => {
@@ -82,7 +82,7 @@ export function defineContractComponents(world: World) {
         {
           metadata: {
             name: 'TileAtPosition',
-            types: [ 'u16', 'u16', 'u8'],
+            types: ['u16', 'u16', 'u8'],
             customTypes: [],
           },
         }
@@ -95,7 +95,7 @@ export function defineContractComponents(world: World) {
         {
           metadata: {
             name: 'PlayerInventory',
-            types: [ 'felt252', 'u8', 'u8'],
+            types: ['felt252', 'u8', 'u8'],
             customTypes: [],
           },
         }
