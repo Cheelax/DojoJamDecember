@@ -36,19 +36,19 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    PlayerCoins: (() => {
-      return defineComponent(
-        world,
-        { id: RecsType.BigInt, balance: RecsType.Number },
-        {
-          metadata: {
-            name: 'PlayerCoins',
-            types: ['felt252', 'u32'],
-            customTypes: [],
-          },
-        }
-      );
-    })(),
+    ERC20Balance: (() => {
+	    return defineComponent(
+	      world,
+	      { token: RecsType.String, account: RecsType.String, amount: RecsType.BigInt },
+	      {
+	        metadata: {
+	          name: "ERC20Balance",
+	          types: ["contractaddress","contractaddress","u256"],
+	          customTypes: [],
+	        },
+	      }
+	    );
+	  })(),
     PlayerScore: (() => {
       return defineComponent(
         world,

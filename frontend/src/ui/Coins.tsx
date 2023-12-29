@@ -13,16 +13,16 @@ const Coins: React.FC<CoinsProps> = ({ networkLayer, localPlayer }) => {
     if (networkLayer == null) return null;
     const {
         world,
-        components: { PlayerCoins },
+        components: { ERC20Balance },
     } = networkLayer;
     const [coins, setCoins] = useState<any>();
 
     // Retrieve coins
     useEffect(() => {
-        defineSystem(world, [Has(PlayerCoins)], function ({ value: [newValue] }: any) {
-            if (newValue && newValue.id == localPlayer.id) {
-                console.log(newValue.balance)
-                setCoins(newValue);
+        defineSystem(world, [Has(ERC20Balance)], function ({ value: [newValue] }: any) {
+            console.log(newValue)
+            if (newValue && newValue.account === parseInt(localPlayer.id)) {
+                setCoins(newValue.amount);
             }
         });
     }, []);

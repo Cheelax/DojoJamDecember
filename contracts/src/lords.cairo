@@ -63,6 +63,13 @@ mod lords {
     //
 
     #[external(v0)]
+    fn faucet(
+        ref self: ContractState
+    ) {
+        self._transfer(get_contract_address(), get_caller_address(), 1000);
+    }
+
+    #[external(v0)]
     impl LordsMetadataImpl of interface::IERC20Metadata<ContractState> {
         fn name(self: @ContractState) -> felt252 {
             self.get_meta().name
@@ -85,7 +92,6 @@ mod lords {
 
         fn balance_of(self: @ContractState, account: ContractAddress) -> u256 {
             self.get_balance(account).amount.print();
-
             self.get_balance(account).amount
         }
 

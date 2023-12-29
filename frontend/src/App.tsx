@@ -14,8 +14,16 @@ function App() {
 
 		store.setState({ networkLayer });
 
-		const connect = networkLayer.systemCalls.connect;
-		connect(networkLayer.account);
+		const {
+			account,
+			systemCalls: { approveLords, faucetLords }
+		} = networkLayer;
+		setTimeout(function() {
+			faucetLords(account);
+		}, 100);
+		setTimeout(function() {
+			approveLords(account);
+		}, 200);
 	}, [networkLayer]);
 
 	Modal.setAppElement('#root');

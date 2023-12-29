@@ -949,7 +949,7 @@
     {
       "name": "plaguestark::actions::actions",
       "address": "0x2ca8dbe9c89ee5a3fd917f790d34032faa623b0466f40c0e8e93cac1e92b0f0",
-      "class_hash": "0x170065e39cd82db551b0047b2dfb1cfd28ee3d5f6d9df96188c25cd8bdb518e",
+      "class_hash": "0x97fafbf4404f643b43a1df19fa77aa6768f6634477b73829c76847a09449de",
       "abi": [
         {
           "type": "impl",
@@ -1017,7 +1017,7 @@
               "inputs": [
                 {
                   "name": "amount",
-                  "type": "core::integer::u32"
+                  "type": "core::integer::u256"
                 }
               ],
               "outputs": [],
@@ -1126,7 +1126,7 @@
     {
       "name": "plaguestark::lords::lords",
       "address": "0x7802dad86390bd868f00c229c887c4e03848dc6876d457d8c9b379e33812d08",
-      "class_hash": "0x229a19b5d2f043590ffc9bb5c1138f10608116218986c86f50add3bd81921ba",
+      "class_hash": "0x3d02f9d9379ebf4ccc9f8acf16b5e34bd6a2ecc6c4daffa427d49e9d92e00e0",
       "abi": [
         {
           "type": "impl",
@@ -1310,7 +1310,7 @@
                 },
                 {
                   "name": "amount",
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u32"
                 }
               ],
               "outputs": [
@@ -1409,6 +1409,13 @@
               "type": "core::starknet::contract_address::ContractAddress"
             }
           ],
+          "outputs": [],
+          "state_mutability": "external"
+        },
+        {
+          "type": "function",
+          "name": "faucet",
+          "inputs": [],
           "outputs": [],
           "state_mutability": "external"
         },

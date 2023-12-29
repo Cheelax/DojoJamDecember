@@ -1,4 +1,4 @@
-import { RPCProvider } from '@dojoengine/core';
+import { DojoProvider } from '@dojoengine/core';
 import { Account, num } from 'starknet';
 import { defineContractComponents } from './contractComponents';
 import manifest from './manifest.json';
@@ -12,8 +12,8 @@ export async function setupNetwork() {
   // Extract environment variables for better readability.
   const { VITE_PUBLIC_WORLD_ADDRESS, VITE_PUBLIC_NODE_URL, VITE_PUBLIC_TORII } = import.meta.env;
 
-  // Create a new RPCProvider instance.
-  const provider = new RPCProvider(VITE_PUBLIC_WORLD_ADDRESS, manifest, VITE_PUBLIC_NODE_URL);
+  // Create a new DojoProvider instance.
+  const provider = new DojoProvider(VITE_PUBLIC_WORLD_ADDRESS, manifest, VITE_PUBLIC_NODE_URL);
 
   const toriiClient = await torii.createClient([], {
     rpcUrl: VITE_PUBLIC_NODE_URL,

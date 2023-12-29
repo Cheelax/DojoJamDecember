@@ -6,14 +6,29 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 export function createSystemCalls(
   { execute }: SetupNetworkResult,
 ) {
-  const connect = async (
+  const approveLords = async (
     signer: Account,
   ) => {
     try {
       await execute(
         signer,
-        "plaguestark::actions::actions",
-        "connect",
+        "plaguestark::lords::lords",
+        "approve",
+        [import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS!,1000,0]
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const faucetLords = async (
+    signer: Account,
+  ) => {
+    try {
+      await execute(
+        signer,
+        "plaguestark::lords::lords",
+        "faucet",
         []
       );
     } catch (e) {
@@ -30,7 +45,7 @@ export function createSystemCalls(
         signer,
         "plaguestark::actions::actions",
         "spawn",
-        [amount]
+        [amount, 0]
       );
     } catch (e) {
       console.error(e);
@@ -70,7 +85,8 @@ export function createSystemCalls(
   };
 
   return {
-    connect,
+    faucetLords,
+    approveLords,
     spawn,
     move,
     drink_potion,
