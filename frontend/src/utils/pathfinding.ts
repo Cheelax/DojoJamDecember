@@ -14,9 +14,10 @@ export const getNeighbors = (tile: Coordinate, grid: any, players: any): Coordin
     const y = tile.y + dy;
 
     if (
-      grid[y] === undefined || grid[y][x] == undefined ||
-      (grid[y] && grid[y][x] && grid[y][x]._type !== 1 && grid[y][x]._type !== 2))
-      {
+      grid[y] === undefined ||
+      grid[y][x] == undefined ||
+      (grid[y] && grid[y][x] && grid[y][x]._type !== 1 && grid[y][x]._type !== 2)
+    ) {
       const neighbor: Coordinate = { x, y };
       let playerFound = false;
 
@@ -34,8 +35,6 @@ export const getNeighbors = (tile: Coordinate, grid: any, players: any): Coordin
       }
     }
   }
-
-  console.log(neighbors)
 
   return neighbors;
 };

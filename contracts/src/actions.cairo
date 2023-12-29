@@ -6,7 +6,7 @@ trait IActions<TContractState> {
     fn set_lords_address(ref self: TContractState, erc20_contract_address: ContractAddress);
     // Send 1000 tokens to the player
     fn connect(self: @TContractState);
-    fn spawn(self: @TContractState);
+    fn spawn(self: @TContractState, name: felt252);
     fn move(self: @TContractState, x: u16, y: u16);
     fn drink_potion(self: @TContractState);
 }
@@ -62,7 +62,7 @@ mod actions {
         }
 
         // ContractState is defined by system decorator expansion
-        fn spawn(self: @ContractState) {
+        fn spawn(self: @ContractState, name: felt252) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
 
@@ -79,8 +79,8 @@ mod actions {
 
             set!(world,
                 (
-                    Player { id: playerId, orientation: 1, x: x, y: y },
-                    PlayerScore { id: playerId, nb_tiles_explored: 0 },
+                    Player { id: playerId, orientation: 1, x: x, y: y, name: name },
+                    PlayerScore { id: playerId, nb_tiles_explored: 0, name: name },
                     EntityLifeStatusTrait::new(playerId),
                     EntityAtPosition { x: x, y: y, id: playerId },
                     PlayerInventory { id: playerId, nb_red_potions: 1, nb_white_herbs: 3 }
@@ -160,8 +160,8 @@ mod actions {
 
             set!(world,
                 (
-                    Player { id: playerId, orientation: nextOrientation, x, y },
-                    PlayerScore { id: playerId, nb_tiles_explored: score.nb_tiles_explored + 1 },
+                    Player { id: playerId, orientation: nextOrientation, x, y, name: player.name },
+                    PlayerScore { id: playerId, nb_tiles_explored: score.nb_tiles_explored + 1 , name: player.name },
                     EntityAtPosition { x, y, id: playerId },
                 )
             );

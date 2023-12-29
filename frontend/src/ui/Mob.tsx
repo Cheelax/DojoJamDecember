@@ -25,6 +25,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
 
   const [currentFrame, setCurrentFrame] = useState(0);
   const [counterAnim, setCounterAnim] = useState<number>(0);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
 
   // Allow animation (set target, then tick lerp to set position)
   const [absoluteTargetPosition, setAbsoluteTargetPosition] = useState<Coordinate>({ x: 0, y: 0 });
@@ -94,25 +95,29 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
   }, []);
 
   useTick((delta) => {
-    setCounterAnim((prevCounter) => prevCounter + delta);
+    if (shouldAnimate) {
+      setCounterAnim((prevCounter) => prevCounter + delta);
 
-    if (counterAnim > 10) {
-      if (animation === Animation.Idle) {
-        // if IDLE, loop through frames
-        if (frames && frames.length > 0) {
-          setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
-        }
-      } else {
-        // otherwise we do only the frames, and then go IDLE
-        if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
-          setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
+      if (counterAnim > 10) {
+        if (animation === Animation.Idle) {
+          // if IDLE, loop through frames
+          if (frames && frames.length > 0) {
+            setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
+          }
         } else {
-          // last frame of the animation
-          setCurrentFrame(0);
-          setAnimation(Animation.Idle);
+          // otherwise we do only the frames, and then go IDLE
+          if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
+            setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
+          } else if (animation === Animation.Death) {
+            setShouldAnimate(false);
+          } else {
+            // last frame of the animation
+            setCurrentFrame(0);
+            setAnimation(Animation.Idle);
+          }
         }
+        setCounterAnim(0);
       }
-      setCounterAnim(0);
     }
   });
 
