@@ -12,9 +12,19 @@ export function createSystemCalls({ execute }: SetupNetworkResult) {
     }
   };
 
-  const spawn = async (signer: Account, name: string) => {
+
+  const spawn = async (
+    signer: Account,
+    amount: number,
+    name: string
+  ) => {
     try {
-      await execute(signer, 'plaguestark::actions::actions', 'spawn', [name]);
+      await execute(
+        signer,
+        "plaguestark::actions::actions",
+        "spawn",
+        [amount, name]
+      );
     } catch (e) {
       console.error(e);
     }

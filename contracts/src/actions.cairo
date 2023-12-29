@@ -6,7 +6,7 @@ trait IActions<TContractState> {
     fn set_lords_address(ref self: TContractState, erc20_contract_address: ContractAddress);
     // Send 1000 tokens to the player
     fn connect(self: @TContractState);
-    fn spawn(self: @TContractState, name: felt252);
+    fn spawn(self: @TContractState, amount: u32, name: felt252);
     fn move(self: @TContractState, x: u16, y: u16);
     fn drink_potion(self: @TContractState);
 }
@@ -21,7 +21,7 @@ mod actions {
 
     use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
 
-    use plaguestark::models::player::{Player, PlayerScore, PlayerInventory};
+    use plaguestark::models::player::{Player, PlayerScore, PlayerInventory, PlayerCoins};
     use plaguestark::models::tile::{Tile, TileAtPosition};
     use plaguestark::models::entity_infection::{EntityLifeStatus, EntityLifeStatusTrait};
     use plaguestark::models::entity::{EntityAtPosition};
@@ -40,29 +40,33 @@ mod actions {
         fn set_lords_address(ref self: ContractState, erc20_contract_address: ContractAddress) {
             let world = self.world_dispatcher.read();
             self.erc20_contract_address.write(erc20_contract_address);
-
-            let mut payload: Array<felt252> = ArrayTrait::new();
-            let from_address: felt252 = get_caller_address().into();
-            payload.append(from_address);
-
-            starknet::call_contract_syscall(self.erc20_contract_address.read(), selector!("balanceOf"), payload.span());
         }
 
         fn connect(self: @ContractState) {
             let mut payload: Array<felt252> = ArrayTrait::new();
 
-            let from_address: felt252 = get_contract_address().into();
-            payload.append(from_address);
-            let to_address: felt252 = get_caller_address().into();
-            payload.append(to_address);
-            payload.append(0);
-            payload.append(1000);
+            // let from_address: felt252 = get_contract_address().into();
+            // payload.append(0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973);
+            // let to_address: felt252 = get_caller_address().into();
+            // payload.append(to_address);
+            // payload.append(0);
+            // payload.append(1000);
 
-            starknet::call_contract_syscall(self.erc20_contract_address.read(), selector!("transferFrom"), payload.span());
+            // starknet::call_contract_syscall(
+            //     self.erc20_contract_address.read(),
+            //     selector!("transferFrom"),
+            //     payload.span()
+            // );
+
+            let world = self.world_dispatcher.read();
+            let playerId: felt252 = get_caller_address().into();
+            set!(world, (
+                PlayerCoins { id: playerId, balance: 1000 }
+            ));
         }
 
         // ContractState is defined by system decorator expansion
-        fn spawn(self: @ContractState, name: felt252) {
+        fn spawn(self: @ContractState, amount: u32, name:felt252) {
             // Access the world dispatcher for reading.
             let world = self.world_dispatcher.read();
 
@@ -77,13 +81,31 @@ mod actions {
 
             let (x,y) = spawn_coords(world, playerId, playerId);
 
+            assert(amount >= 10, 'Entry cost is minimum 10');
+            let mut coins = get!(world, playerId, PlayerCoins);
+            assert(coins.balance >= amount, 'Not enough coins');
+
+            // let mut payload: Array<felt252> = ArrayTrait::new();
+
+            // let from_address: felt252 = get_caller_address().into();
+            // payload.append(from_address);
+            // let to_address: felt252 = get_contract_address().into();
+            // payload.append(to_address);
+            // payload.append(0);
+            // payload.append(amount.into());
+
+            // starknet::call_contract_syscall(self.erc20_contract_address.read(), selector!("transferFrom"), payload.span());
+
+            coins.balance -= 10;
+
             set!(world,
                 (
                     Player { id: playerId, orientation: 1, x: x, y: y, name: name },
                     PlayerScore { id: playerId, nb_tiles_explored: 0, name: name },
                     EntityLifeStatusTrait::new(playerId),
                     EntityAtPosition { x: x, y: y, id: playerId },
-                    PlayerInventory { id: playerId, nb_red_potions: 1, nb_white_herbs: 3 }
+                    PlayerInventory { id: playerId, nb_red_potions: 1, nb_white_herbs: 3 },
+                    coins,
                 )
             );
         }
