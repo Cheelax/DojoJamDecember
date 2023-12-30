@@ -4,6 +4,91 @@ import { defineComponent, Type as RecsType, World } from '@dojoengine/recs';
 
 export function defineContractComponents(world: World) {
   return {
+    Adventurer: (() => {
+      return defineComponent(
+        world,
+        {
+          last_action_block: RecsType.Number,
+          health: RecsType.Number,
+          xp: RecsType.Number,
+          gold: RecsType.Number,
+          weapon_id: RecsType.Number,
+          weapon_xp: RecsType.Number,
+          weapon_metadata: RecsType.Number,
+          chest_id: RecsType.Number,
+          chest_xp: RecsType.Number,
+          chest_metadata: RecsType.Number,
+          head_id: RecsType.Number,
+          head_xp: RecsType.Number,
+          head_metadata: RecsType.Number,
+          waist_id: RecsType.Number,
+          waist_xp: RecsType.Number,
+          waist_metadata: RecsType.Number,
+          foot_id: RecsType.Number,
+          foot_xp: RecsType.Number,
+          foot_metadata: RecsType.Number,
+          hand_id: RecsType.Number,
+          hand_xp: RecsType.Number,
+          hand_metadata: RecsType.Number,
+          neck_id: RecsType.Number,
+          neck_xp: RecsType.Number,
+          neck_metadata: RecsType.Number,
+          ring_id: RecsType.Number,
+          ring_xp: RecsType.Number,
+          ring_metadata: RecsType.Number,
+          beast_health: RecsType.Number,
+          stat_points_available: RecsType.Number,
+          actions_per_block: RecsType.Number,
+          mutated: RecsType.Boolean,
+          strength: RecsType.Number,
+          dexterity: RecsType.Number,
+          vitality: RecsType.Number,
+        },
+        {
+          metadata: {
+            name: 'Adventurer',
+            types: [
+              'u16',
+              'u16',
+              'u16',
+              'u16',
+              'u8',
+              'u16',
+              'u8',
+              'u8',
+              'u16',
+              'u8',
+              'u8',
+              'u16',
+              'u8',
+              'u8',
+              'u16',
+              'u8',
+              'u8',
+              'u16',
+              'u8',
+              'u8',
+              'u16',
+              'u8',
+              'u8',
+              'u16',
+              'u8',
+              'u8',
+              'u16',
+              'u8',
+              'u16',
+              'u8',
+              'u8',
+              'bool',
+              'u8',
+              'u8',
+              'u8',
+            ],
+            customTypes: [],
+          },
+        }
+      );
+    })(),
     EntityLifeStatus: (() => {
       return defineComponent(
         world,
@@ -37,22 +122,22 @@ export function defineContractComponents(world: World) {
       );
     })(),
     ERC20Balance: (() => {
-	    return defineComponent(
-	      world,
-	      {
+      return defineComponent(
+        world,
+        {
           token: RecsType.String,
           account: RecsType.String,
           amount: RecsType.BigInt,
         },
-	      {
-	        metadata: {
-	          name: "ERC20Balance",
-	          types: ["contractaddress","contractaddress","u128"],
-	          customTypes: [],
-	        },
-	      }
-	    );
-	  })(),
+        {
+          metadata: {
+            name: 'ERC20Balance',
+            types: ['contractaddress', 'contractaddress', 'u128'],
+            customTypes: [],
+          },
+        }
+      );
+    })(),
     PlayerScore: (() => {
       return defineComponent(
         world,
@@ -86,7 +171,7 @@ export function defineContractComponents(world: World) {
         {
           metadata: {
             name: 'TileAtPosition',
-            types: [ 'u16', 'u16', 'u8'],
+            types: ['u16', 'u16', 'u8'],
             customTypes: [],
           },
         }
@@ -99,7 +184,7 @@ export function defineContractComponents(world: World) {
         {
           metadata: {
             name: 'PlayerInventory',
-            types: [ 'felt252', 'u8', 'u8'],
+            types: ['felt252', 'u8', 'u8'],
             customTypes: [],
           },
         }
