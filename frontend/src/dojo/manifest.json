@@ -949,7 +949,7 @@
     {
       "name": "plaguestark::actions::actions",
       "address": "0x2ca8dbe9c89ee5a3fd917f790d34032faa623b0466f40c0e8e93cac1e92b0f0",
-      "class_hash": "0x4754e54db9152c7d678fdaccf1e5561ac5f33f5dc7b789dc25f5ca7e96dc8fe",
+      "class_hash": "0x551b0b495312344236f45755e6868a33ec64f90ba0786b054cfaae848453b2",
       "abi": [
         {
           "type": "impl",
@@ -989,6 +989,16 @@
           "interface_name": "plaguestark::actions::IActions"
         },
         {
+          "type": "struct",
+          "name": "core::array::Span::<core::felt252>",
+          "members": [
+            {
+              "name": "snapshot",
+              "type": "@core::array::Array::<core::felt252>"
+            }
+          ]
+        },
+        {
           "type": "interface",
           "name": "plaguestark::actions::IActions",
           "items": [
@@ -997,7 +1007,19 @@
               "name": "set_lords_address",
               "inputs": [
                 {
-                  "name": "erc20_contract_address",
+                  "name": "contract_address",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "set_randomness_address",
+              "inputs": [
+                {
+                  "name": "contract_address",
                   "type": "core::starknet::contract_address::ContractAddress"
                 }
               ],
@@ -1015,6 +1037,10 @@
                 {
                   "name": "character",
                   "type": "core::integer::u8"
+                },
+                {
+                  "name": "name",
+                  "type": "core::felt252"
                 }
               ],
               "outputs": [],
@@ -1042,6 +1068,30 @@
               "inputs": [],
               "outputs": [],
               "state_mutability": "view"
+            },
+            {
+              "type": "function",
+              "name": "receive_random_words",
+              "inputs": [
+                {
+                  "name": "requestor_address",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "request_id",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "random_words",
+                  "type": "core::array::Span::<core::felt252>"
+                },
+                {
+                  "name": "calldata",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
             }
           ]
         },
@@ -1123,7 +1173,7 @@
     {
       "name": "plaguestark::lootsurvivor::lootsurvivor",
       "address": "0x2a7f1267bb92db616fae0f62bd8b98c11efe0e3a8cdf78418fd653f2949fdf9",
-      "class_hash": "0x10600e646e329dfdb527222a396f663a4eebebba776ad84ba8d80d24eda2c5",
+      "class_hash": "0x4a36955f560cfd69f9ebf25f3fd44fe380c83ff4ae4e94e1ec37b0e2180d538",
       "abi": [
         {
           "type": "impl",
@@ -1830,6 +1880,127 @@
               "kind": "nested"
             }
           ]
+        }
+      ],
+      "reads": [],
+      "writes": [],
+      "computed": []
+    },
+    {
+      "name": "plaguestark::randomness::Randomness",
+      "address": "0x5f0cf801a571f194d7f967e29bdf197289512cc93fa59902797811c8801e395",
+      "class_hash": "0x7af07970da34596571dd1dda55639fe484bfc58e626c1d1a1b0900c18aa08fe",
+      "abi": [
+        {
+          "type": "impl",
+          "name": "IRandomnessImpl",
+          "interface_name": "plaguestark::randomness::IRandomness"
+        },
+        {
+          "type": "struct",
+          "name": "core::array::Span::<core::felt252>",
+          "members": [
+            {
+              "name": "snapshot",
+              "type": "@core::array::Array::<core::felt252>"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "plaguestark::randomness::IRandomness",
+          "items": [
+            {
+              "type": "function",
+              "name": "request_random",
+              "inputs": [
+                {
+                  "name": "seed",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "callback_address",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "callback_fee_limit",
+                  "type": "core::integer::u128"
+                },
+                {
+                  "name": "publish_delay",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "num_words",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "calldata",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [
+                {
+                  "type": "core::integer::u64"
+                }
+              ],
+              "state_mutability": "external"
+            },
+            {
+              "type": "function",
+              "name": "submit_random",
+              "inputs": [
+                {
+                  "name": "request_id",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "requestor_address",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "seed",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "minimum_block_number",
+                  "type": "core::integer::u64"
+                },
+                {
+                  "name": "callback_address",
+                  "type": "core::starknet::contract_address::ContractAddress"
+                },
+                {
+                  "name": "callback_fee_limit",
+                  "type": "core::integer::u128"
+                },
+                {
+                  "name": "callback_fee",
+                  "type": "core::integer::u128"
+                },
+                {
+                  "name": "random_words",
+                  "type": "core::array::Span::<core::felt252>"
+                },
+                {
+                  "name": "proof",
+                  "type": "core::array::Span::<core::felt252>"
+                },
+                {
+                  "name": "calldata",
+                  "type": "core::array::Array::<core::felt252>"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "plaguestark::randomness::Randomness::Event",
+          "kind": "enum",
+          "variants": []
         }
       ],
       "reads": [],
@@ -2782,6 +2953,11 @@
           "key": false
         },
         {
+          "name": "name",
+          "type": "felt252",
+          "key": false
+        },
+        {
           "name": "x",
           "type": "u16",
           "key": false
@@ -2802,7 +2978,7 @@
           "key": false
         }
       ],
-      "class_hash": "0x290cc399237e8a913d931eb827337b9e5b34981c10eb4220141b8f1517698d1",
+      "class_hash": "0xf1bee66a6d26338ee6ebff0f13a69b51b780455344470cee8a9a904a57ca9f",
       "abi": [
         {
           "type": "function",
@@ -3166,7 +3342,7 @@
           "key": false
         }
       ],
-      "class_hash": "0x2ac7dea277569a57e466d98f0a5c0f0eef27273b0f9344d0ba1d4b296b95341",
+      "class_hash": "0xb7a8d106397417521576ef5bc2d04d383187012cd00a00fbe1114e0bfe1d81",
       "abi": [
         {
           "type": "function",

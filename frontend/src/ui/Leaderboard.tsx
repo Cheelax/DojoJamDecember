@@ -40,11 +40,15 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ networkLayer, localPlayer }) 
     });
   }, []);
 
+  function feltToStr(felt: any) {
+    let hexString = felt.toString(16);
+    if (hexString.length % 2) hexString = '0' + hexString; // Ensure even length
+    const byteArray = new Uint8Array(hexString.match(/.{1,2}/g).map((byte:any) => parseInt(byte, 16)));
+    return new TextDecoder().decode(byteArray);
+  }
+
   if (list === undefined || localPlayer === undefined) return;
-  list.forEach((elem: any, key: number) => {
-    console.log('ELEM');
-    console.log(elem);
-  });
+
   return (
     <Container>
       <Text
@@ -66,7 +70,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ networkLayer, localPlayer }) 
           <Container key={`${elem.id.toString()}-container`}>
             <Text
               key={elem.id.toString() + 'name'}
-              text={localPlayer.id === elem.id ? 'you' : '0x' + elem.name.toString()}
+              text={localPlayer.id === elem.id ? 'you' : feltToStr(elem.name) }
               x={20}
               y={45 + (key + 1) * 20}
               style={

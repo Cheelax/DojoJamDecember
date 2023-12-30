@@ -11,6 +11,7 @@ import Inventory from './Inventory';
 import Mob from './Mob';
 import { getNeighbors } from '../utils/pathfinding';
 import { store } from '../store';
+import Coins from './Coins';
 
 interface CanvasProps {
   networkLayer: NetworkLayer | undefined;
@@ -34,6 +35,13 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
   const [neighbors, setNeighbors] = useState<any>([]);
   const [entitiesLifeStatus, setEntitiesLifeStatus] = useState<any>({});
   const [players, setPlayers] = useState<any>({});
+
+  function feltToStr(felt: any) {
+    let hexString = felt.toString(16);
+    if (hexString.length % 2) hexString = '0' + hexString; // Ensure even length
+    const byteArray = new Uint8Array(hexString.match(/.{1,2}/g).map((byte:any) => parseInt(byte, 16)));
+    return new TextDecoder().decode(byteArray);
+  }
 
   function isLocalPlayer(id: number): boolean {
     return '0x' + id.toString(16) == account.address;
@@ -136,11 +144,14 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
               type="doctor1"
               targetPosition={{ x: player.x, y: player.y } as Coordinate}
               nbInfectionStacks={player.character == 2 ? 5 : 3}
+              isLocalPlayer={isLocalPlayer(player.id)}
+              username={feltToStr(player.name)}
             />
           ))}
         </Container>
         <Leaderboard networkLayer={networkLayer} localPlayer={localPlayer} />
         <Inventory networkLayer={networkLayer} localPlayer={localPlayer} />
+        <Coins networkLayer={networkLayer} localPlayer={localPlayer} />
       </Stage>
     </div>
   );

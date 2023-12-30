@@ -111,11 +111,11 @@ export function defineContractComponents(world: World) {
     Player: (() => {
       return defineComponent(
         world,
-        { id: RecsType.BigInt, x: RecsType.Number, y: RecsType.Number, orientation: RecsType.Number, character: RecsType.Number },
+        { id: RecsType.BigInt, x: RecsType.Number, y: RecsType.Number, orientation: RecsType.Number, character: RecsType.Number, name: RecsType.String },
         {
           metadata: {
             name: 'Player',
-            types: ['felt252', 'u16', 'u16', 'u8', 'u8'],
+            types: ['felt252', 'u16', 'u16', 'u8', 'u8', 'felt252'],
             customTypes: [],
           },
         }
@@ -141,14 +141,14 @@ export function defineContractComponents(world: World) {
     PlayerScore: (() => {
       return defineComponent(
         world,
-        { id: RecsType.BigInt, name: RecsType.String, nb_tiles_explored: RecsType.Number }
-        // {
-        //   metadata: {
-        //     name: 'PlayerScore',
-        //     types: ['felt252', 'felt252', 'u16'],
-        //     customTypes: [],
-        //   },
-        // }
+        { id: RecsType.BigInt, name: RecsType.String, nb_tiles_explored: RecsType.Number },
+        {
+          metadata: {
+            name: 'PlayerScore',
+            types: ['felt252', 'felt252', 'u16'],
+            customTypes: [],
+          },
+        }
       );
     })(),
     Tile: (() => {

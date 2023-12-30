@@ -13,13 +13,15 @@ interface MobProps {
   orientation: number;
   targetPosition: Coordinate;
   nbInfectionStacks: number;
+  username: string;
+  isLocalPlayer: boolean;
 }
 
 function lerp(start: number, end: number, t: number) {
   return start * (1 - t) + end * t;
 }
 
-const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition, nbInfectionStacks }) => {
+const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition, nbInfectionStacks, username, isLocalPlayer }) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
   const [frames, setFrames] = useState<Texture[]>([]);
   const [resource, setResource] = useState<any>(undefined);
@@ -38,16 +40,14 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     if (resource === undefined || orientation === undefined) return;
     if (lifeStatus.isDead) {
       setFrames(getFramesFromType('doctorinfected', Animation.Death, orientation, resource));
+      setAnimation(Animation.Death);
+      setCurrentFrame(1)
+      setShouldAnimate(false)
+      return
     } else if (lifeStatus.isInfected) {
-      if (animation === Animation.Walk) {
-        setFrames(getFramesFromType('doctorinfected', Animation.Walk, orientation, resource));
-      } else {
-        setFrames(getFramesFromType('doctorinfected', Animation.Idle, orientation, resource));
-      }
-    } else if (animation === Animation.Walk) {
-      setFrames(getFramesFromType(type, Animation.Walk, orientation, resource));
+      setFrames(getFramesFromType('doctorinfected', animation, orientation, resource));
     } else {
-      setFrames(getFramesFromType(type, Animation.Idle, orientation, resource));
+      setFrames(getFramesFromType(type, animation, orientation, resource));
     }
     setCurrentFrame(0);
     setCounterAnim(0);
@@ -96,29 +96,29 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
   }, []);
 
   useTick((delta) => {
-    if (shouldAnimate) {
-      setCounterAnim((prevCounter) => prevCounter + delta);
+    if (!shouldAnimate) { return; }
+    setCounterAnim((prevCounter) => prevCounter + delta);
 
-      if (counterAnim > 10) {
-        if (animation === Animation.Idle) {
-          // if IDLE, loop through frames
-          if (frames && frames.length > 0) {
-            setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
-          }
-        } else {
-          // otherwise we do only the frames, and then go IDLE
-          if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
-            setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
-          } else if (animation === Animation.Death) {
-            setShouldAnimate(false);
-          } else {
-            // last frame of the animation
-            setCurrentFrame(0);
-            setAnimation(Animation.Idle);
-          }
+    if (counterAnim > 10) {
+      console.log("set current frame C");
+      if (animation === Animation.Idle) {
+        // if IDLE, loop through frames
+        if (frames && frames.length > 0) {
+          setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
         }
-        setCounterAnim(0);
+      } else {
+        // otherwise we do only the frames, and then go IDLE
+        if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
+          setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
+        } else if (animation === Animation.Death) {
+          setShouldAnimate(false);
+        } else {
+          // last frame of the animation
+          setCurrentFrame(0);
+          setAnimation(Animation.Idle);
+        }
       }
+      setCounterAnim(0);
     }
   });
 
@@ -126,7 +126,10 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     return null;
   }
 
-  const hintText = !lifeStatus.isDead && !lifeStatus.isInfected ? lifeStatus.infectionStacks + '/' + Math.floor(nbInfectionStacks) : '';
+  let hintText = username
+  if (isLocalPlayer) {
+    hintText = !lifeStatus.isDead && !lifeStatus.isInfected ? lifeStatus.infectionStacks + '/' + Math.floor(nbInfectionStacks) : '';
+  }
 
   return (
     <>
@@ -140,6 +143,9 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
         textures={frames}
         initialFrame={currentFrame}
       />
+      {
+
+      }
       <Text
         text={hintText}
         zIndex={to_grid_coordinate(absolutePosition).x + to_grid_coordinate(absolutePosition).y}
