@@ -79,4 +79,4 @@ or (depends on OS)
 
 4. **Terminal 4 - Client Front end:**
 
-``` cd client && yarn && yarn dev ```
+``` cd client && bun i && bun dev ```
