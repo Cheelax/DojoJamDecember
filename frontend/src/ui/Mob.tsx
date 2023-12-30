@@ -109,35 +109,31 @@ const Mob: React.FC<MobProps> = ({
   }, []);
 
   useTick((delta) => {
-    if (!shouldAnimate) {
-      return;
-    }
-    setCounterAnim((prevCounter) => prevCounter + delta);
+    if (shouldAnimate) {
+      setCounterAnim((prevCounter) => prevCounter + delta);
 
-    if (counterAnim > 10) {
-      console.log('set current frame C');
-      if (animation === Animation.Idle) {
-        // if IDLE, loop through frames
-        if (frames && frames.length > 0) {
-          setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
-        }
-      } else {
-        // otherwise we do only the frames, and then go IDLE
-        if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
-          setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
-        } else if (animation === Animation.Death) {
-          console.log('END SHOULD ANIMATE');
-          setShouldAnimate(false);
+      if (counterAnim > 10) {
+        if (animation === Animation.Idle) {
+          // if IDLE, loop through frames
+          if (frames && frames.length > 0) {
+            setCurrentFrame((prevFrame) => (prevFrame + 1) % frames.length); // change to the next frame and back to f0
+          }
         } else {
-          // last frame of the animation
-          setCurrentFrame(0);
-          setAnimation(Animation.Idle);
+          // otherwise we do only the frames, and then go IDLE
+          if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
+            setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
+          } else if (animation === Animation.Death) {
+            setShouldAnimate(false);
+          } else {
+            // last frame of the animation
+            setCurrentFrame(0);
+            setAnimation(Animation.Idle);
+          }
         }
+        setCounterAnim(0);
       }
-      setCounterAnim(0);
     }
   });
-
   if (resource === undefined || lifeStatus === undefined) {
     return null;
   }
