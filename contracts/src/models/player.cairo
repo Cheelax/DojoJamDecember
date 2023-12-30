@@ -6,6 +6,7 @@ struct Player {
     x: u16,
     y: u16,
     orientation: u8, // use enum
+    amount_vested: u128,
 }
 
 // 0:strength

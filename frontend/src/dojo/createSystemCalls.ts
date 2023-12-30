@@ -9,7 +9,6 @@ export function createSystemCalls({ execute }: SetupNetworkResult) {
       await execute(signer, 'plaguestark::lords::lords', 'approve', [
         import.meta.env.VITE_PUBLIC_ACTIONS_ADDRESS!,
         1000,
-        0,
       ]);
     } catch (e) {
       console.error(e);
@@ -26,7 +25,7 @@ export function createSystemCalls({ execute }: SetupNetworkResult) {
 
   const spawn = async (signer: Account, amount: number, character: number) => {
     try {
-      await execute(signer, 'plaguestark::actions::actions', 'spawn', [amount, 0, character]);
+      await execute(signer, 'plaguestark::actions::actions', 'spawn', [amount, character]);
     } catch (e) {
       console.error(e);
     }

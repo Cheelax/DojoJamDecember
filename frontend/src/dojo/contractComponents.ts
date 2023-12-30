@@ -39,11 +39,15 @@ export function defineContractComponents(world: World) {
     ERC20Balance: (() => {
 	    return defineComponent(
 	      world,
-	      { token: RecsType.String, account: RecsType.String, amount: RecsType.BigInt },
+	      {
+          token: RecsType.String,
+          account: RecsType.String,
+          amount: RecsType.BigInt,
+        },
 	      {
 	        metadata: {
 	          name: "ERC20Balance",
-	          types: ["contractaddress","contractaddress","u256"],
+	          types: ["contractaddress","contractaddress","u128"],
 	          customTypes: [],
 	        },
 	      }

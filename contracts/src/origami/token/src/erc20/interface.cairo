@@ -2,14 +2,14 @@ use starknet::ContractAddress;
 
 #[starknet::interface]
 trait IERC20<TState> {
-    fn total_supply(self: @TState) -> u256;
-    fn balance_of(self: @TState, account: ContractAddress) -> u256;
-    fn allowance(self: @TState, owner: ContractAddress, spender: ContractAddress) -> u256;
-    fn transfer(ref self: TState, recipient: ContractAddress, amount: u256) -> bool;
+    fn total_supply(self: @TState) -> u128;
+    fn balance_of(self: @TState, account: ContractAddress) -> u128;
+    fn allowance(self: @TState, owner: ContractAddress, spender: ContractAddress) -> u128;
+    fn transfer(ref self: TState, recipient: ContractAddress, amount: u128) -> bool;
     fn transfer_from(
-        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u256
+        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u128
     ) -> bool;
-    fn approve(ref self: TState, spender: ContractAddress, amount: u256) -> bool;
+    fn approve(ref self: TState, spender: ContractAddress, amount: u128) -> bool;
 }
 
 #[starknet::interface]
@@ -21,50 +21,50 @@ trait IERC20Metadata<TState> {
 
 #[starknet::interface]
 trait ISafeAllowance<TState> {
-    fn increase_allowance(ref self: TState, spender: ContractAddress, added_value: u256) -> bool;
+    fn increase_allowance(ref self: TState, spender: ContractAddress, added_value: u128) -> bool;
     fn decrease_allowance(
-        ref self: TState, spender: ContractAddress, subtracted_value: u256
+        ref self: TState, spender: ContractAddress, subtracted_value: u128
     ) -> bool;
 }
 
 #[starknet::interface]
 trait IERC20Camel<TState> {
-    fn totalSupply(self: @TState) -> u256;
-    fn balanceOf(self: @TState, account: ContractAddress) -> u256;
-    fn allowance(self: @TState, owner: ContractAddress, spender: ContractAddress) -> u256;
-    fn transfer(ref self: TState, recipient: ContractAddress, amount: u256) -> bool;
+    fn totalSupply(self: @TState) -> u128;
+    fn balanceOf(self: @TState, account: ContractAddress) -> u128;
+    fn allowance(self: @TState, owner: ContractAddress, spender: ContractAddress) -> u128;
+    fn transfer(ref self: TState, recipient: ContractAddress, amount: u128) -> bool;
     fn transferFrom(
-        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u256
+        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u128
     ) -> bool;
-    fn approve(ref self: TState, spender: ContractAddress, amount: u256) -> bool;
+    fn approve(ref self: TState, spender: ContractAddress, amount: u128) -> bool;
 }
 
 #[starknet::interface]
 trait IERC20CamelOnly<TState> {
-    fn totalSupply(self: @TState) -> u256;
-    fn balanceOf(self: @TState, account: ContractAddress) -> u256;
+    fn totalSupply(self: @TState) -> u128;
+    fn balanceOf(self: @TState, account: ContractAddress) -> u128;
     fn transferFrom(
-        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u256
+        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u128
     ) -> bool;
 }
 
 #[starknet::interface]
 trait ISafeAllowanceCamel<TState> {
-    fn increaseAllowance(ref self: TState, spender: ContractAddress, addedValue: u256) -> bool;
-    fn decreaseAllowance(ref self: TState, spender: ContractAddress, subtractedValue: u256) -> bool;
+    fn increaseAllowance(ref self: TState, spender: ContractAddress, addedValue: u128) -> bool;
+    fn decreaseAllowance(ref self: TState, spender: ContractAddress, subtractedValue: u128) -> bool;
 }
 
 #[starknet::interface]
 trait ERC20ABI<TState> {
     // IERC20
-    fn total_supply(self: @TState) -> u256;
-    fn balance_of(self: @TState, account: ContractAddress) -> u256;
-    fn allowance(self: @TState, owner: ContractAddress, spender: ContractAddress) -> u256;
-    fn transfer(ref self: TState, recipient: ContractAddress, amount: u256) -> bool;
+    fn total_supply(self: @TState) -> u128;
+    fn balance_of(self: @TState, account: ContractAddress) -> u128;
+    fn allowance(self: @TState, owner: ContractAddress, spender: ContractAddress) -> u128;
+    fn transfer(ref self: TState, recipient: ContractAddress, amount: u128) -> bool;
     fn transfer_from(
-        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u256
+        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u128
     ) -> bool;
-    fn approve(ref self: TState, spender: ContractAddress, amount: u256) -> bool;
+    fn approve(ref self: TState, spender: ContractAddress, amount: u128) -> bool;
 
     // IERC20Metadata
     fn name(self: @TState) -> felt252;
@@ -72,19 +72,19 @@ trait ERC20ABI<TState> {
     fn decimals(self: @TState) -> u8;
 
     // IERC20SafeAllowance
-    fn increase_allowance(ref self: TState, spender: ContractAddress, added_value: u256) -> bool;
+    fn increase_allowance(ref self: TState, spender: ContractAddress, added_value: u128) -> bool;
     fn decrease_allowance(
-        ref self: TState, spender: ContractAddress, subtracted_value: u256
+        ref self: TState, spender: ContractAddress, subtracted_value: u128
     ) -> bool;
 
     // IERC20CamelOnly
-    fn totalSupply(self: @TState) -> u256;
-    fn balanceOf(self: @TState, account: ContractAddress) -> u256;
+    fn totalSupply(self: @TState) -> u128;
+    fn balanceOf(self: @TState, account: ContractAddress) -> u128;
     fn transferFrom(
-        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u256
+        ref self: TState, sender: ContractAddress, recipient: ContractAddress, amount: u128
     ) -> bool;
 
     // IERC20CamelSafeAllowance
-    fn increaseAllowance(ref self: TState, spender: ContractAddress, addedValue: u256) -> bool;
-    fn decreaseAllowance(ref self: TState, spender: ContractAddress, subtractedValue: u256) -> bool;
+    fn increaseAllowance(ref self: TState, spender: ContractAddress, addedValue: u128) -> bool;
+    fn decreaseAllowance(ref self: TState, spender: ContractAddress, subtractedValue: u128) -> bool;
 }

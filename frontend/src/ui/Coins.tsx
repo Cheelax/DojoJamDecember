@@ -20,9 +20,8 @@ const Coins: React.FC<CoinsProps> = ({ networkLayer, localPlayer }) => {
     // Retrieve coins
     useEffect(() => {
         defineSystem(world, [Has(ERC20Balance)], function ({ value: [newValue] }: any) {
-            console.log(newValue)
             if (newValue && newValue.account === parseInt(localPlayer.id)) {
-                setCoins(newValue.amount);
+                setCoins(newValue);
             }
         });
     }, []);
@@ -37,7 +36,7 @@ const Coins: React.FC<CoinsProps> = ({ networkLayer, localPlayer }) => {
               anchor={0.5}
               x={1280 - 110} y={30}
             >
-                <Text text={`${coins.balance}`} x={-100} y={-20} style={
+                <Text text={`${coins.amount}`} x={-110} y={-20} style={
                     new TextStyle({
                         align: 'right',
                         fontFamily: '"Source Sans Pro", Helvetica, sans-serif',

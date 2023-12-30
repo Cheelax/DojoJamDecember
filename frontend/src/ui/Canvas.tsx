@@ -59,8 +59,6 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
         }
       }
     }
-    console.log('maxIndex');
-    console.log(maxIndex);
     let character = maxIndex;
     spawn(account, 10, character);
 

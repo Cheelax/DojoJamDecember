@@ -8,7 +8,7 @@ struct ERC20Balance {
     token: ContractAddress,
     #[key]
     account: ContractAddress,
-    amount: u256,
+    amount: u128,
 }
 
 #[derive(Model, Copy, Drop, Serde)]
@@ -19,7 +19,7 @@ struct ERC20Allowance {
     owner: ContractAddress,
     #[key]
     spender: ContractAddress,
-    amount: u256,
+    amount: u128,
 }
 
 #[derive(Model, Copy, Drop, Serde)]
@@ -28,5 +28,5 @@ struct ERC20Meta {
     token: ContractAddress,
     name: felt252,
     symbol: felt252,
-    total_supply: u256,
+    total_supply: u128,
 }

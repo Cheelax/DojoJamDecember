@@ -36,7 +36,7 @@ echo "Initializing ERC20 LORDS token..."
 
 # Initialize ERC20
 # sozo execute $LORDS_ADDRESS initializer --calldata $WORLD_ADDRESS,0x4c4f524453,0x4c4f524453,0x100000,0x0,0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973
-sozo execute $LORDS_ADDRESS initializer --calldata $WORLD_ADDRESS,0x4c4f524453,0x4c4f524453,0x100000,0x0,$LORDS_ADDRESS
+sozo execute $LORDS_ADDRESS initializer --calldata $WORLD_ADDRESS,0x4c4f524453,0x4c4f524453,0x100000,$LORDS_ADDRESS
 
 # Approve actions
 # sozo execute $LORDS_ADDRESS approve --calldata 0x517ececd29116499f4a1b64b094da79ba08dfd54a3edaa316134c41f8160973,0x0,0x100000
