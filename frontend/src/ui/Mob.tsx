@@ -63,6 +63,7 @@ const Mob: React.FC<MobProps> = ({
     if (resource === undefined || orientation === undefined) return;
     if (lifeStatus.isDead) {
       setFrames(getFramesFromType('doctorinfected', Animation.Death, orientation, resource));
+      setAnimation(Animation.Death);
     } else if (lifeStatus.isInfected) {
       if (animation === Animation.Walk) {
         setFrames(getFramesFromType('doctorinfected', Animation.Walk, orientation, resource));
@@ -127,8 +128,7 @@ const Mob: React.FC<MobProps> = ({
   }, []);
 
   useTick((delta) => {
-    if (isLocalPlayer) {
-      console.log('shouldAnimate', shouldAnimate);
+    if (isLocalPlayer && Animation.Death === animation) {
       console.log('animation', animation);
     }
 
