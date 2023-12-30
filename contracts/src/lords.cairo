@@ -1,8 +1,8 @@
 #[starknet::contract]
 mod lords {
-    use token::erc20::models::{ERC20Allowance, ERC20Balance, ERC20Meta};
+    use plaguestark::erc20::models::{ERC20Allowance, ERC20Balance, ERC20Meta};
     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
-    use token::erc20::interface;
+    use plaguestark::erc20::interface;
     use integer::BoundedInt;
     use starknet::ContractAddress;
     use starknet::{get_caller_address, get_contract_address};

@@ -22,12 +22,8 @@ mod systems {
 
 use plaguestark::data::v00 as config;
 
-mod origami {
-    mod token {
-        mod src {
-            mod erc20 {
-                mod models;
-            }
-        }
-    }
+mod erc20 {
+    mod erc20;
+    mod interface;
+    mod models;
 }
