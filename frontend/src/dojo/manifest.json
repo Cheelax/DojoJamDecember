@@ -949,7 +949,7 @@
     {
       "name": "plaguestark::actions::actions",
       "address": "0x2ca8dbe9c89ee5a3fd917f790d34032faa623b0466f40c0e8e93cac1e92b0f0",
-      "class_hash": "0x7a872874c4d880f4fd1d1204bb31c365437db5441c1bb2aefee2487719b6e61",
+      "class_hash": "0x4754e54db9152c7d678fdaccf1e5561ac5f33f5dc7b789dc25f5ca7e96dc8fe",
       "abi": [
         {
           "type": "impl",
@@ -989,20 +989,6 @@
           "interface_name": "plaguestark::actions::IActions"
         },
         {
-          "type": "struct",
-          "name": "core::integer::u256",
-          "members": [
-            {
-              "name": "low",
-              "type": "core::integer::u128"
-            },
-            {
-              "name": "high",
-              "type": "core::integer::u128"
-            }
-          ]
-        },
-        {
           "type": "interface",
           "name": "plaguestark::actions::IActions",
           "items": [
@@ -1024,7 +1010,7 @@
               "inputs": [
                 {
                   "name": "amount",
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 },
                 {
                   "name": "character",
@@ -1135,9 +1121,297 @@
       "computed": []
     },
     {
+      "name": "plaguestark::lootsurvivor::lootsurvivor",
+      "address": "0x2a7f1267bb92db616fae0f62bd8b98c11efe0e3a8cdf78418fd653f2949fdf9",
+      "class_hash": "0x10600e646e329dfdb527222a396f663a4eebebba776ad84ba8d80d24eda2c5",
+      "abi": [
+        {
+          "type": "impl",
+          "name": "WorldProviderImpl",
+          "interface_name": "dojo::world::IWorldProvider"
+        },
+        {
+          "type": "struct",
+          "name": "dojo::world::IWorldDispatcher",
+          "members": [
+            {
+              "name": "contract_address",
+              "type": "core::starknet::contract_address::ContractAddress"
+            }
+          ]
+        },
+        {
+          "type": "interface",
+          "name": "dojo::world::IWorldProvider",
+          "items": [
+            {
+              "type": "function",
+              "name": "world",
+              "inputs": [],
+              "outputs": [
+                {
+                  "type": "dojo::world::IWorldDispatcher"
+                }
+              ],
+              "state_mutability": "view"
+            }
+          ]
+        },
+        {
+          "type": "impl",
+          "name": "UpgradableImpl",
+          "interface_name": "dojo::components::upgradeable::IUpgradeable"
+        },
+        {
+          "type": "interface",
+          "name": "dojo::components::upgradeable::IUpgradeable",
+          "items": [
+            {
+              "type": "function",
+              "name": "upgrade",
+              "inputs": [
+                {
+                  "name": "new_class_hash",
+                  "type": "core::starknet::class_hash::ClassHash"
+                }
+              ],
+              "outputs": [],
+              "state_mutability": "external"
+            }
+          ]
+        },
+        {
+          "type": "function",
+          "name": "dojo_resource",
+          "inputs": [],
+          "outputs": [
+            {
+              "type": "core::felt252"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "type": "enum",
+          "name": "core::bool",
+          "variants": [
+            {
+              "name": "False",
+              "type": "()"
+            },
+            {
+              "name": "True",
+              "type": "()"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "plaguestark::lootsurvivor::Adventurer",
+          "members": [
+            {
+              "name": "last_action_block",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "health",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "gold",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "weapon_id",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "weapon_xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "weapon_metadata",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "chest_id",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "chest_xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "chest_metadata",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "head_id",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "head_xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "head_metadata",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "waist_id",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "waist_xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "waist_metadata",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "foot_id",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "foot_xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "foot_metadata",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "hand_id",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "hand_xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "hand_metadata",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "neck_id",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "neck_xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "neck_metadata",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "ring_id",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "ring_xp",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "ring_metadata",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "beast_health",
+              "type": "core::integer::u16"
+            },
+            {
+              "name": "stat_points_available",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "actions_per_block",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "mutated",
+              "type": "core::bool"
+            },
+            {
+              "name": "strength",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "dexterity",
+              "type": "core::integer::u8"
+            },
+            {
+              "name": "vitality",
+              "type": "core::integer::u8"
+            }
+          ]
+        },
+        {
+          "type": "function",
+          "name": "getAdventurer",
+          "inputs": [
+            {
+              "name": "id",
+              "type": "core::felt252"
+            }
+          ],
+          "outputs": [
+            {
+              "type": "plaguestark::lootsurvivor::Adventurer"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "type": "event",
+          "name": "dojo::components::upgradeable::upgradeable::Upgraded",
+          "kind": "struct",
+          "members": [
+            {
+              "name": "class_hash",
+              "type": "core::starknet::class_hash::ClassHash",
+              "kind": "data"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "dojo::components::upgradeable::upgradeable::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "Upgraded",
+              "type": "dojo::components::upgradeable::upgradeable::Upgraded",
+              "kind": "nested"
+            }
+          ]
+        },
+        {
+          "type": "event",
+          "name": "plaguestark::lootsurvivor::lootsurvivor::Event",
+          "kind": "enum",
+          "variants": [
+            {
+              "name": "UpgradeableEvent",
+              "type": "dojo::components::upgradeable::upgradeable::Event",
+              "kind": "nested"
+            }
+          ]
+        }
+      ],
+      "reads": [],
+      "writes": [],
+      "computed": []
+    },
+    {
       "name": "plaguestark::lords::lords",
       "address": "0x7802dad86390bd868f00c229c887c4e03848dc6876d457d8c9b379e33812d08",
-      "class_hash": "0x3dc9c51e4877f1718331c1e53858e6d752054d6e000d5e1ece2eb1b375100",
+      "class_hash": "0x7292e947bf45c2afd568cc96f06c7749b4e28d848358aa2a5003b1436202f0d",
       "abi": [
         {
           "type": "impl",
@@ -1189,20 +1463,6 @@
           "interface_name": "token::erc20::interface::IERC20"
         },
         {
-          "type": "struct",
-          "name": "core::integer::u256",
-          "members": [
-            {
-              "name": "low",
-              "type": "core::integer::u128"
-            },
-            {
-              "name": "high",
-              "type": "core::integer::u128"
-            }
-          ]
-        },
-        {
           "type": "enum",
           "name": "core::bool",
           "variants": [
@@ -1226,7 +1486,7 @@
               "inputs": [],
               "outputs": [
                 {
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "state_mutability": "view"
@@ -1242,7 +1502,7 @@
               ],
               "outputs": [
                 {
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "state_mutability": "view"
@@ -1262,7 +1522,7 @@
               ],
               "outputs": [
                 {
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "state_mutability": "view"
@@ -1277,7 +1537,7 @@
                 },
                 {
                   "name": "amount",
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "outputs": [
@@ -1301,7 +1561,7 @@
                 },
                 {
                   "name": "amount",
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "outputs": [
@@ -1321,7 +1581,7 @@
                 },
                 {
                   "name": "amount",
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "outputs": [
@@ -1348,7 +1608,7 @@
               "inputs": [],
               "outputs": [
                 {
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "state_mutability": "view"
@@ -1364,7 +1624,7 @@
               ],
               "outputs": [
                 {
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "state_mutability": "view"
@@ -1383,7 +1643,7 @@
                 },
                 {
                   "name": "amount",
-                  "type": "core::integer::u256"
+                  "type": "core::integer::u128"
                 }
               ],
               "outputs": [
@@ -1413,7 +1673,7 @@
             },
             {
               "name": "initial_supply",
-              "type": "core::integer::u256"
+              "type": "core::integer::u128"
             },
             {
               "name": "recipient",
@@ -1440,7 +1700,7 @@
             },
             {
               "name": "added_value",
-              "type": "core::integer::u256"
+              "type": "core::integer::u128"
             }
           ],
           "outputs": [
@@ -1460,7 +1720,7 @@
             },
             {
               "name": "addedValue",
-              "type": "core::integer::u256"
+              "type": "core::integer::u128"
             }
           ],
           "outputs": [
@@ -1480,7 +1740,7 @@
             },
             {
               "name": "subtracted_value",
-              "type": "core::integer::u256"
+              "type": "core::integer::u128"
             }
           ],
           "outputs": [
@@ -1500,7 +1760,7 @@
             },
             {
               "name": "subtractedValue",
-              "type": "core::integer::u256"
+              "type": "core::integer::u128"
             }
           ],
           "outputs": [
@@ -1527,7 +1787,7 @@
             },
             {
               "name": "value",
-              "type": "core::integer::u256",
+              "type": "core::integer::u128",
               "kind": "data"
             }
           ]
@@ -1549,7 +1809,7 @@
             },
             {
               "name": "value",
-              "type": "core::integer::u256",
+              "type": "core::integer::u128",
               "kind": "data"
             }
           ]
@@ -1761,6 +2021,198 @@
       ]
     },
     {
+      "name": "plaguestark::models::entity::entity_list",
+      "members": [
+        {
+          "name": "id",
+          "type": "u32",
+          "key": true
+        },
+        {
+          "name": "entity_id",
+          "type": "felt252",
+          "key": false
+        },
+        {
+          "name": "next_id",
+          "type": "u32",
+          "key": false
+        },
+        {
+          "name": "prev_id",
+          "type": "u32",
+          "key": false
+        },
+        {
+          "name": "last_id",
+          "type": "u32",
+          "key": false
+        }
+      ],
+      "class_hash": "0x111aa4c06540df8c81640e3be38d0b3732745ac14696a2fe1c02552ad27fa77",
+      "abi": [
+        {
+          "type": "function",
+          "name": "name",
+          "inputs": [],
+          "outputs": [
+            {
+              "type": "core::felt252"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "unpacked_size",
+          "inputs": [],
+          "outputs": [
+            {
+              "type": "core::integer::u32"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "type": "function",
+          "name": "packed_size",
+          "inputs": [],
+          "outputs": [
+            {
+              "type": "core::integer::u32"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "type": "struct",
+          "name": "core::array::Span::<core::integer::u8>",
+          "members": [
+            {
+              "name": "snapshot",
+              "type": "@core::array::Array::<core::integer::u8>"
+            }
+          ]
+        },
+        {
+          "type": "function",
+          "name": "layout",
+          "inputs": [],
+          "outputs": [
+            {
+              "type": "core::array::Span::<core::integer::u8>"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "type": "struct",
+          "name": "core::array::Span::<core::felt252>",
+          "members": [
+            {
+              "name": "snapshot",
+              "type": "@core::array::Array::<core::felt252>"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "core::array::Span::<core::array::Span::<core::felt252>>",
+          "members": [
+            {
+              "name": "snapshot",
+              "type": "@core::array::Array::<core::array::Span::<core::felt252>>"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "dojo::database::introspect::Struct",
+          "members": [
+            {
+              "name": "name",
+              "type": "core::felt252"
+            },
+            {
+              "name": "attrs",
+              "type": "core::array::Span::<core::felt252>"
+            },
+            {
+              "name": "children",
+              "type": "core::array::Span::<core::array::Span::<core::felt252>>"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "core::array::Span::<(core::felt252, core::array::Span::<core::felt252>)>",
+          "members": [
+            {
+              "name": "snapshot",
+              "type": "@core::array::Array::<(core::felt252, core::array::Span::<core::felt252>)>"
+            }
+          ]
+        },
+        {
+          "type": "struct",
+          "name": "dojo::database::introspect::Enum",
+          "members": [
+            {
+              "name": "name",
+              "type": "core::felt252"
+            },
+            {
+              "name": "attrs",
+              "type": "core::array::Span::<core::felt252>"
+            },
+            {
+              "name": "children",
+              "type": "core::array::Span::<(core::felt252, core::array::Span::<core::felt252>)>"
+            }
+          ]
+        },
+        {
+          "type": "enum",
+          "name": "dojo::database::introspect::Ty",
+          "variants": [
+            {
+              "name": "Primitive",
+              "type": "core::felt252"
+            },
+            {
+              "name": "Struct",
+              "type": "dojo::database::introspect::Struct"
+            },
+            {
+              "name": "Enum",
+              "type": "dojo::database::introspect::Enum"
+            },
+            {
+              "name": "Tuple",
+              "type": "core::array::Span::<core::array::Span::<core::felt252>>"
+            }
+          ]
+        },
+        {
+          "type": "function",
+          "name": "schema",
+          "inputs": [],
+          "outputs": [
+            {
+              "type": "dojo::database::introspect::Ty"
+            }
+          ],
+          "state_mutability": "view"
+        },
+        {
+          "type": "event",
+          "name": "plaguestark::models::entity::entity_list::Event",
+          "kind": "enum",
+          "variants": []
+        }
+      ]
+    },
+    {
       "name": "plaguestark::models::entity_infection::entity_life_status",
       "members": [
         {
@@ -1779,6 +2231,11 @@
           "key": false
         },
         {
+          "name": "infected_by",
+          "type": "felt252",
+          "key": false
+        },
+        {
           "name": "deadAt",
           "type": "u64",
           "key": false
@@ -1789,7 +2246,7 @@
           "key": false
         }
       ],
-      "class_hash": "0x26677b4b1810195e097e6d0f0eeb62afb1f1a89082ac65912ac5298dded8867",
+      "class_hash": "0x51aa14e1fc3dc77dadbe39fdf7eceaa0569014ececea2922a14d8e225d3c078",
       "abi": [
         {
           "type": "function",
@@ -2338,9 +2795,14 @@
           "name": "orientation",
           "type": "u8",
           "key": false
+        },
+        {
+          "name": "amount_vested",
+          "type": "u128",
+          "key": false
         }
       ],
-      "class_hash": "0x7c5ec3fdc0d127e17c266d51fd6ed395f3fce5a3e7cb68c693bae86059fd42b",
+      "class_hash": "0x290cc399237e8a913d931eb827337b9e5b34981c10eb4220141b8f1517698d1",
       "abi": [
         {
           "type": "function",
@@ -3251,11 +3713,11 @@
         },
         {
           "name": "amount",
-          "type": "u256",
+          "type": "u128",
           "key": false
         }
       ],
-      "class_hash": "0x5be3520e15b4bc0ec3273adf9ae56eb67d80f3e499bdefefb65282d5dc93297",
+      "class_hash": "0x6e32f6fb9f79768281724a461ec6a88b734d2039237c63d71d356b68a696ed0",
       "abi": [
         {
           "type": "function",
@@ -3433,11 +3895,11 @@
         },
         {
           "name": "amount",
-          "type": "u256",
+          "type": "u128",
           "key": false
         }
       ],
-      "class_hash": "0x396de1b1c75805f4eb71a36a16990087061493fdd52fd61654bff44bed8fff",
+      "class_hash": "0x5517dc1fbd5a76cb3551eeed0764c5e7e3924fdea06707306940d54c50b34b4",
       "abi": [
         {
           "type": "function",
@@ -3620,11 +4082,11 @@
         },
         {
           "name": "total_supply",
-          "type": "u256",
+          "type": "u128",
           "key": false
         }
       ],
-      "class_hash": "0x206b8eef0338c154993f85a00731fbdafcaf5e49e814b3aaad722437cd60e90",
+      "class_hash": "0x3024f6d40159602176ea5c9fca4031685f596a344f071b06c4eec0bbd619641",
       "abi": [
         {
           "type": "function",

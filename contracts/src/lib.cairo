@@ -2,6 +2,7 @@ mod constants;
 mod actions;
 mod lords;
 mod randomness;
+mod lootsurvivor;
 
 mod data {
     mod v00;

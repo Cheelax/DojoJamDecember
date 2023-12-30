@@ -34,7 +34,7 @@ function App() {
 					<Canvas networkLayer={networkLayer} />
 				</div>
 			) : (
-				<NewGame />
+				<NewGame networkLayer={networkLayer}/>
 			)}
 		</div>
 	);
