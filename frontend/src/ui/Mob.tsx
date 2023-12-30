@@ -78,14 +78,6 @@ const Mob: React.FC<MobProps> = ({
   }, [animation, resource, orientation, lifeStatus]);
 
   useEffect(() => {
-    if (lifeStatus.isDead) {
-      console.log('set current frame DEATH (POPPING)');
-      setCurrentFrame(1);
-      setShouldAnimate(false);
-    }
-  }, []);
-
-  useEffect(() => {
     if (targetPosition === undefined) return;
 
     setAbsoluteTargetPosition(to_center(to_screen_coordinate(targetPosition.x, targetPosition.y)));
@@ -114,15 +106,19 @@ const Mob: React.FC<MobProps> = ({
     }
   }, [isMoving]);
 
-  // Only at init
   useEffect(() => {
     const load = async () => {
       const resource = await Assets.load([`assets/${type}/${type}.json`, `assets/doctorinfected/doctorinfected.json`]);
-      setResource({
-        ...resource,
-      });
+      setResource(resource);
 
-      setFrames(getFramesFromType(type, Animation.Idle, Direction.SE, resource));
+      if (lifeStatus.isDead) {
+        const deathFrames = getFramesFromType('doctorinfected', Animation.Death, Direction.SE, resource);
+        setFrames(deathFrames);
+        setCurrentFrame(deathFrames.length - 1);
+        setShouldAnimate(false);
+      } else {
+        setFrames(getFramesFromType(type, Animation.Idle, Direction.SE, resource));
+      }
     };
     load();
   }, []);
@@ -130,6 +126,9 @@ const Mob: React.FC<MobProps> = ({
   useTick((delta) => {
     if (shouldAnimate) {
       setCounterAnim((prevCounter) => prevCounter + delta);
+      if (animation === Animation.Death && currentFrame === frames.length - 1) {
+        setShouldAnimate(false);
+      }
 
       if (counterAnim > 10) {
         if (animation === Animation.Idle) {
