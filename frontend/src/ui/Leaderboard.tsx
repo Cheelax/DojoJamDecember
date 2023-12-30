@@ -15,16 +15,26 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ networkLayer, localPlayer }) 
     components: { PlayerScore },
   } = networkLayer;
   const [playersScores, setPlayersScores] = useState<any>({});
-  const [list, setList] = useState<any>();
+  const [list, setList] = useState<any>([]);
 
   // Compute players scores
   useEffect(() => {
-    if (playersScores === undefined) return;
+    if (playersScores === undefined || localPlayer === undefined) return;
     // Sort players scores
-    const newList = Object.values(playersScores);
+    let newList = Object.values(playersScores);
     newList.sort((a: any, b: any) => b.nb_tiles_explored - a.nb_tiles_explored);
-    setList(newList.slice(0, 5));
-  }, [playersScores]);
+    let isLocalPlayerInList = false
+    newList = newList.slice(0, 5)
+    newList.forEach((e:any) => {
+      if (e && localPlayer && e.id === localPlayer.id) {
+        isLocalPlayerInList = true;
+      }
+    })
+    if (localPlayer && !isLocalPlayerInList && playersScores[localPlayer.id]) {
+      newList[5] = playersScores[localPlayer.id]
+    }
+    setList(newList);
+  }, [playersScores, localPlayer]);
 
   // Retrieve players scores
   useEffect(() => {
@@ -70,7 +80,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ networkLayer, localPlayer }) 
           <Container key={`${elem.id.toString()}-container`}>
             <Text
               key={elem.id.toString() + 'name'}
-              text={localPlayer.id === elem.id ? 'you' : feltToStr(elem.name) }
+              text={localPlayer && localPlayer.id === elem.id ? 'you' : feltToStr(elem.name || '') }
               x={20}
               y={45 + (key + 1) * 20}
               style={

@@ -100,7 +100,6 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     setCounterAnim((prevCounter) => prevCounter + delta);
 
     if (counterAnim > 10) {
-      console.log("set current frame C");
       if (animation === Animation.Idle) {
         // if IDLE, loop through frames
         if (frames && frames.length > 0) {
