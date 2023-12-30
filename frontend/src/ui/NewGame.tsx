@@ -1,11 +1,14 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { adventurerList, AdventurerType } from '../utils/adventurerList';
 import StatsCard from './StatsCard';
 import NewGameButton from './NewGameButton';
 import { store } from '../store';
 import Logo from '../assets/plague.webp';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
-import { sound as pixiSound } from '@pixi/sound'
+import { sound as pixiSound } from '@pixi/sound';
+import RulesButton from './RulesButton';
+import FaucetButton from './FaucetButton';
+import Modal from './Modal';
 
 interface NewGameProps {
   onPseudoChange?: (pseudo: string) => void;
@@ -15,6 +18,17 @@ interface NewGameProps {
 const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
   const { setLoggedIn, setUsername, username, setSelectedAdventurer, selectedAdventurer } = store();
   const [adventurers, setAdventurers] = useState<AdventurerType[]>(adventurerList);
+
+  const [isRulesModalOpen, setRulesModalOpen] = useState(false);
+
+  const openRulesModal = () => {
+    setRulesModalOpen(true);
+  };
+
+  // Function to close the rules modal
+  const closeRulesModal = () => {
+    setRulesModalOpen(false);
+  };
 
   useEffect(() => {
     if (!networkLayer) return;
@@ -45,6 +59,22 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
     fetchAdventurers();
   }, [networkLayer]);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        closeRulesModal();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const updateAdventurerList = (newValues: any[]) => {
     const updatedAdventurers = adventurerList.map((adventurer, index) => {
       if (index < newValues.length) {
@@ -72,7 +102,7 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
   };
 
   const login = () => {
-	pixiSound.play('start_game')
+    pixiSound.play('start_game');
     setLoggedIn(true);
   };
 
@@ -101,15 +131,29 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
               key={index}
               data={adventurer}
               onClick={() => {
-				pixiSound.play('select_player')
-				setSelectedAdventurer(adventurer)
-			  }}
+                pixiSound.play('select_player');
+                setSelectedAdventurer(adventurer);
+              }}
               isSelected={selectedAdventurer === null ? undefined : selectedAdventurer.name === adventurer.name}
             />
           ))}
         </div>
       </div>
-      <NewGameButton onClick={login} disabled={!username || !selectedAdventurer} />
+      <div className="flex justify-between space-x-4">
+        <RulesButton onClick={openRulesModal} />
+        <FaucetButton
+          onClick={() => {
+            if (!networkLayer) return;
+            const {
+              account,
+              systemCalls: { faucetLords },
+            } = networkLayer;
+            faucetLords(account);
+          }}
+        />
+        <NewGameButton onClick={login} disabled={!username || !selectedAdventurer} />
+      </div>
+      <Modal isOpen={isRulesModalOpen} onClose={closeRulesModal} modalRef={modalRef}></Modal>
     </div>
   );
 };
