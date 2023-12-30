@@ -119,7 +119,7 @@ const Mob: React.FC<MobProps> = ({
         console.log('DEATH POPED');
         console.log(deathFrames.length);
         setShouldAnimate(false);
-        setCurrentFrame(0);
+        setCurrentFrame(deathFrames.length - 1);
       } else {
         setFrames(getFramesFromType(type, Animation.Idle, Direction.SE, resource));
       }
@@ -128,11 +128,6 @@ const Mob: React.FC<MobProps> = ({
   }, []);
 
   useTick((delta) => {
-    if (Animation.Death === animation) {
-      console.log('animation', animation);
-      console.log('shouldAnimate', shouldAnimate);
-    }
-
     if (shouldAnimate) {
       setCounterAnim((prevCounter) => prevCounter + delta);
       if (animation === Animation.Death) {
