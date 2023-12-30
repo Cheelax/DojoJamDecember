@@ -5,6 +5,7 @@ import { store } from './store';
 import { useEffect } from 'react';
 import { useNetworkLayer } from './dojo/useNetworkLayer';
 import NewGame from './ui/NewGame';
+import { sound as pixiSound } from '@pixi/sound'
 
 function App() {
   const networkLayer = useNetworkLayer();
@@ -13,6 +14,22 @@ function App() {
     if (!networkLayer || !networkLayer.account) return;
 
     store.setState({ networkLayer });
+
+	const soundList = [
+		'become_infected',
+		'dead',
+		'drink',
+		'get_infection_stack',
+		'health_restore',
+		'pick_flower',
+		'select_player',
+		'soundtrack',
+		'start_game',
+		'walk',
+	]
+	for (const sound of soundList) {
+		pixiSound.add(sound, `assets/sfx/${sound}.mp3`);
+	}
 
     const {
       account,

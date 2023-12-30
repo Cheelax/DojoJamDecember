@@ -5,6 +5,7 @@ import NewGameButton from './NewGameButton';
 import { store } from '../store';
 import Logo from '../assets/plague.webp';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
+import { sound as pixiSound } from '@pixi/sound'
 
 interface NewGameProps {
   onPseudoChange?: (pseudo: string) => void;
@@ -71,6 +72,7 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
   };
 
   const login = () => {
+	pixiSound.play('start_game')
     setLoggedIn(true);
   };
 
@@ -98,7 +100,10 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
             <StatsCard
               key={index}
               data={adventurer}
-              onClick={() => setSelectedAdventurer(adventurer)}
+              onClick={() => {
+				pixiSound.play('select_player')
+				setSelectedAdventurer(adventurer)
+			  }}
               isSelected={selectedAdventurer === null ? undefined : selectedAdventurer.name === adventurer.name}
             />
           ))}

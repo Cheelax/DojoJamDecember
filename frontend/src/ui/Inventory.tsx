@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { defineSystem, Has } from '@dojoengine/recs';
 import whiteHerbSprite from '../assets/tilesets/herb1.png';
 import redPotionSprite from '../assets/red_potion.png';
+import { sound as pixiSound } from '@pixi/sound';
 
 interface InventoryProps {
     networkLayer: any;
@@ -23,8 +24,22 @@ const Inventory: React.FC<InventoryProps> = ({ networkLayer, localPlayer }) => {
     // Retrieve inventory
     useEffect(() => {
         defineSystem(world, [Has(PlayerInventory)], function ({ value: [newValue] }: any) {
-            if (newValue && newValue.id == localPlayer.id) {
-                setInventory(newValue);
+            if (localPlayer && newValue && newValue.id == localPlayer.id) {
+                setInventory((inventory: any) => {
+                    // Pick herb
+                    if (inventory && inventory.nb_white_herbs < newValue.nb_white_herbs) {
+                        pixiSound.play('pick_flower')
+                    }
+                    // Drink potion
+                    if (inventory && inventory.nb_red_potions > newValue.nb_red_potions) {
+                        pixiSound.play('health_restore')
+                    }
+                    // Craft potion
+                    if (inventory && inventory.nb_red_potions < newValue.nb_red_potions) {
+                        pixiSound.play('drink')
+                    }
+                    return newValue
+                });
             }
         });
     }, []);

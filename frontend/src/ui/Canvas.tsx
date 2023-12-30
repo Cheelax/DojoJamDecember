@@ -12,6 +12,7 @@ import Mob from './Mob';
 import { getNeighbors } from '../utils/pathfinding';
 import { store } from '../store';
 import Coins from './Coins';
+import { sound as pixiSound } from '@pixi/sound';
 
 interface CanvasProps {
   networkLayer: NetworkLayer | undefined;
@@ -71,6 +72,17 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
 
     defineSystem(world, [Has(EntityLifeStatus)], function ({ value: [newValue] }: any) {
       setEntitiesLifeStatus((prevEntities: any) => {
+        if (isLocalPlayer(newValue.id) && prevEntities[newValue.id]) {
+          if (!prevEntities[newValue.id].isInfected && newValue.isInfected) {
+            pixiSound.play('become_infected')
+          }
+          if (!prevEntities[newValue.id].isDead && newValue.isDead) {
+            pixiSound.play('dead')
+          }
+          if (prevEntities[newValue.id].infectionStacks < newValue.infectionStacks) {
+            pixiSound.play('get_infection_stack')
+          }
+        }
         return { ...prevEntities, [newValue.id]: newValue };
       });
     });

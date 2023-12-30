@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Coordinate } from '../type/GridElement';
 import { to_center, to_grid_coordinate, to_screen_coordinate } from '../utils/grid';
 import { Direction, getFramesFromType, Animation } from '../utils/animation';
+import { sound as pixiSound } from '@pixi/sound';
 
 export type MobType = 'doctor1';
 
@@ -89,6 +90,7 @@ const Mob: React.FC<MobProps> = ({
   useEffect(() => {
     if (isMoving) {
       setAnimation(Animation.Walk);
+      pixiSound.play('walk')
     } else {
       setAnimation(Animation.Idle);
     }
