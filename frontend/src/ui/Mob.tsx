@@ -21,7 +21,15 @@ function lerp(start: number, end: number, t: number) {
   return start * (1 - t) + end * t;
 }
 
-const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition, nbInfectionStacks, username, isLocalPlayer }) => {
+const Mob: React.FC<MobProps> = ({
+  type,
+  lifeStatus,
+  orientation,
+  targetPosition,
+  nbInfectionStacks,
+  username,
+  isLocalPlayer,
+}) => {
   const [animation, setAnimation] = useState<Animation>(Animation.Idle);
   const [frames, setFrames] = useState<Texture[]>([]);
   const [resource, setResource] = useState<any>(undefined);
@@ -40,10 +48,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     if (resource === undefined || orientation === undefined) return;
     if (lifeStatus.isDead) {
       setFrames(getFramesFromType('doctorinfected', Animation.Death, orientation, resource));
-      setAnimation(Animation.Death);
-      setCurrentFrame(1)
-      setShouldAnimate(false)
-      return
+      return;
     } else if (lifeStatus.isInfected) {
       setFrames(getFramesFromType('doctorinfected', animation, orientation, resource));
     } else {
@@ -52,6 +57,13 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     setCurrentFrame(0);
     setCounterAnim(0);
   }, [animation, resource, orientation, lifeStatus]);
+
+  useEffect(() => {
+    if (lifeStatus.isDead) {
+      setCurrentFrame(1);
+      setShouldAnimate(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (targetPosition === undefined) return;
@@ -96,11 +108,13 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
   }, []);
 
   useTick((delta) => {
-    if (!shouldAnimate) { return; }
+    if (!shouldAnimate) {
+      return;
+    }
     setCounterAnim((prevCounter) => prevCounter + delta);
 
     if (counterAnim > 10) {
-      console.log("set current frame C");
+      console.log('set current frame C');
       if (animation === Animation.Idle) {
         // if IDLE, loop through frames
         if (frames && frames.length > 0) {
@@ -126,9 +140,12 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
     return null;
   }
 
-  let hintText = username
+  let hintText = username;
   if (isLocalPlayer) {
-    hintText = !lifeStatus.isDead && !lifeStatus.isInfected ? lifeStatus.infectionStacks + '/' + Math.floor(nbInfectionStacks) : '';
+    hintText =
+      !lifeStatus.isDead && !lifeStatus.isInfected
+        ? lifeStatus.infectionStacks + '/' + Math.floor(nbInfectionStacks)
+        : '';
   }
 
   return (
@@ -143,9 +160,7 @@ const Mob: React.FC<MobProps> = ({ type, lifeStatus, orientation, targetPosition
         textures={frames}
         initialFrame={currentFrame}
       />
-      {
-
-      }
+      {}
       <Text
         text={hintText}
         zIndex={to_grid_coordinate(absolutePosition).x + to_grid_coordinate(absolutePosition).y}
