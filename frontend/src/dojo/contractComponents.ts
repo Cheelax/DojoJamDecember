@@ -26,11 +26,11 @@ export function defineContractComponents(world: World) {
     Player: (() => {
       return defineComponent(
         world,
-        { id: RecsType.BigInt, x: RecsType.Number, y: RecsType.Number, orientation: RecsType.Number },
+        { id: RecsType.BigInt, x: RecsType.Number, y: RecsType.Number, orientation: RecsType.Number, character: RecsType.Number },
         {
           metadata: {
             name: 'Player',
-            types: ['felt252', 'u16', 'u16', 'u8'],
+            types: ['felt252', 'u16', 'u16', 'u8', 'u8'],
             customTypes: [],
           },
         }
