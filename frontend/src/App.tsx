@@ -7,37 +7,37 @@ import { useNetworkLayer } from './dojo/useNetworkLayer';
 import NewGame from './ui/NewGame';
 
 function App() {
-	const networkLayer = useNetworkLayer();
-	const { loggedIn, username, selectedAdventurer } = store();
-	useEffect(() => {
-		if (!networkLayer || !networkLayer.account) return;
+  const networkLayer = useNetworkLayer();
+  const { loggedIn, username, selectedAdventurer } = store();
+  useEffect(() => {
+    if (!networkLayer || !networkLayer.account) return;
 
-		store.setState({ networkLayer });
+    store.setState({ networkLayer });
 
-		const {
-			account,
-			systemCalls: { approveLords, faucetLords }
-		} = networkLayer;
-		setTimeout(function() {
-			faucetLords(account);
-		}, 100);
-		setTimeout(function() {
-			approveLords(account);
-		}, 200);
-	}, [networkLayer]);
+    const {
+      account,
+      systemCalls: { approveLords, faucetLords },
+    } = networkLayer;
+    setTimeout(function () {
+      faucetLords(account);
+    }, 1000);
+    setTimeout(function () {
+      approveLords(account);
+    }, 2000);
+  }, [networkLayer]);
 
-	Modal.setAppElement('#root');
-	return (
-		<div className='flex flex-col min-h-screen w-full'>
-			{loggedIn ? (
-				<div className='flex-grow mx-auto mt-2'>
-					<Canvas networkLayer={networkLayer} />
-				</div>
-			) : (
-				<NewGame networkLayer={networkLayer}/>
-			)}
-		</div>
-	);
+  Modal.setAppElement('#root');
+  return (
+    <div className="flex flex-col min-h-screen w-full">
+      {loggedIn ? (
+        <div className="flex-grow mx-auto mt-2">
+          <Canvas networkLayer={networkLayer} />
+        </div>
+      ) : (
+        <NewGame networkLayer={networkLayer} />
+      )}
+    </div>
+  );
 }
 
 export default App;
