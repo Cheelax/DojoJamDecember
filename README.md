@@ -65,7 +65,7 @@ After cloning the project:
 
 1. **Terminal 1 - Katana:**
 
-``` cd client && katana --disable-fee ```
+``` cd client && katana --disable-fee --invoke-max-steps 1000000000```
 
 2. **Terminal 2 - Contract build:**
 
