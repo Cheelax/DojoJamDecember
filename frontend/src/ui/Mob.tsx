@@ -117,9 +117,8 @@ const Mob: React.FC<MobProps> = ({
         setFrames(deathFrames);
         console.log('DEATH POPED');
         console.log(deathFrames.length);
-        // setCurrentFrame(deathFrames.length - 1);
-        setCounterAnim(deathFrames.length - 1);
         setShouldAnimate(false);
+        setCurrentFrame(0);
       } else {
         setFrames(getFramesFromType(type, Animation.Idle, Direction.SE, resource));
       }
