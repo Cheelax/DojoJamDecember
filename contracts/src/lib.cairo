@@ -14,7 +14,6 @@ mod models {
     mod tile;
     mod entity;
     mod entity_infection;
-    mod adventurer;
 }
 
 mod systems {

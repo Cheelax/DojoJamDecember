@@ -4,45 +4,47 @@ import StatsCard from './StatsCard';
 import NewGameButton from './NewGameButton';
 import { store } from '../store';
 import Logo from '../assets/plague.webp';
-import { useNetworkLayer } from '../dojo/useNetworkLayer';
+import { NetworkLayer } from '../dojo/createNetworkLayer';
 
 interface NewGameProps {
   onPseudoChange?: (pseudo: string) => void; // Callback function to update parent state
+  networkLayer: NetworkLayer
 }
 
-const NewGame: FC<NewGameProps> = ({ onPseudoChange }) => {
+const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
   const { setLoggedIn, setUsername, username, setSelectedAdventurer, selectedAdventurer } = store();
   const [adventurers, setAdventurers] = useState<any[]>([]);
-  const networkLayer = useNetworkLayer();
+
   useEffect(() => {
-    if (!networkLayer || !networkLayer.account) return;
-    console.log(networkLayer.account);
-    const {
-      account,
-      systemCalls: { getAdventurers },
+	if (!networkLayer) return;
+	const {
+	  network: {
+		provider
+	  },
     } = networkLayer;
+
     const fetchAdventurers = async () => {
       const results = [];
-      await delay(1000);
       for (let i = 1; i <= 5; i++) {
         try {
           await delay(100);
-          const result = await networkLayer.network.provider.call(
+          const { result } = await provider.call(
             'plaguestark::lootsurvivor::lootsurvivor',
             'getAdventurer',
             [i]
           );
-          console.log('LETSGOOOOOO');
-          console.log(result);
-
-          //   const adventurerData = await getAdventurers(account, i);
-          results.push(result);
+		  const adventurer = {
+			strength: result[result.length - 3],
+			dexterity: result[result.length - 2],
+			vitality: result[result.length - 1],
+		  }
+		  console.log(adventurer);
+          results.push(adventurer);
         } catch (error) {
           console.error(`Error fetching adventurer ${i}:`, error);
         }
-        // await delay(100);
       }
-      setAdventurers(results); // Mettre à jour l'état avec les données récupérées
+      setAdventurers(results);
     };
 
     fetchAdventurers();

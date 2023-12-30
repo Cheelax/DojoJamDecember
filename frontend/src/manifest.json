@@ -1123,7 +1123,7 @@
     {
       "name": "plaguestark::lootsurvivor::lootsurvivor",
       "address": "0x2a7f1267bb92db616fae0f62bd8b98c11efe0e3a8cdf78418fd653f2949fdf9",
-      "class_hash": "0x5a5f1ba33141ad62c9b0f6028421896f44c84f124394636655d90dac5161221",
+      "class_hash": "0x10600e646e329dfdb527222a396f663a4eebebba776ad84ba8d80d24eda2c5",
       "abi": [
         {
           "type": "impl",
@@ -1353,7 +1353,7 @@
         },
         {
           "type": "function",
-          "name": "get_adventurer",
+          "name": "getAdventurer",
           "inputs": [
             {
               "name": "id",
@@ -1365,59 +1365,7 @@
               "type": "plaguestark::lootsurvivor::Adventurer"
             }
           ],
-          "state_mutability": "external"
-        },
-        {
-          "type": "function",
-          "name": "initialize",
-          "inputs": [],
-          "outputs": [],
-          "state_mutability": "external"
-        },
-        {
-          "type": "function",
-          "name": "randomize_stats",
-          "inputs": [
-            {
-              "name": "seed",
-              "type": "core::felt252"
-            }
-          ],
-          "outputs": [],
-          "state_mutability": "external"
-        },
-        {
-          "type": "function",
-          "name": "get_vitality",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::integer::u8"
-            }
-          ],
-          "state_mutability": "external"
-        },
-        {
-          "type": "function",
-          "name": "get_strength",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::integer::u8"
-            }
-          ],
-          "state_mutability": "external"
-        },
-        {
-          "type": "function",
-          "name": "get_dexterity",
-          "inputs": [],
-          "outputs": [
-            {
-              "type": "core::integer::u8"
-            }
-          ],
-          "state_mutability": "external"
+          "state_mutability": "view"
         },
         {
           "type": "event",
