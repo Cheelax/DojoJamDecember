@@ -60,7 +60,8 @@ const Mob: React.FC<MobProps> = ({
 
   useEffect(() => {
     if (lifeStatus.isDead) {
-      setCurrentFrame(1);
+      console.log('set current frame DEATH (POPPING)');
+      setCurrentFrame(2);
       setShouldAnimate(false);
     }
   }, []);
@@ -125,6 +126,7 @@ const Mob: React.FC<MobProps> = ({
         if (frames && frames.length > 0 && currentFrame < frames.length - 1) {
           setCurrentFrame((prevFrame) => prevFrame + 1); // change to the next frame
         } else if (animation === Animation.Death) {
+          console.log('END SHOULD ANIMATE');
           setShouldAnimate(false);
         } else {
           // last frame of the animation
