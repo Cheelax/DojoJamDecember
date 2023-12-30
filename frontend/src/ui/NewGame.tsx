@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useState } from 'react';
-import { adventurerList } from '../utils/adventurerList';
+import { adventurerList, AdventurerType } from '../utils/adventurerList';
 import StatsCard from './StatsCard';
 import NewGameButton from './NewGameButton';
 import { store } from '../store';
@@ -7,60 +7,67 @@ import Logo from '../assets/plague.webp';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
 
 interface NewGameProps {
-  onPseudoChange?: (pseudo: string) => void; // Callback function to update parent state
-  networkLayer: NetworkLayer
+  onPseudoChange?: (pseudo: string) => void;
+  networkLayer: NetworkLayer;
 }
 
 const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
   const { setLoggedIn, setUsername, username, setSelectedAdventurer, selectedAdventurer } = store();
-  const [adventurers, setAdventurers] = useState<any[]>([]);
+  const [adventurers, setAdventurers] = useState<AdventurerType[]>(adventurerList);
 
   useEffect(() => {
-	if (!networkLayer) return;
-	const {
-	  network: {
-		provider
-	  },
+    if (!networkLayer) return;
+    const {
+      network: { provider },
     } = networkLayer;
 
     const fetchAdventurers = async () => {
       const results = [];
-      for (let i = 1; i <= 5; i++) {
+      for (let i = 1; i <= adventurerList.length; i++) {
         try {
           await delay(100);
-          const { result } = await provider.call(
-            'plaguestark::lootsurvivor::lootsurvivor',
-            'getAdventurer',
-            [i]
-          );
-		  const adventurer = {
-			strength: result[result.length - 3],
-			dexterity: result[result.length - 2],
-			vitality: result[result.length - 1],
-		  }
-		  console.log(adventurer);
+          const { result } = await provider.call('plaguestark::lootsurvivor::lootsurvivor', 'getAdventurer', [i]);
+          const adventurer = {
+            strength: parseInt(result[result.length - 3], 16),
+            dexterity: parseInt(result[result.length - 2], 16),
+            vitality: parseInt(result[result.length - 1], 16),
+          };
+          console.log(adventurer);
           results.push(adventurer);
         } catch (error) {
           console.error(`Error fetching adventurer ${i}:`, error);
         }
       }
-      setAdventurers(results);
+      updateAdventurerList(results);
     };
 
     fetchAdventurers();
   }, [networkLayer]);
 
+  const updateAdventurerList = (newValues: any[]) => {
+    const updatedAdventurers = adventurerList.map((adventurer, index) => {
+      if (index < newValues.length) {
+        const updatedValues = adventurer.value.map((stat) => {
+          const newValue = newValues[index][stat.name];
+          return newValue ? { ...stat, value: newValue.toString() } : stat;
+        });
+        return { ...adventurer, value: updatedValues };
+      }
+      return adventurer;
+    });
+    setAdventurers(updatedAdventurers);
+  };
+
   const delay = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
-  useEffect(() => {
-    console.log('NewGame.tsx useEffect', adventurers);
-  }, [adventurers]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setUsername(value);
-    // onPseudoChange(value); // Notify the parent of the change
+    if (onPseudoChange) {
+      onPseudoChange(value);
+    }
   };
 
   const login = () => {
@@ -81,22 +88,20 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
           placeholder="Pseudo"
           value={username}
           onChange={handleInputChange}
-          maxLength={18} // Limit the input to 30 characters
+          maxLength={18}
         />
       </div>
       <div className=" w-full max-w-[80%] mb-12">
         <p className="w-full text-start mt-20 mb-8">Choose an adventurer below:</p>
         <div className="flex  justify-around">
-          {adventurerList.map((adventurer, index) => {
-            return (
-              <StatsCard
-                key={index}
-                data={adventurer}
-                onClick={() => setSelectedAdventurer(adventurer)}
-                isSelected={selectedAdventurer === null ? undefined : selectedAdventurer.name === adventurer.name}
-              />
-            );
-          })}
+          {adventurers.map((adventurer, index) => (
+            <StatsCard
+              key={index}
+              data={adventurer}
+              onClick={() => setSelectedAdventurer(adventurer)}
+              isSelected={selectedAdventurer === null ? undefined : selectedAdventurer.name === adventurer.name}
+            />
+          ))}
         </div>
       </div>
       <NewGameButton onClick={login} disabled={!username || !selectedAdventurer} />
