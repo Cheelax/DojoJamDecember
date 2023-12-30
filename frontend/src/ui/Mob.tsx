@@ -114,6 +114,8 @@ const Mob: React.FC<MobProps> = ({
       if (lifeStatus.isDead) {
         const deathFrames = getFramesFromType('doctorinfected', Animation.Death, Direction.SE, resource);
         setFrames(deathFrames);
+        console.log('DEATH POPED');
+        console.log(deathFrames.length);
         setCurrentFrame(deathFrames.length - 1);
         setShouldAnimate(false);
       } else {
@@ -126,6 +128,11 @@ const Mob: React.FC<MobProps> = ({
   useTick((delta) => {
     if (shouldAnimate) {
       setCounterAnim((prevCounter) => prevCounter + delta);
+      if (animation === Animation.Death) {
+        console.log('death');
+        console.log(frames.length);
+        console.log(currentFrame);
+      }
       if (animation === Animation.Death && currentFrame === frames.length - 1) {
         setShouldAnimate(false);
       }
