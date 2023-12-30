@@ -61,7 +61,7 @@ const Mob: React.FC<MobProps> = ({
   useEffect(() => {
     if (lifeStatus.isDead) {
       console.log('set current frame DEATH (POPPING)');
-      setCurrentFrame(2);
+      setCurrentFrame(1);
       setShouldAnimate(false);
     }
   }, []);
