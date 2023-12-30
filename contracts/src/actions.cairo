@@ -3,10 +3,18 @@ use starknet::ContractAddress;
 // define the interface
 #[starknet::interface]
 trait IActions<TContractState> {
-    fn set_lords_address(ref self: TContractState, erc20_contract_address: ContractAddress);
+    fn set_lords_address(ref self: TContractState, contract_address: ContractAddress);
+    fn set_randomness_address(ref self: TContractState, contract_address: ContractAddress);
     fn spawn(self: @TContractState, amount: u128, character: u8);
     fn move(self: @TContractState, x: u16, y: u16);
     fn drink_potion(self: @TContractState);
+    fn receive_random_words(
+        ref self: TContractState,
+        requestor_address: ContractAddress,
+        request_id: u64,
+        random_words: Span<felt252>,
+        calldata: Array<felt252>
+    );
 }
 
 // dojo decorator
@@ -26,18 +34,23 @@ mod actions {
     use plaguestark::models::game::{Game};
     use plaguestark::models::map::{Map, MapTrait};
     use plaguestark::systems::create::{initGame};
+    use plaguestark::randomness::{IRandomness,IRandomnessDispatcher,IRandomnessDispatcherTrait};
 
     #[storage]  
     struct Storage {
         erc20_contract_address: ContractAddress,
+        randomness_contract_address: ContractAddress,
     }
 
     // impl: implement functions specified in trait
     #[external(v0)]
     impl ActionsImpl of IActions<ContractState> {
-        fn set_lords_address(ref self: ContractState, erc20_contract_address: ContractAddress) {
-            let world = self.world_dispatcher.read();
-            self.erc20_contract_address.write(erc20_contract_address);
+        fn set_lords_address(ref self: ContractState, contract_address: ContractAddress) {
+            self.erc20_contract_address.write(contract_address);
+        }
+
+        fn set_randomness_address(ref self: ContractState, contract_address: ContractAddress) {
+            self.randomness_contract_address.write(contract_address);
         }
 
         // ContractState is defined by system decorator expansion
@@ -49,7 +62,10 @@ mod actions {
             // Init game once
             let game = get!(world, 0, (Game));
             if !game.isInit {
-                initGame(world);
+                let mut game = get!(world, 0, (Game));
+                game.isInit = true;
+                set!(world, (game));
+                request_my_randomness(world, self.randomness_contract_address.read(), 1, 2500); // mapseed, mapsize
             }
             
             // Get the address of the current caller, possibly the player's address.
@@ -184,6 +200,51 @@ mod actions {
             lifeStatus.infectionStacks = 0;
             set!(world, ( inventory, lifeStatus ));
         }
+
+        fn receive_random_words(
+            ref self: ContractState,
+            requestor_address: ContractAddress,
+            request_id: u64,
+            random_words: Span<felt252>,
+            calldata: Array<felt252>
+        ) {
+            let world = self.world_dispatcher.read();
+            initGame(world, random_words);
+            return ();
+        }
+    }
+
+    fn request_my_randomness(
+        world: IWorldDispatcher,
+        randomness_contract_address: ContractAddress,
+        seed: u64,
+        num_words: u64,
+    ) {
+        let randomness_dispatcher = IRandomnessDispatcher {
+            contract_address: randomness_contract_address
+        };
+        let emptyArray: Array<felt252> = ArrayTrait::new();
+        // Request the randomness
+        let request_id = randomness_dispatcher
+            .request_random(
+                seed, get_contract_address(), 0, 0, num_words, 
+                emptyArray
+            );
+
+        let emptyArray: Array<felt252> = ArrayTrait::new();
+        randomness_dispatcher
+            .submit_random(
+                request_id,
+                get_contract_address(),
+                seed,
+                0,
+                get_contract_address(),
+                0, 0,
+                emptyArray.span(),
+                emptyArray.span(),
+                emptyArray
+            );
+        return ();
     }
 
     fn spawn_coords(world: IWorldDispatcher, player: felt252, mut salt: felt252) -> (u16, u16) {

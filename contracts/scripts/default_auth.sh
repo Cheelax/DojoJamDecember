@@ -10,12 +10,16 @@ export ACTIONS_ADDRESS=$(cat ./target/dev/manifest.json | jq -r '.contracts[] | 
 
 export LORDS_ADDRESS=$(cat ./target/dev/manifest.json | jq -r '.contracts[] | select(.name == "plaguestark::lords::lords" ).address')
 
+export RANDOMNESS_ADDRESS=$(cat ./target/dev/manifest.json | jq -r '.contracts[] | select(.name == "plaguestark::randomness::Randomness" ).address')
+
 echo "---------------------------------------------------------------------------"
 echo world : $WORLD_ADDRESS 
 echo " "
 echo actions : $ACTIONS_ADDRESS
 echo " "
 echo lords : $LORDS_ADDRESS
+echo " "
+echo randomness : $RANDOMNESS_ADDRESS
 echo "---------------------------------------------------------------------------"
 
 # enable system -> component authorizations
@@ -46,6 +50,8 @@ sozo execute $LORDS_ADDRESS initializer --calldata $WORLD_ADDRESS,0x4c4f524453,0
 
 # Set ERC20 address
 sozo execute $ACTIONS_ADDRESS set_lords_address --calldata $LORDS_ADDRESS
+
+sozo execute $ACTIONS_ADDRESS set_randomness_address --calldata $RANDOMNESS_ADDRESS
 
 # ERC20 Lords END
 

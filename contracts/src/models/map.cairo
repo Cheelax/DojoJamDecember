@@ -71,7 +71,7 @@ trait MapTrait {
     /// # Returns
     /// * The score.
     fn get_type(self: Map, raw_type: u8) -> Type;
-    fn generate(self: Map, seed: felt252) -> Span<u8>;
+    fn generate(self: Map, random_words: Span<felt252>) -> Span<u8>;
     fn decompose(self: Map, index: u16) -> (u16, u16);
     fn addTileAtRandomEmptyPosition(self: Map, world: IWorldDispatcher, _type: u8, seed: felt252);
 }
@@ -84,8 +84,8 @@ impl MapImpl of MapTrait {
         Map { id:0_u32, size:grid_side, seed:seed }
     }
 
-    fn generate(self: Map, seed: felt252) -> Span<u8> {
-        _generate(seed, self.size * self.size)
+    fn generate(self: Map, random_words: Span<felt252>) -> Span<u8> {
+        _generate(random_words, self.size * self.size)
     }
 
     fn get_type(self: Map, raw_type: u8) -> Type {
@@ -131,14 +131,15 @@ impl MapImpl of MapTrait {
     }
 }
 
-fn _generate(seed: felt252, n_tiles: u16) -> Span<u8> {
-    let mut index = 0;
+fn _generate(random_words: Span<felt252>, n_tiles: u16) -> Span<u8> {
+    let mut index: u32 = 0;
     let mut dict_types: Felt252Dict<u8> = Default::default();
     loop {
-        if index >= n_tiles {
+        if index >= n_tiles.into() {
             break;
         }
-        let randValue = _uniform_random(seed + index.into(), 1000);
+        let rawRand: u32 = (*random_words.at(index)).try_into().unwrap();
+        let randValue = rawRand % 1000;
         let mut _type = GROUND_TYPE;
         if randValue > 950 { // 5%
             _type = ROCK_TYPE;
@@ -231,16 +232,5 @@ mod tests {
     #[available_gas(18_000_000)]
     fn test_map_new() {
         let result = MapTrait::new(GAME_ID, SEED, 50);
-    }
-
-    #[test]
-    #[available_gas(18_000_000_000)]
-    fn test_generate(){
-        let mut map= MapTrait::new(0, 0, 50);
-          
-        // create tile
-        let raw_types = map.generate(map.seed);
-        let mut index = 0;
-        let length = raw_types.len();
     }
 }

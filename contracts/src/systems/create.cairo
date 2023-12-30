@@ -4,16 +4,12 @@ use plaguestark::models::game::{Game};
 use plaguestark::models::map::{Map, MapTrait, Type};
 use plaguestark::models::tile::{Tile, TileAtPosition};
 
-fn initGame(world: IWorldDispatcher) {
-    let mut game = get!(world, 0, (Game));
-    game.isInit = true;
-    set!(world, (game));
-
+fn initGame(world: IWorldDispatcher, random_words: Span<felt252>) {
     let mut map = MapTrait::new(0, 0, 50);
     set!(world, (map));
 
     // create tile
-    let raw_types = map.generate(map.seed);
+    let raw_types = map.generate(random_words);
     let mut index = 0;
     let length = raw_types.len();
     loop {
