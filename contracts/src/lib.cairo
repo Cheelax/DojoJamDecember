@@ -23,7 +23,6 @@ mod systems {
 use plaguestark::data::v00 as config;
 
 mod erc20 {
-    mod erc20;
     mod interface;
     mod models;
 }
