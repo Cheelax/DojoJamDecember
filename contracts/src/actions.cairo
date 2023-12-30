@@ -168,30 +168,6 @@ mod actions {
             } else {
                 lifeStatus.tick(world);
             }
-
-            // Retrieve updated value
-            let lifeStatus = get!(world, entityId, EntityLifeStatus);
-            lifeStatus.tick(world);
-
-            // let mut y: u8 = 0;
-            // loop {
-            //     if y >= 50 {
-            //         break;
-            //     }
-            //     let mut x: u8 = 0;
-            //     loop {
-            //         if x >= 50 {
-            //             break;
-            //         }
-            //         let entityId = get!(world, (x,y), EntityAtPosition).id;
-            //         if entityId != 0 {
-                        // let lifeStatus = get!(world, entityId, EntityLifeStatus);
-            //             lifeStatus.tick(world);
-            //         }
-            //         x += 1;
-            //     };
-            //     y += 1;
-            // };
         }
 
         fn drink_potion(self: @ContractState) {

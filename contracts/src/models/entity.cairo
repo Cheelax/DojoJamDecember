@@ -19,6 +19,7 @@ struct EntityList {
 }
 
 use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
+use debug::PrintTrait;
 
 trait EntityListTrait {
     // Add in lsit and returns id
@@ -89,15 +90,45 @@ impl EntityListImpl of EntityListTrait {
         }
         let mut prevElement = get!(world, *self.prev_id, EntityList);
         let mut nextElement = get!(world, *self.next_id, EntityList);
-        prevElement.next_id = nextElement.id;
-        nextElement.prev_id = prevElement.id;
+
+        if prevElement.id != *self.id {
+            prevElement.next_id = nextElement.id;
+        } else {
+            prevElement.next_id = prevElement.id;
+            prevElement.last_id = prevElement.id;
+        }
+
+        if nextElement.id != *self.id {
+            nextElement.prev_id = prevElement.id;
+        } else {
+            nextElement.prev_id = nextElement.id;
+            nextElement.last_id = nextElement.last_id;
+        }
+
         if (*self.id == 0) {
             nextElement.last_id = *self.last_id;
             nextElement.prev_id = nextElement.id;
         }
+
+        let mut nextId = nextElement.id;
+        if nextId == *self.id {
+            nextId = prevElement.id;
+        }
+
+        if prevElement.id != *self.id {
+            set!(world, (
+                prevElement,
+            ))
+        }
+
+        if nextElement.id != *self.id {
+            set!(world, (
+                nextElement,
+            ))
+        }
+
         set!(world, (
-            prevElement,
-            nextElement
+            EntityList { id: *self.id, entity_id: 0, next_id: nextId, prev_id: 0, last_id: 0 }
         ))
     }
     
@@ -189,7 +220,7 @@ mod tests {
     }
 
     #[test]
-    #[available_gas(30000000)]
+    #[available_gas(300000000)]
     fn test_two_element_remove_first() {
         // models
         let mut models = array![entity_list::TEST_CLASS_HASH];
@@ -214,4 +245,31 @@ mod tests {
 
         assert(node.isLast(world) == true, 'Should be last');
     }
+
+    // #[test]
+    // #[available_gas(300000000)]
+    // fn test_two_element_remove_last() {
+    //     // models
+    //     let mut models = array![entity_list::TEST_CLASS_HASH];
+
+    //     // deploy world with models
+    //     let world = spawn_test_world(models);
+
+    //     let entity_id: felt252 = 134;
+    //     EntityListTrait::add(world, entity_id);
+
+    //     let second_entity_id: felt252 = 256;
+    //     EntityListTrait::add(world, second_entity_id);
+
+    //     let node = EntityListTrait::getFirst(world);
+    //     node.getNext(world).remove(world);
+
+    //     let node = EntityListTrait::getFirst(world);
+    //     assert(node.entity_id == entity_id, 'Wrong first entity_id');
+    //     assert(node.prev_id == 0, 'Wrong first prev_id');
+    //     assert(node.last_id == 0, 'Wrong first last_id');
+    //     assert(node.next_id == 0, 'Wrong first next_id');
+
+    //     assert(node.isLast(world) == true, 'Should be last');
+    // }
 }
