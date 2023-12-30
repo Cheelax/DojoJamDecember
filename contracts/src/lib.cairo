@@ -2,6 +2,7 @@ mod constants;
 mod actions;
 mod lords;
 mod randomness;
+mod lootsurvivor;
 
 mod data {
     mod v00;
@@ -13,6 +14,7 @@ mod models {
     mod tile;
     mod entity;
     mod entity_infection;
+    mod adventurer;
 }
 
 mod systems {
