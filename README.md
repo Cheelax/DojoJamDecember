@@ -56,3 +56,27 @@ This game was created for the Dojo Christmas Game Jam 2023, built on the Realms 
 
 
 ![image](https://github.com/Cheelax/DojoJamDecember/assets/92889945/2f5f570b-0796-428a-8384-6ccbd0570b38)
+
+--------------------------------------------
+
+***How to launch the game***
+
+After cloning the project:
+
+1. **Terminal 1 - Katana:**
+
+``` cd client && katana --disable-fee ```
+
+2. **Terminal 2 - Contract build:**
+
+``` cd client && sozo build && sozo migrate && torii --world  0x691f741c8fd33d557daced16f586c44f3f64633f4a227485b8cd0a8718d9bd4 ```
+
+3. **Terminal 3 - Burner accounts:**
+
+``` bash ./contracts/scripts/default_auth.sh ```
+or (depends on OS)
+``` sh ./contracts/scripts/default_auth.sh ```
+
+4. **Terminal 4 - Client Front end:**
+
+``` cd client && yarn && yarn dev ```
