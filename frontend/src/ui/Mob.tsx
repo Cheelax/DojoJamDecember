@@ -44,15 +44,34 @@ const Mob: React.FC<MobProps> = ({
 
   const [isMoving, setIsMoving] = useState(false);
 
+  // useEffect(() => {
+  //   if (resource === undefined || orientation === undefined) return;
+  //   if (lifeStatus.isDead) {
+  //     setFrames(getFramesFromType('doctorinfected', Animation.Death, orientation, resource));
+  //     return;
+  //   } else if (lifeStatus.isInfected) {
+  //     setFrames(getFramesFromType('doctorinfected', animation, orientation, resource));
+  //   } else {
+  //     setFrames(getFramesFromType(type, animation, orientation, resource));
+  //   }
+  //   setCurrentFrame(0);
+  //   setCounterAnim(0);
+  // }, [animation, resource, orientation, lifeStatus]);
+
   useEffect(() => {
     if (resource === undefined || orientation === undefined) return;
     if (lifeStatus.isDead) {
       setFrames(getFramesFromType('doctorinfected', Animation.Death, orientation, resource));
-      return;
     } else if (lifeStatus.isInfected) {
-      setFrames(getFramesFromType('doctorinfected', animation, orientation, resource));
+      if (animation === Animation.Walk) {
+        setFrames(getFramesFromType('doctorinfected', Animation.Walk, orientation, resource));
+      } else {
+        setFrames(getFramesFromType('doctorinfected', Animation.Idle, orientation, resource));
+      }
+    } else if (animation === Animation.Walk) {
+      setFrames(getFramesFromType(type, Animation.Walk, orientation, resource));
     } else {
-      setFrames(getFramesFromType(type, animation, orientation, resource));
+      setFrames(getFramesFromType(type, Animation.Idle, orientation, resource));
     }
     setCurrentFrame(0);
     setCounterAnim(0);
