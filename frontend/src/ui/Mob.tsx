@@ -128,8 +128,9 @@ const Mob: React.FC<MobProps> = ({
   }, []);
 
   useTick((delta) => {
-    if (isLocalPlayer && Animation.Death === animation) {
+    if (Animation.Death === animation) {
       console.log('animation', animation);
+      console.log('shouldAnimate', shouldAnimate);
     }
 
     if (shouldAnimate) {
