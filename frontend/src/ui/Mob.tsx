@@ -44,20 +44,6 @@ const Mob: React.FC<MobProps> = ({
 
   const [isMoving, setIsMoving] = useState(false);
 
-  // useEffect(() => {
-  //   if (resource === undefined || orientation === undefined) return;
-  //   if (lifeStatus.isDead) {
-  //     setFrames(getFramesFromType('doctorinfected', Animation.Death, orientation, resource));
-  //     return;
-  //   } else if (lifeStatus.isInfected) {
-  //     setFrames(getFramesFromType('doctorinfected', animation, orientation, resource));
-  //   } else {
-  //     setFrames(getFramesFromType(type, animation, orientation, resource));
-  //   }
-  //   setCurrentFrame(0);
-  //   setCounterAnim(0);
-  // }, [animation, resource, orientation, lifeStatus]);
-
   useEffect(() => {
     if (!shouldAnimate) return;
     if (resource === undefined || orientation === undefined) return;
@@ -116,8 +102,6 @@ const Mob: React.FC<MobProps> = ({
       if (lifeStatus.isDead) {
         const deathFrames = getFramesFromType('doctorinfected', Animation.Death, Direction.SE, resource);
         setFrames(deathFrames);
-        console.log('DEATH POPED');
-        console.log(deathFrames.length);
         setShouldAnimate(false);
         setCurrentFrame(deathFrames.length - 1);
       } else {
@@ -130,11 +114,6 @@ const Mob: React.FC<MobProps> = ({
   useTick((delta) => {
     if (shouldAnimate) {
       setCounterAnim((prevCounter) => prevCounter + delta);
-      if (animation === Animation.Death) {
-        console.log('death');
-        console.log(frames.length);
-        console.log(currentFrame);
-      }
       if (animation === Animation.Death && currentFrame === frames.length - 1) {
         setShouldAnimate(false);
       }
