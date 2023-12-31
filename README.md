@@ -1,4 +1,4 @@
-![LOGOv2](https://github.com/Cheelax/DojoJamDecember/assets/92889945/81f8fe5b-a630-4126-9daf-1438e976b302)
+![Logo_v4_fill](https://github.com/Cheelax/DojoJamDecember/assets/92889945/628eb98f-529c-47bc-8df5-95e428bfc187)
 
 
 ***Plague Survivor***
