@@ -5,6 +5,7 @@ use starknet::ContractAddress;
 trait IActions<TContractState> {
     fn set_lords_address(ref self: TContractState, contract_address: ContractAddress);
     fn set_randomness_address(ref self: TContractState, contract_address: ContractAddress);
+    fn set_treasury_address(ref self: TContractState, contract_address: ContractAddress);
     fn spawn(self: @TContractState, amount: u128, character: u8, name: felt252);
     fn move(self: @TContractState, x: u16, y: u16);
     fn drink_potion(self: @TContractState);
@@ -29,10 +30,11 @@ mod actions {
     use plaguestark::models::tile::{Tile, TileAtPosition};
     use plaguestark::models::entity_infection::{EntityLifeStatus, EntityLifeStatusTrait};
     use plaguestark::models::entity::{EntityAtPosition};
-    use plaguestark::models::game::{Game};
+    use plaguestark::models::game::{Game,ContractsRegistry};
     use plaguestark::models::map::{Map, MapTrait};
     use plaguestark::systems::create::{initGame};
     use plaguestark::randomness::{IRandomness,IRandomnessDispatcher,IRandomnessDispatcherTrait};
+    use plaguestark::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
 
     use poseidon::poseidon_hash_span;
 
@@ -45,6 +47,7 @@ mod actions {
     struct Storage {
         erc20_contract_address: ContractAddress,
         randomness_contract_address: ContractAddress,
+        treasury_contract_address: ContractAddress,
     }
 
     // impl: implement functions specified in trait
@@ -52,10 +55,29 @@ mod actions {
     impl ActionsImpl of IActions<ContractState> {
         fn set_lords_address(ref self: ContractState, contract_address: ContractAddress) {
             self.erc20_contract_address.write(contract_address);
+
+            let world = self.world_dispatcher.read();
+            let mut contracts = get!(world, 'contracts', ContractsRegistry);
+            contracts.lords_address = contract_address.into();
+            set!(world, (contracts));
         }
 
         fn set_randomness_address(ref self: ContractState, contract_address: ContractAddress) {
             self.randomness_contract_address.write(contract_address);
+
+            let world = self.world_dispatcher.read();
+            let mut contracts = get!(world, 'contracts', ContractsRegistry);
+            contracts.randomness_address = contract_address.into();
+            set!(world, (contracts));
+        }
+
+        fn set_treasury_address(ref self: ContractState, contract_address: ContractAddress) {
+            self.treasury_contract_address.write(contract_address);
+
+            let world = self.world_dispatcher.read();
+            let mut contracts = get!(world, 'contracts', ContractsRegistry);
+            contracts.treasury_address = contract_address.into();
+            set!(world, (contracts));
         }
 
         // ContractState is defined by system decorator expansion
@@ -78,18 +100,13 @@ mod actions {
             // Pay fees
             assert(amount >= 10, 'Entry cost is minimum 10');
 
-            let mut payload: Array<felt252> = ArrayTrait::new();
-            let from_address: felt252 = get_caller_address().into();
-            payload.append(from_address);
-            let to_address: felt252 = get_contract_address().into();
-            payload.append(to_address);
-            payload.append(amount.into());
-
-            starknet::call_contract_syscall(
-                self.erc20_contract_address.read(),
-                selector!("transferFrom"),
-                payload.span()
-            );
+            let lordsDispatcher = IERC20Dispatcher {
+                contract_address: self.erc20_contract_address.read()
+            };
+            let from: ContractAddress = get_caller_address();
+            let to: ContractAddress = get_contract_address();
+            let finalAmount: u128 = amount;
+            lordsDispatcher.transfer_from(from, to, finalAmount);
 
             let (x,y) = spawn_coords(world, playerId, playerId);
             set!(world,
@@ -162,8 +179,25 @@ mod actions {
                 nextOrientation = 7; // SW
             }
 
-            let entityId = get!(world, (x,y), EntityAtPosition).id;
-            assert(entityId == 0, 'There is already someone here');
+            let mut otherEntity = get!(world, (x,y), EntityAtPosition);
+            if otherEntity.id != 0 {
+                let mut other = get!(world, otherEntity.id, Player);
+                let otherLifeStatus = get!(world, otherEntity.id, EntityLifeStatus);
+                if other.amount_vested == 0 {
+                    otherEntity.id = 0;
+                } else if otherLifeStatus.isDead {
+                    let lordsDispatcher = IERC20Dispatcher {
+                        contract_address: self.erc20_contract_address.read()
+                    };
+                    let to: ContractAddress = get_caller_address();
+                    let finalAmount: u128 = other.amount_vested;
+                    lordsDispatcher.transfer(to, finalAmount);
+                    other.amount_vested = 0;
+                    set!(world, (other));
+                    otherEntity.id = 0;
+                }
+            }
+            assert(otherEntity.id == 0, 'There is already someone here');
 
             let (player, score) = get!(world, playerId, (Player, PlayerScore));
             // Remove player from previous tile
@@ -267,51 +301,3 @@ mod actions {
         (x, y)
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use starknet::class_hash::Felt252TryIntoClassHash;
-
-//     // import world dispatcher
-//     use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
-//     use debug::PrintTrait;
-//     use plaguestark::models::player::{player,Player};
-
-//     // import test utils
-//     use dojo::test_utils::{spawn_test_world, deploy_contract};
-
-//     // import actions
-//     use super::{actions, IActionsDispatcher, IActionsDispatcherTrait};
-
-//     #[test]
-//     #[available_gas(30000000)]
-//     fn test_1() {
-//         // caller
-//         let caller = starknet::contract_address_const::<0x0>();
-
-//         // models
-//         let mut models = array![player::TEST_CLASS_HASH];
-
-//         // deploy world with models
-//         let world = spawn_test_world(models);
-
-//         // deploy systems contract
-//         let contract_address = world
-//             .deploy_contract('salt', actions::TEST_CLASS_HASH.try_into().unwrap());
-//         let actions_system = IActionsDispatcher { contract_address };
-
-//         // call spawn()
-//         actions_system.spawn();
-
-//         let player = get!(world, caller, Player);
-//         assert(player.x == 0 && player.y == 0, 'pos1 is wrong');
-//         assert(player.orientation == 0, 'orient1 is wrong');
-
-//         // call move with direction right
-//         actions_system.move(1, 0);
-
-//         let player = get!(world, caller, Player);
-//         assert(player.x == 1 && player.y == 0, 'pos2 is wrong');
-//         assert(player.orientation == 1, 'orient2 is wrong');
-//     }
-// }

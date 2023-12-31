@@ -1,6 +1,8 @@
 // Core imports
 use plaguestark::models::player::{Player};
+use plaguestark::models::game::{ContractsRegistry};
 use plaguestark::models::entity::{EntityAtPosition};
+use plaguestark::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};
 
 // External imports
 use starknet::info::{get_block_number};
@@ -38,27 +40,25 @@ fn killEntity(entityId: felt252, world: IWorldDispatcher) {
     }
     entityLifeStatus.isDead = true;
 
+    let contracts = get!(world, 'contracts', (ContractsRegistry));
+
     // If infected solo, send to treasure
-    let mut destination_address: felt252 = 0x5c47b38f788ec9d382b5079165bc96c0f49647250199a78d34c436d54d12217;
+    let mut destination_address: felt252 = contracts.treasury_address;
     // Else send to infected_by
     if (entityLifeStatus.id != entityLifeStatus.infected_by) {
         destination_address = entityLifeStatus.infected_by;
     }
 
-    let player = get!(world, entityId, (Player));
+    let mut player = get!(world, entityId, (Player));
+    let amount = player.amount_vested * 80 / 100; // Get 80% of the amount
+    player.amount_vested -= amount;
 
-    let mut payload: Array<felt252> = ArrayTrait::new();
-    payload.append(destination_address); // Destination treasury or target
-    payload.append(player.amount_vested.into());
+    let lordsDispatcher = IERC20Dispatcher {
+        contract_address: contracts.lords_address.try_into().unwrap()
+    };
+    lordsDispatcher.transfer(destination_address.try_into().unwrap(), amount);
 
-    let lords_contract: felt252 = 0x7802dad86390bd868f00c229c887c4e03848dc6876d457d8c9b379e33812d08;
-    starknet::call_contract_syscall(
-        lords_contract.try_into().unwrap(),
-        selector!("transfer"),
-        payload.span()
-    );
-
-    set!(world, (entityLifeStatus));
+    set!(world, (entityLifeStatus, player));
 }
 
 // Check -2 to 2 square around the player. If there is an infected entity, returns true

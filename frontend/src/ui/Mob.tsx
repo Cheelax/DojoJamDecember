@@ -101,7 +101,7 @@ const Mob: React.FC<MobProps> = ({
       const resource = await Assets.load([`assets/${type}/${type}.json`, `assets/doctorinfected/doctorinfected.json`]);
       setResource(resource);
 
-      if (lifeStatus.isDead) {
+      if (lifeStatus && lifeStatus.isDead) {
         const deathFrames = getFramesFromType('doctorinfected', Animation.Death, Direction.SE, resource);
         setFrames(deathFrames);
         setShouldAnimate(false);

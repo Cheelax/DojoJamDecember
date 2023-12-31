@@ -14,6 +14,9 @@ export RANDOMNESS_ADDRESS=$(cat ./target/dev/manifest.json | jq -r '.contracts[]
 
 export LOOTSURVIVOR_ADDRESS=$(cat ./target/dev/manifest.json | jq -r '.contracts[] | select(.name == "plaguestark::lootsurvivor::lootsurvivor" ).address')
 
+# This is a random address that's part of the prefunded accounts
+export TREASURY_ADDRESS="0x5ae5b8925c1568f3ec6ab5f4d4ea4b5467e6d6a18f0944608a0d368ac15bdc7"
+
 echo "---------------------------------------------------------------------------"
 echo world : $WORLD_ADDRESS 
 echo " "
@@ -24,6 +27,8 @@ echo " "
 echo randomness : $RANDOMNESS_ADDRESS
 echo " "
 echo adventurer : $LOOTSURVIVOR_ADDRESS
+echo " "
+echo treasury : $TREASURY_ADDRESS
 echo "---------------------------------------------------------------------------"
 
 # enable system -> component authorizations
@@ -49,12 +54,12 @@ done
 echo "Initializing ERC20 LORDS token..."
 
 # Initialize ERC20
-sozo execute $LORDS_ADDRESS initializer --calldata $WORLD_ADDRESS,0x4c4f524453,0x4c4f524453,0x100000,$LORDS_ADDRESS
+sozo execute $LORDS_ADDRESS initializer --calldata $WORLD_ADDRESS,0x4c4f524453,0x4c4f524453,0x10000000000,$LORDS_ADDRESS
 
-# Set ERC20 address
+echo "Link contracts"
+
 sozo execute $ACTIONS_ADDRESS set_lords_address --calldata $LORDS_ADDRESS
 sozo execute $ACTIONS_ADDRESS set_randomness_address --calldata $RANDOMNESS_ADDRESS
-
-# ERC20 Lords END
+sozo execute $ACTIONS_ADDRESS set_treasury_address --calldata $TREASURY_ADDRESS
 
 echo "Default authorizations have been successfully set."
