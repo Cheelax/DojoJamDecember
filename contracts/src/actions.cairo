@@ -128,9 +128,8 @@ mod actions {
             // Get the address of the current caller, possibly the player's address.
             let playerId: felt252 = get_caller_address().into();
 
-            let player = get!(world, playerId, (Player));
-
-            let lifeStatus = get!(world, playerId, EntityLifeStatus);
+            let (player,lifeStatus) = get!(world, playerId, (Player, EntityLifeStatus));
+            assert(player.amount_vested > 0, 'You need to spawn first');
             assert(lifeStatus.isDead() == false, 'You are dead');
 
             let isNextToPlayer = (
@@ -193,8 +192,8 @@ mod actions {
                     let finalAmount: u128 = other.amount_vested;
                     lordsDispatcher.transfer(to, finalAmount);
                     other.amount_vested = 0;
-                    set!(world, (other));
-                    otherEntity.id = 0;
+                    otherEntity.id = 0; // Virtually remove the entity from the map
+                    set!(world, (other, otherEntity));
                 }
             }
             assert(otherEntity.id == 0, 'There is already someone here');

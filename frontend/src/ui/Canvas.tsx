@@ -50,6 +50,10 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
 
   useEffect(() => {
     if (tiles === undefined || localPlayer === undefined) return;
+    if (localPlayer.isDead) {
+      setNeighbors([]);
+      return
+    }
     setNeighbors(getNeighbors(localPlayer, tiles, players));
   }, [tiles, localPlayer]);
 
@@ -148,7 +152,7 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
             setCameraOffset={setCameraOffset}
           />
           <MapComponent networkLayer={networkLayer} neighbor={neighbors} />
-          {Object.values(players).filter((player: any) => { console.log(player.amount_vested); return player.amount_vested > 0}).map((player: any) => (
+          {Object.values(players).filter((player: any) => player.amount_vested > 0).map((player: any) => (
             <Mob
               key={player.id}
               orientation={player.orientation}

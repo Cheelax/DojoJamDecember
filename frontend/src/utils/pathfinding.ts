@@ -24,7 +24,7 @@ export const getNeighbors = (tile: Coordinate, grid: any, players: any): Coordin
       // Iterate through players array to check if the player exists at (x, y)
       for (const player of Object.values(players)) {
         const playerparsed = player as any;
-        if (playerparsed.x === x && playerparsed.y === y) {
+        if (playerparsed.x === x && playerparsed.y === y && playerparsed.amount_vested > 2) {
           playerFound = true;
           break; // Exit the loop if a player is found
         }
