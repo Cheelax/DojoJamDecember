@@ -3,9 +3,15 @@ use plaguestark::models::player::{Player};
 use plaguestark::models::entity::{EntityAtPosition};
 
 // External imports
+use starknet::info::{get_block_number};
 use starknet::{ContractAddress,get_contract_address};
 use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
-use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
+use poseidon::poseidon_hash_span;
+
+fn _uniform_random(seed: felt252, max: u128) -> u128 {
+    let hash: u256 = poseidon_hash_span(array![seed].span()).into();
+    hash.low % max
+}
 
 fn infectEntity(entityId: felt252, world: IWorldDispatcher, timestamp: u64, source: felt252) {
     let mut entityLifeStatus = get!(world, entityId, EntityLifeStatus);
@@ -86,7 +92,7 @@ fn spreadAndGetInfection(playerId: felt252, world: IWorldDispatcher, timestamp: 
                     if entityId != 0 && entityId != playerId {
                         let entityLifeStatus = get!(world, entityId, EntityLifeStatus);
                         // Is entity dead?
-                        if (entityLifeStatus.isInfected && timestamp >= entityLifeStatus.deadAt) {
+                        if entityLifeStatus.isInfected && timestamp >= entityLifeStatus.deadAt {
                             killEntity(entityLifeStatus.id, world);
                         } else {
                             // Is it an infected entity? If yes, I become infected
@@ -137,14 +143,15 @@ impl EntityLifeStatusImpl of EntityLifeStatusTrait {
     #[inline(always)]
     fn tick(self: @EntityLifeStatus, world: IWorldDispatcher) {
         let timestamp: u64 = starknet::get_block_info().unbox().block_timestamp;
-        let player = get!(world, *self.id, plaguestark::models::player::Player);
+        let player = get!(world, *self.id, Player);
 
         spreadAndGetInfection(*self.id, world, timestamp);
+
         let mut stackToInfection = 3;
-        if(player.character == 2) {
+        if (player.character == 2) {
             stackToInfection = 5;
         }
-        if (*self.infectionStacks >= stackToInfection) { // if 3 or more stacks, becomes infected
+        if (!*self.isInfected && *self.infectionStacks >= stackToInfection) {
             infectEntity(*self.id, world, timestamp, *self.id);
         }
         if (*self.isInfected && timestamp >= *self.deadAt) {
@@ -155,21 +162,21 @@ impl EntityLifeStatusImpl of EntityLifeStatusTrait {
 
     #[inline(always)]
     fn randomlyAddInfectionStack(self: @EntityLifeStatus, world: IWorldDispatcher) -> bool {
+        if *self.isInfected {
+            return false;
+        }
         let entityId = *self.id;
         let player = get!(world, entityId, (Player));
-        let salt = entityId + player.x.into() + (player.y * 100).into();
-        let hash = pedersen::pedersen(entityId, salt);
-        let rnd_seed = match u128s_from_felt252(hash) {
-            U128sFromFelt252Result::Narrow(low) => low,
-            U128sFromFelt252Result::Wide((high, low)) => low,
-        };
-        let max_rand: u128 = 100;
-        let (rnd_seed, rnd_value) = u128_safe_divmod(rnd_seed, max_rand.try_into().unwrap());
+
+        let salt = entityId + player.x.into() + (player.y * 100).into() + get_block_number().into();
+
+        let rnd_value = _uniform_random(salt, 100);
         let mut stackChance = 10;
-        if(player.character == 1) {
+        if player.character == 1 {
             stackChance = 5;
         }
-        if (rnd_value <= stackChance) { // 10% chance to get one stack
+
+        if rnd_value <= stackChance { // 10% chance to get one stack
             let mut lifeStatus = get!(world, entityId, EntityLifeStatus);
             lifeStatus.infectionStacks += 1;
             set!(world, (lifeStatus));

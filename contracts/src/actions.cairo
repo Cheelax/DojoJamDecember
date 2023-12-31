@@ -25,8 +25,6 @@ mod actions {
 
     use debug::PrintTrait;
 
-    use integer::{u128s_from_felt252, U128sFromFelt252Result, u128_safe_divmod};
-
     use plaguestark::models::player::{Player, PlayerScore, PlayerInventory};
     use plaguestark::models::tile::{Tile, TileAtPosition};
     use plaguestark::models::entity_infection::{EntityLifeStatus, EntityLifeStatusTrait};
@@ -35,6 +33,13 @@ mod actions {
     use plaguestark::models::map::{Map, MapTrait};
     use plaguestark::systems::create::{initGame};
     use plaguestark::randomness::{IRandomness,IRandomnessDispatcher,IRandomnessDispatcherTrait};
+
+    use poseidon::poseidon_hash_span;
+
+    fn _uniform_random(seed: felt252, max: u128) -> u128 {
+        let hash: u256 = poseidon_hash_span(array![seed].span()).into();
+        hash.low % max
+    }
 
     #[storage]  
     struct Storage {
@@ -176,13 +181,10 @@ mod actions {
                 )
             );
 
-            if (lifeStatus.randomlyAddInfectionStack(world)) {
-                // Retrieve updated value
-                let updatedLifeStatus = get!(world, entityId, EntityLifeStatus);
-                updatedLifeStatus.tick(world);
-            } else {
-                lifeStatus.tick(world);
-            }
+            lifeStatus.randomlyAddInfectionStack(world);
+            // Update life status
+            let lifeStatus = get!(world, playerId, EntityLifeStatus);
+            lifeStatus.tick(world);
         }
 
         fn drink_potion(self: @ContractState) {
@@ -250,19 +252,8 @@ mod actions {
         let mut x = 10;
         let mut y = 10;
         loop {
-            let hash = pedersen::pedersen(player, salt);
-            let rnd_seed = match u128s_from_felt252(hash) {
-                U128sFromFelt252Result::Narrow(low) => low,
-                U128sFromFelt252Result::Wide((high, low)) => low,
-            };
-            let MAP_SIZE: u128 = 50;
-            let (rnd_seed, x_) = u128_safe_divmod(rnd_seed, MAP_SIZE.try_into().unwrap());
-            let (rnd_seed, y_) = u128_safe_divmod(rnd_seed, MAP_SIZE.try_into().unwrap());
-            let x_: felt252 = x_.into();
-            let y_: felt252 = y_.into();
-
-            x = x_.try_into().unwrap();
-            y = y_.try_into().unwrap();
+            x = _uniform_random(player + salt, 50).try_into().unwrap();
+            y = _uniform_random(player + salt, 50).try_into().unwrap();
 
             let (entity, tile) = get!(world, (x, y), (EntityAtPosition, TileAtPosition));
 
