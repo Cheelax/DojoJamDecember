@@ -14,7 +14,7 @@ const FaucetButton: React.FC<FaucetButtonProps> = ({ onClick, disabled }) => {
       onClick={onClick}
       disabled={disabled}
     >
-      Faucet
+      Faucet <br/> +1000 LORDS
     </button>
   );
 };

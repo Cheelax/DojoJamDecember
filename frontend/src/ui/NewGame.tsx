@@ -16,9 +16,12 @@ interface NewGameProps {
 }
 
 const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
-  const { setLoggedIn, setUsername, username, setSelectedAdventurer, selectedAdventurer } = store();
+  const { setLoggedIn, setUsername, username, setSelectedAdventurer, selectedAdventurer, setLordsAmount: setLordsAmountStore, lordsAmount: lordsAmountStore } = store();
   const [adventurers, setAdventurers] = useState<AdventurerType[]>(adventurerList);
-
+  const [receivedFaucet, setReceivedFaucet] = useState<boolean>(false);
+  const [lordsAmount, setLordsAmount] = useState<number>(lordsAmountStore);
+  const [clickFaucet, setClickFaucet] = useState<boolean>(false);
+  
   const [isRulesModalOpen, setRulesModalOpen] = useState(false);
 
   const openRulesModal = () => {
@@ -75,6 +78,10 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
     };
   }, []);
 
+  useEffect(() => {
+    setLordsAmountStore(lordsAmount)
+  }, [lordsAmount])
+
   const updateAdventurerList = (newValues: any[]) => {
     const updatedAdventurers = adventurerList.map((adventurer, index) => {
       if (index < newValues.length) {
@@ -108,13 +115,33 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center">
-      <img src={Logo} alt="Plague" className="w-1/4 mb-16" />
+     <div style={{position: 'absolute', right: 10, top: 10, display: 'flex', alignItems: 'center'}}>
+        <img src='assets/lords.png' style={{ float: 'right' }}/>
+        <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>LORDS { lordsAmount}</div>
+        <FaucetButton
+          onClick={() => {
+            if (!networkLayer) return;
+            const {
+              account,
+              systemCalls: { faucetLords },
+            } = networkLayer;
+            faucetLords(account);
+            setClickFaucet(true);
+            setTimeout(() => {
+              setReceivedFaucet(true)
+              setLordsAmount(lordsAmount + 1000)
+            }, 1000)
+          }}
+          disabled={clickFaucet}
+        />
+      </div>
+      <img src={Logo} alt="Plague" className="w-1/4 mb-8 mt-8" />
       <div className="w-full max-w-xs">
         <label className="block text-[#fae8c8] text-sm font-bold mb-2" htmlFor="pseudo">
           Username
         </label>
         <input
-          className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline text-gray-600"
+          className="shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline text-gray-600 mb-2"
           id="pseudo"
           type="text"
           placeholder="Pseudo"
@@ -123,8 +150,8 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
           maxLength={18}
         />
       </div>
-      <div className=" w-full max-w-[80%] mb-12">
-        <p className="w-full text-start mt-20 mb-8">Choose an adventurer below:</p>
+      <div className=" w-full max-w-[80%] mb-2">
+        <p className="w-full text-start mt-20 mb-2">Choose an adventurer below:</p>
         <div className="flex  justify-around">
           {adventurers.map((adventurer, index) => (
             <StatsCard
@@ -141,17 +168,7 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
       </div>
       <div className="flex justify-between space-x-4">
         <RulesButton onClick={openRulesModal} />
-        <FaucetButton
-          onClick={() => {
-            if (!networkLayer) return;
-            const {
-              account,
-              systemCalls: { faucetLords },
-            } = networkLayer;
-            faucetLords(account);
-          }}
-        />
-        <NewGameButton onClick={login} disabled={!username || !selectedAdventurer} />
+        <NewGameButton onClick={login} disabled={!username || !selectedAdventurer || !receivedFaucet} />
       </div>
       <Modal isOpen={isRulesModalOpen} onClose={closeRulesModal} modalRef={modalRef}></Modal>
     </div>

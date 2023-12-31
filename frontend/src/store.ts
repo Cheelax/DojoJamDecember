@@ -10,6 +10,8 @@ export type Store = {
     setUsername: (username: string) => void;
     selectedAdventurer: AdventurerType | null;
     setSelectedAdventurer: (adventurer: AdventurerType | null) => void;
+    lordsAmount: number;
+    setLordsAmount: (amount: number) => void;
 };
 
 export const store = create<Store>((set) => ({
@@ -20,5 +22,7 @@ export const store = create<Store>((set) => ({
     setUsername: (username: string) => set(() => ({ username })),
     selectedAdventurer: null,
     setSelectedAdventurer: (adventurer: AdventurerType | null) => set(() => ({ selectedAdventurer: adventurer })),
+    lordsAmount: 0,
+    setLordsAmount: (amount: number) => set(() => ({ lordsAmount: amount })),
 }));
 

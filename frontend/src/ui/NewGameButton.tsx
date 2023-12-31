@@ -14,7 +14,7 @@ const NewGameButton: React.FC<NewGameButtonProps> = ({ onClick, disabled }) => {
 			onClick={onClick}
 			disabled={disabled}
 		>
-			New Game
+			New Game <br/> -10 LORDS
 		</button>
 	);
 };

@@ -33,14 +33,9 @@ function App() {
 
     const {
       account,
-      systemCalls: { approveLords, faucetLords },
+      systemCalls: { approveLords },
     } = networkLayer;
-    setTimeout(function () {
-      faucetLords(account);
-    }, 1000);
-    setTimeout(function () {
-      approveLords(account);
-    }, 2000);
+    approveLords(account);
   }, [networkLayer]);
 
   Modal.setAppElement('#root');
