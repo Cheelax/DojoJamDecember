@@ -162,6 +162,13 @@ const Mob: React.FC<MobProps> = ({
     if (lifeStatus.isInfected && !lifeStatus.isDead) {
       hintText = nbSecondsBeforeDeath.toString()
     }
+    if (lifeStatus.isDead) {
+      hintText = "2 💰"
+    }
+  } else {
+    if (lifeStatus.isDead) {
+      hintText = "2 💰"
+    }
   }
 
   return (

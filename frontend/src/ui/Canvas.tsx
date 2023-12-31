@@ -50,12 +50,12 @@ const Canvas: React.FC<CanvasProps> = ({ networkLayer }) => {
 
   useEffect(() => {
     if (tiles === undefined || localPlayer === undefined) return;
-    if (localPlayer.isDead) {
+    if (entitiesLifeStatus[localPlayer.id] && entitiesLifeStatus[localPlayer.id].isDead) {
       setNeighbors([]);
       return
     }
     setNeighbors(getNeighbors(localPlayer, tiles, players));
-  }, [tiles, localPlayer]);
+  }, [tiles, localPlayer, entitiesLifeStatus]);
 
   useEffect(() => {
     let maxIndex = 0;
