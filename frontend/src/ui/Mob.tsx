@@ -39,6 +39,8 @@ const Mob: React.FC<MobProps> = ({
   const [counterAnim, setCounterAnim] = useState<number>(0);
   const [shouldAnimate, setShouldAnimate] = useState(true);
 
+  const [nbSecondsBeforeDeath, setNbSecondsBeforeDeath] = useState(0);
+
   // Allow animation (set target, then tick lerp to set position)
   const [absoluteTargetPosition, setAbsoluteTargetPosition] = useState<Coordinate>({ x: 0, y: 0 });
   const [absolutePosition, setAbsolutePosition] = useState<Coordinate>({ x: 0, y: 0 });
@@ -114,6 +116,11 @@ const Mob: React.FC<MobProps> = ({
   }, []);
 
   useTick((delta) => {
+    if (lifeStatus.isInfected && !lifeStatus.isDead) {
+      const nbSeconds = Math.floor((lifeStatus.deadAt * 1000 - Date.now()) / 1000);
+      setNbSecondsBeforeDeath(nbSeconds <= 0 ? 0 : nbSeconds);
+    }
+
     if (shouldAnimate) {
       setCounterAnim((prevCounter) => prevCounter + delta);
       if (animation === Animation.Death && currentFrame === frames.length - 1) {
@@ -152,6 +159,9 @@ const Mob: React.FC<MobProps> = ({
       !lifeStatus.isDead && !lifeStatus.isInfected
         ? lifeStatus.infectionStacks + '/' + Math.floor(nbInfectionStacks)
         : '';
+    if (lifeStatus.isInfected && !lifeStatus.isDead) {
+      hintText = nbSecondsBeforeDeath.toString()
+    }
   }
 
   return (
