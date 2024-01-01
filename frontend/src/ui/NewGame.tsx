@@ -3,7 +3,7 @@ import { adventurerList, AdventurerType } from '../utils/adventurerList';
 import StatsCard from './StatsCard';
 import NewGameButton from './NewGameButton';
 import { store } from '../store';
-import Logo from '../assets/plague.webp';
+import Logo from '../assets/plague.png';
 import { NetworkLayer } from '../dojo/createNetworkLayer';
 import { sound as pixiSound } from '@pixi/sound';
 import RulesButton from './RulesButton';
