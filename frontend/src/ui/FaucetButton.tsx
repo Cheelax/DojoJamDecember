@@ -10,11 +10,11 @@ const FaucetButton: React.FC<FaucetButtonProps> = ({ onClick, disabled }) => {
     <button
       className={`bg-[#ffdb9e] transition ${
         disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#ffd285]'
-      } my-10 text-white font-bold py-2 px-4 rounded w-full max-w-xs`}
+      } my-10 text-white font-bold py-2 px-2 rounded w-full max-w-xs`}
       onClick={onClick}
       disabled={disabled}
     >
-      Faucet <br/> +1000 LORDS
+      Click to get <br /> +1000 LORDS
     </button>
   );
 };

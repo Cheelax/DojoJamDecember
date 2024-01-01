@@ -16,12 +16,20 @@ interface NewGameProps {
 }
 
 const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
-  const { setLoggedIn, setUsername, username, setSelectedAdventurer, selectedAdventurer, setLordsAmount: setLordsAmountStore, lordsAmount: lordsAmountStore } = store();
+  const {
+    setLoggedIn,
+    setUsername,
+    username,
+    setSelectedAdventurer,
+    selectedAdventurer,
+    setLordsAmount: setLordsAmountStore,
+    lordsAmount: lordsAmountStore,
+  } = store();
   const [adventurers, setAdventurers] = useState<AdventurerType[]>(adventurerList);
   const [receivedFaucet, setReceivedFaucet] = useState<boolean>(false);
   const [lordsAmount, setLordsAmount] = useState<number>(lordsAmountStore);
   const [clickFaucet, setClickFaucet] = useState<boolean>(false);
-  
+
   const [isRulesModalOpen, setRulesModalOpen] = useState(false);
 
   const openRulesModal = () => {
@@ -36,7 +44,8 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
   useEffect(() => {
     if (!networkLayer) return;
     const {
-      network: { provider },
+      network: { provider, account },
+      systemCalls: { faucetLords },
     } = networkLayer;
 
     const fetchAdventurers = async () => {
@@ -79,8 +88,8 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
   }, []);
 
   useEffect(() => {
-    setLordsAmountStore(lordsAmount)
-  }, [lordsAmount])
+    setLordsAmountStore(lordsAmount);
+  }, [lordsAmount]);
 
   const updateAdventurerList = (newValues: any[]) => {
     const updatedAdventurers = adventurerList.map((adventurer, index) => {
@@ -115,25 +124,29 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center">
-     <div style={{position: 'absolute', right: 10, top: 10, display: 'flex', alignItems: 'center'}}>
-        <img src='assets/lords.png' style={{ float: 'right' }}/>
-        <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>LORDS { lordsAmount}</div>
-        <FaucetButton
-          onClick={() => {
-            if (!networkLayer) return;
-            const {
-              account,
-              systemCalls: { faucetLords },
-            } = networkLayer;
-            faucetLords(account);
-            setClickFaucet(true);
-            setTimeout(() => {
-              setReceivedFaucet(true)
-              setLordsAmount(lordsAmount + 1000)
-            }, 1000)
-          }}
-          disabled={clickFaucet}
-        />
+      <div style={{ position: 'absolute', right: 10, top: 10, display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }} className="mx-5">
+          {lordsAmount}
+        </div>
+        <img src="assets/lords.png" style={{ float: 'right' }} className="mr-2" />
+        {!clickFaucet && (
+          <FaucetButton
+            onClick={() => {
+              if (!networkLayer) return;
+              const {
+                account,
+                systemCalls: { faucetLords },
+              } = networkLayer;
+              faucetLords(account);
+              setClickFaucet(true);
+              setTimeout(() => {
+                setReceivedFaucet(true);
+                setLordsAmount(lordsAmount + 1000);
+              }, 1000);
+            }}
+            disabled={clickFaucet}
+          />
+        )}
       </div>
       <img src={Logo} alt="Plague" className="w-1/4 mb-8 mt-8" />
       <div className="w-full max-w-xs">
@@ -166,7 +179,7 @@ const NewGame: FC<NewGameProps> = ({ onPseudoChange, networkLayer }) => {
           ))}
         </div>
       </div>
-      <div className="flex justify-between space-x-4">
+      <div className="flex justify-center space-around space-x-4 w-full">
         <RulesButton onClick={openRulesModal} />
         <NewGameButton onClick={login} disabled={!username || !selectedAdventurer || !receivedFaucet} />
       </div>
